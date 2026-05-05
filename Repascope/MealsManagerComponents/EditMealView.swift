@@ -15,14 +15,19 @@ struct EditMealView: View {
     @Bindable var meal: MealItem
     
     @State private var isTargeted = false
-        
+    
     var body: some View {
-        VStack {
+        ScrollView {
+            VStack {
                 
+                // Photo
                 if let photo = meal.photo {
                     Image(photo)
+                        .resizable()
+                        .scaledToFill()
                         .frame(height: 200)
                         .frame(maxWidth: .infinity)
+                        .clipped()
                 } else {
                     Image(systemName: "camera")
                         .font(.system(size: 50))
@@ -37,35 +42,43 @@ struct EditMealView: View {
                     .fontWeight(.bold)
                     .padding()
                 
-                VStack(alignment: .leading) {
-                                        
+                VStack(alignment: .leading, spacing: 12) {
+                    
                     Text("Ingrédients")
                         .font(.headline)
                     
-                    VStack(alignment: .leading) {
-                        ForEach(meal.ingredients) { ingredient in
-                            HStack{
-                                Text(ingredient.ingredient.name)
-                                Spacer()
-                                Text("Quantité : \(ingredient.quantity)")
+                    VStack(alignment: .center, spacing: 0) {
+                        if meal.ingredients.isEmpty {
+                            Text("Glisser des ingrédients ici")
+                        } else {
+                            ForEach(meal.ingredients.indices, id: \.self) { index in
+                                IngredientStepperLine(
+                                    ingredient: $meal.ingredients[index],
+                                    onDelete: {
+                                        meal.ingredients.remove(at: index)
+                                        try? modelContext.save()
+                                    })
+                                .frame(height: 40)
                             }
+                            Spacer(minLength: 40)
                         }
                     }
-                    .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
-                    .background(Color.gray.opacity(0.1))
+                    .frame(maxWidth: .infinity, minHeight: 80)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.green.opacity(0.1))
+                    )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(isTargeted ? Color.blue : Color.clear, lineWidth: 2)
+                            .stroke(isTargeted ? Color.green : Color.clear, lineWidth: 2)
                     )
                     .animation(.easeInOut(duration: 0.15), value: isTargeted)
                     .dropDestination(for: IngredientTransfer.self, action: { transfers, _ in
-                        //print("🟢 drop reçu : \(transfers.count) éléments")
                         for transfer in transfers {
                             guard let ingredient = modelContext.model(for: transfer.persistentID) as? Ingredient else {
                                 print("🔴 ingredient introuvable")
                                 continue
                             }
-                            //print("✅ ingredient trouvé : \(ingredient.name)")
                             let mealIngredient = MealIngredient(ingredient: ingredient, quantity: 1)
                             meal.ingredients.append(mealIngredient)
                         }
@@ -73,14 +86,17 @@ struct EditMealView: View {
                         return true
                     }, isTargeted: { isTargeted = $0 })
                     
-                    TextField("Notes", text: $meal.notes )
+                    Text("Notes")
+                        .font(.headline)
+                    
+                    TextField("Ajouter des notes...", text: $meal.notes, axis: .vertical)
                         .lineLimit(5...10)
-                        .padding(.vertical)
                 }
                 .frame(maxWidth: 500)
+                .padding(.horizontal)
                 
                 Spacer()
-
+            }
         }
     }
 }
