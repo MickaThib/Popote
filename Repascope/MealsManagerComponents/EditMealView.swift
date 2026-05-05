@@ -10,15 +10,14 @@ import SwiftData
 
 struct EditMealView: View {
     
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) private var modelContext
     
-    @Binding var selectedMeal: MealItem?
+    @Bindable var meal: MealItem
     
     @State private var isTargeted = false
         
     var body: some View {
         VStack {
-            if let meal = selectedMeal {
                 
                 if let photo = meal.photo {
                     Image(photo)
@@ -62,7 +61,7 @@ struct EditMealView: View {
                     .dropDestination(for: IngredientTransfer.self, action: { transfers, _ in
                         //print("🟢 drop reçu : \(transfers.count) éléments")
                         for transfer in transfers {
-                            guard let ingredient = context.model(for: transfer.persistentID) as? Ingredient else {
+                            guard let ingredient = modelContext.model(for: transfer.persistentID) as? Ingredient else {
                                 print("🔴 ingredient introuvable")
                                 continue
                             }
@@ -70,31 +69,26 @@ struct EditMealView: View {
                             let mealIngredient = MealIngredient(ingredient: ingredient, quantity: 1)
                             meal.ingredients.append(mealIngredient)
                         }
+                        try? modelContext.save()
                         return true
                     }, isTargeted: { isTargeted = $0 })
                     
-                    TextField("Notes", text: Binding(get: {meal.notes}, set: { selectedMeal?.notes = $0 }),axis: .vertical)
+                    TextField("Notes", text: $meal.notes )
                         .lineLimit(5...10)
                         .padding(.vertical)
                 }
                 .frame(maxWidth: 500)
                 
                 Spacer()
-                
-            } else {
-                //TODO: Ecran à terminer
-                Text("Aucun repas sélectionné")
-            }
+
         }
     }
 }
 
 #Preview {
-    EditMealView(selectedMeal: .constant(MealItem(title: "Pâtes bolognaises", photo: nil, ingredients: [
+    EditMealView(meal: MealItem(title: "Pâtes bolognaises", photo: nil, ingredients: [
         MealIngredient(ingredient: Ingredient(name: "Pâtes"), quantity: 1),
         MealIngredient(ingredient: Ingredient(name: "Sauce tomate"), quantity: 1),
         MealIngredient(ingredient: Ingredient(name: "Viande hâchée"), quantity: 1)
-    ])))
-    
-    //EditMealView(selectedMeal: .constant(nil))
+    ]))
 }

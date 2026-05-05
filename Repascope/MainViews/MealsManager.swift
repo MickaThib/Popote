@@ -21,8 +21,14 @@ struct MealsManager: View {
             MealListView(selectedMeal: $selectedMeal)
                 .frame(width: 270)
             
-            EditMealView(selectedMeal: $selectedMeal)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            if let meal = selectedMeal {
+                EditMealView(meal: meal)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                //TODO: a terminer
+                Text("Aucun repas sélectionné")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
             
             IngredientListView()
                 .frame(width: 300)

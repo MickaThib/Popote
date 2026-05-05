@@ -11,8 +11,9 @@ import SwiftData
 @Model
 final class Ingredient: Hashable {
     var name: String
+    
     @Relationship(deleteRule: .cascade, inverse: \MealIngredient.ingredient)
-    var mealIngredients: [MealIngredient] = []
+        var mealIngredients: [MealIngredient] = []
     
     init(name: String) {
         self.name = name

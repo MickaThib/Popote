@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 final class MealIngredient {
-    @Relationship(deleteRule: .cascade) var ingredient: Ingredient
+    var ingredient: Ingredient
     var quantity: Int
 
     init(ingredient: Ingredient, quantity: Int) {
