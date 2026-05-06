@@ -15,6 +15,7 @@ struct EditMealView: View {
     @Bindable var meal: MealItem
     
     @State private var isTargeted = false
+    @State private var isEditing = false
     
     var body: some View {
         ScrollView {
@@ -36,11 +37,28 @@ struct EditMealView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color.gray.opacity(0.3))
                 }
-                
-                Text(meal.title)
-                    .font(.system(size: 30))
-                    .fontWeight(.bold)
-                    .padding()
+                HStack(alignment: .lastTextBaseline) {
+                    if isEditing {
+                        TextField("Nom de la recette", text: $meal.title)
+                            .font(.system(size: 30))
+                            .fontWeight(.bold)
+                            .padding(.vertical)
+                    } else {
+                        Text(meal.title)
+                            .font(.system(size: 30))
+                            .fontWeight(.bold)
+                            .padding(.vertical)
+                    }
+                    Spacer()
+                    Button("Modifier", systemImage: "pencil") {
+                        isEditing.toggle()
+                        try? modelContext.save()
+                    }
+                    .buttonStyle(.borderless)
+                    //.labelStyle(.iconOnly)
+                    //.font(.system(size: 18))
+                }
+                .frame(maxWidth: 500)
                 
                 VStack(alignment: .leading, spacing: 12) {
                     
