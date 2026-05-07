@@ -14,12 +14,10 @@ struct IngredientListView: View {
     
     @Query(sort: \Ingredient.name) private var ingredients: [Ingredient]
     
-    @State var showDeleteAlert:Bool = false
+    @State private var showDeleteAlert:Bool = false
     @State private var ingredientToDelete:Ingredient?
     
-    @State var showAddIngredientSheet:Bool = false
-    @State var ingredientToAdd: String = ""
-    
+    @State var showAddIngredientSheet:Bool = false    
     
     var body: some View {
         
@@ -80,39 +78,23 @@ struct IngredientListView: View {
                 }
             }
         }
-        .sheet(isPresented: $showAddIngredientSheet, onDismiss: {
-            ingredientToAdd = ""
-        }) {
-            VStack(spacing: 16) {
-                Text("Ajouter un ingrédient")
-                    .font(.headline)
-                TextField("Nom de l'ingrédient", text: $ingredientToAdd)
-                    .onSubmit {
-                        addIngredient(name: ingredientToAdd)
-                    }
-                    .frame(width: 300)
-                HStack {
-                    Button("Annuler", role: .cancel) {
-                        ingredientToAdd = ""
-                        showAddIngredientSheet = false
-                    }
-                    Button("Ajouter") {
-                        addIngredient(name: ingredientToAdd)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(ingredientToAdd.isEmpty)
-                }
+        .sheet(isPresented: $showAddIngredientSheet) {
+
+            IngredientAddSheet(
+                existingIngredients: ingredients
+            ) { name in
+                addIngredient(name: name)
             }
-            .padding()
         }
     }
     
     func addIngredient(name: String) {
         modelContext.insert(Ingredient(name: name))
-        try? modelContext.save()
-        ingredientToAdd = ""
-        showAddIngredientSheet = false
-        
+        do {
+            try modelContext.save()
+        } catch {
+            print(error)
+        }
     }
     
     func deleteIngredient(ingredient:Ingredient) {
