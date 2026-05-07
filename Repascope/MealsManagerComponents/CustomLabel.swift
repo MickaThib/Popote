@@ -12,7 +12,12 @@ struct CustomLabel: View {
     let title:String
     let type: ListLabelType
     let isSelected: Bool
+    var newTitleAction: ((String) -> Void)?
     var deleteAction: () -> Void
+    
+    @State private var isEditing: Bool = false
+    @State private var newName: String = ""
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         ZStack(alignment: .leading) {
@@ -22,11 +27,40 @@ struct CustomLabel: View {
                 .stroke(isSelected ? type.ItemColor() : .clear, lineWidth: 1)
             
             HStack {
-                Text(title)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.black)
-                    .padding(.leading)
+                if isEditing {
+                    TextField(title, text: $newName)
+                        .padding(.leading)
+                        .focused($isFocused)
+                        .onSubmit { commitEdit() }
+                        .onChange(of: isFocused) { _, focused in
+                            if !focused && isEditing {
+                                commitEdit()
+                            }
+                        }
+                } else {
+                    Text(title)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(.black)
+                        .padding(.leading)
+                }
+                
                 Spacer()
+                
+                if type == .ingredient, newTitleAction != nil {
+                    Button {
+                        if isEditing {
+                            commitEdit()
+                        } else {
+                            newName = title
+                            isEditing = true
+                            isFocused = true
+                        }
+                    } label: {
+                        Image(systemName: "pencil")
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                }
                 Button {
                     deleteAction()
                 } label: {
@@ -39,6 +73,13 @@ struct CustomLabel: View {
         }
         .frame(maxWidth: .infinity)
     }
+    
+    private func commitEdit() {
+            guard !newName.isEmpty else { return }
+            newTitleAction?(newName)
+            isEditing = false
+        }
+    
 }
 
 enum ListLabelType: String {
@@ -56,5 +97,5 @@ enum ListLabelType: String {
 }
 
 #Preview {
-    CustomLabel(title: "Côtes de porc", type: .meal, isSelected: true, deleteAction: {})
+    CustomLabel(title: "Côtes de porc", type: .ingredient, isSelected: true, deleteAction: {})
 }

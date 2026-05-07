@@ -56,10 +56,14 @@ struct IngredientListView: View {
                     title: ingredient.name,
                     type: .ingredient,
                     isSelected: false,
+                    newTitleAction: { newName in
+                        ingredient.name = newName
+                        try? modelContext.save()
+                    },
                     deleteAction: {deleteIngredient(ingredient: ingredient)}
                 )
                 .listRowSeparator(.hidden)
-                .frame(height: 30)
+                .frame(height: 25)
                 .draggable(IngredientTransfer(persistentID: ingredient.persistentModelID))
             }
             .padding(.top, 0)
@@ -118,5 +122,18 @@ struct IngredientListView: View {
 }
 
 #Preview {
-    IngredientListView()
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Ingredient.self, configurations: config)
+    
+    let ingredients = [
+        Ingredient(name: "Carotte"),
+        Ingredient(name: "Pommes de terre"),
+        Ingredient(name: "Pain de mie"),
+        Ingredient(name: "Avocats")
+    ]
+    
+    for ingredient in ingredients { container.mainContext.insert(ingredient) }
+    
+    return IngredientListView()
+        .modelContainer(container)
 }

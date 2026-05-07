@@ -13,7 +13,7 @@
 
 ## EDIT MEAL VIEW
 - [ ] Ajouter une photo
-- [ ] Pouvoir modifier un ingrédient (sans devoir l'effacer et le supprimer partout)
+- [X] Pouvoir modifier un ingrédient (sans devoir l'effacer et le supprimer partout)
 - [ ] Vérifier qu'un ingrédient nommé pareil n'existe pas déjà
 
 ## SETTINGS
