@@ -57,7 +57,7 @@ struct OrganizerView: View {
                 .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
             }
             .padding()
-            .frame(width: 280)
+            .frame(width: 300)
         }
     }
 }

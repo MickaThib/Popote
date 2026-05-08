@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		CAD9F5AA2FA22F8E00507B5B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CAD9F5A92FA22F8E00507B5B /* .gitignore */; };
+		CAE4CD212FAE834500008CAF /* Repascope.entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = CAE4CD202FAE834500008CAF /* Repascope.entitlements.plist */; };
 		CAF218632FA257CE0066C02C /* TODO.md in Resources */ = {isa = PBXBuildFile; fileRef = CAF218612FA257BE0066C02C /* TODO.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CAB0FF892FA20D9600D76087 /* Repascope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Repascope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD9F5A92FA22F8E00507B5B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		CAE4CD202FAE834500008CAF /* Repascope.entitlements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Repascope.entitlements.plist; path = Repascope/Repascope.entitlements.plist; sourceTree = "<group>"; };
 		CAF218612FA257BE0066C02C /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -22,6 +24,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Repascope.entitlements.plist,
 			);
 			target = CAB0FF882FA20D9600D76087 /* Repascope */;
 		};
@@ -52,6 +55,7 @@
 		CAB0FF802FA20D9600D76087 = {
 			isa = PBXGroup;
 			children = (
+				CAE4CD202FAE834500008CAF /* Repascope.entitlements.plist */,
 				CAF218612FA257BE0066C02C /* TODO.md */,
 				CAB0FF8B2FA20D9600D76087 /* Repascope */,
 				CAB0FF8A2FA20D9600D76087 /* Products */,
@@ -133,6 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CAF218632FA257CE0066C02C /* TODO.md in Resources */,
+				CAE4CD212FAE834500008CAF /* Repascope.entitlements.plist in Resources */,
 				CAD9F5AA2FA22F8E00507B5B /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -276,6 +281,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Repascope/Repascope.entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -284,13 +290,7 @@
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Repascope/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Repascope;
@@ -326,6 +326,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ENTITLEMENTS = Repascope/Repascope.entitlements.plist;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -334,13 +335,7 @@
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Repascope/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Repascope;

@@ -19,5 +19,7 @@
 			<dict/>
 		</dict>
 	</array>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Repascope souhaite accéder à Notes pour exporter votre liste de courses.</string>
 </dict>
 </plist>

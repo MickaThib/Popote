@@ -47,11 +47,25 @@ struct ShoppingList: View {
     
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
-            Text("Liste de courses")
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
-                .padding(.vertical, 10)
+            
+            HStack {
+                Text("Liste de courses")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
+                Spacer()
+                Button {
+                    exportToNotes(items: shoppingList)
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .padding(.trailing)
+                        .font(.system(size: 18))
+                }
+                .buttonStyle(.plain)
+
+            }
+            
             Divider()
             
             Group {
@@ -74,23 +88,14 @@ struct ShoppingList: View {
                 }
                 .listStyle(.plain)
                 
-                HStack {
-                    Button(role: .destructive) {
-                        showEmptyListAlert = true
-                    } label: {
-                        Label("Vider la liste", systemImage: "trash")
-                    }
-                    
-                    Button(action: startAddingItem) {
-                        if isAddingItem {
-                            Label("Terminer", systemImage: "xmark")
-                        } else {
-                            Label("Ajouter", systemImage: "plus")
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.pink)
-                }
+                let emptyAction = { showEmptyListAlert = true }
+                let addAction = { startAddingItem() }
+
+                ShoppingListButtons(
+                    emptyListAction: emptyAction,
+                    startAddingItemAction: addAction,
+                    isAddingItem: isAddingItem
+                )
                 .frame(maxWidth: .infinity)
                 .padding()
             }
@@ -167,6 +172,66 @@ struct ShoppingList: View {
             print("SAVE ERROR:", error)
         }
     }
+    
+    func exportToNotes(items: [ShoppingItem]) {
+        let htmlItems = items.map { item in
+            let checked = item.isChecked ? "true" : "false"
+            return "<li data-checked='\(checked)'>\(item.name)</li>"  // ← apostrophes
+        }.joined(separator: "\n")
+        
+        let html = "<ul class='checked'>\n\(htmlItems)\n</ul>"
+        
+        // Échapper les apostrophes éventuelles dans les noms d'articles
+        let safeName = "Liste de courses"
+        let safeHtml = html.replacingOccurrences(of: "\\", with: "\\\\")
+                           .replacingOccurrences(of: "\"", with: "\\\"")
+        
+        let script = """
+        tell application "Notes"
+            activate
+            set noteBody to "\(safeHtml)"
+            make new note with properties {name:"Liste de courses", body:noteBody}
+        end tell
+        """
+        
+        var appleScriptError: NSDictionary?
+        if let result = NSAppleScript(source: script)?.executeAndReturnError(&appleScriptError) {
+            print("AppleScript OK:", result)
+        } else if let err = appleScriptError {
+            print("AppleScript ERROR:", err)
+        }
+    }
+}
+
+struct ShoppingListButtons: View {
+    
+    let emptyListAction: () -> Void
+    let startAddingItemAction: () -> Void
+    let isAddingItem: Bool
+    
+    var body: some View {
+        HStack {
+            Button(role: .destructive) {
+                emptyListAction()
+            } label: {
+                Label("Vider la liste", systemImage: "trash")
+            }
+            
+            Button(role: .none) {
+                startAddingItemAction()
+            } label: {
+                if isAddingItem {
+                    Label("Terminer", systemImage: "xmark")
+                } else {
+                    Label("Ajouter", systemImage: "plus")
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.pink)
+        }
+    }
+    
+    
 }
 
 #Preview {
