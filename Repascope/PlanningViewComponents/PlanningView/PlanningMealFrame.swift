@@ -6,15 +6,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PlanningMealFrame: View {
     
+    @Environment(\.modelContext) private var context
+    
     let day: Date
-    let moment: MealMoment
+    let slot: MealSlot
     @State var guests: String = ""
     @State var notes: String = ""
-    @State var meal1: MealItem?
-    @State var meal2: MealItem?
+    let plannedMeals: [PlannedMeal]
+
     
     var body: some View {
         VStack {
@@ -27,52 +30,8 @@ struct PlanningMealFrame: View {
             .padding(.horizontal, 7)
             .padding(.top, 7)
             
-            if let meal1 = meal1 {
-                
-                if let meal2 = meal2 {
-                    // Si deux repas sont prévus : répartir case à égalité
-                    HStack {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.blue.opacity(0.2))
-                            .frame(minHeight: 40, maxHeight: .infinity)
-                            .overlay {
-                                Text(meal1.title)
-                                    .font(.headline)
-                            }
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.blue.opacity(0.2))
-                            .frame(minHeight: 40, maxHeight: .infinity)
-                            .overlay {
-                                Text(meal2.title)
-                                    .font(.headline)
-                            }
-                    }
-                    .padding(.horizontal, 7)
-                    .padding(.bottom, 7)
-                    
-                } else {
-                    // Si un seul repas est prévu : prévoir espace pour en ajouter un autre
-                    HStack {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.blue.opacity(0.2))
-                            .frame(minHeight: 40, maxHeight: .infinity)
-                            .overlay {
-                                Text(meal1.title)
-                                    .font(.headline)
-                            }
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(.clear)
-                            .stroke(Color.gray.opacity(0.2))
-                            .frame(maxWidth: 40)
-                            .overlay {
-                                Image(systemName: "plus")
-                            }
-                    }
-                    .padding(.horizontal, 7)
-                    .padding(.bottom, 7)
-                }
-                
-            } else {
+            if plannedMeals.count == 0 {
+                // Si aucun repas n'est prévu
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.gray.opacity(0.2))
                     .frame(minHeight: 40, maxHeight: .infinity)
@@ -83,6 +42,41 @@ struct PlanningMealFrame: View {
                             .font(.callout)
                             .foregroundStyle(.gray)
                     }
+            } else if plannedMeals.count < 2 {
+                // Si un seul repas est prévu : prévoir espace pour en ajouter un autre
+                HStack {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color.blue.opacity(0.2))
+                        .frame(minHeight: 40, maxHeight: .infinity)
+                        .overlay {
+                            Text(plannedMeals.first?.meal?.title ?? "Indéfini")
+                                .font(.headline)
+                        }
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.clear)
+                        .stroke(Color.gray.opacity(0.2))
+                        .frame(maxWidth: 40)
+                        .overlay {
+                            Image(systemName: "plus")
+                        }
+                }
+                .padding(.horizontal, 7)
+                .padding(.bottom, 7)
+            } else {
+                // Si deux repas (ou plus) sont prévus : répartir cases à égalité
+                HStack {
+                    ForEach(plannedMeals) { pm in
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color.blue.opacity(0.2))
+                            .frame(minHeight: 40, maxHeight: .infinity)
+                            .overlay {
+                                Text(pm.meal?.title ?? "Indéfini")
+                                    .font(.headline)
+                            }
+                    }
+                }
+                .padding(.horizontal, 7)
+                .padding(.bottom, 7)
             }
         }
         .frame(minWidth: 150, maxWidth: .infinity)
@@ -93,13 +87,10 @@ struct PlanningMealFrame: View {
     }
 }
 
-enum MealMoment:String {
-    case noon = "Midi"
-    case evening = "Soir"
-}
-
 #Preview {
     let meal1 = MealItem(title: "Quiche lorraine", photo: nil)
     let meal2 = MealItem(title: "Haricots verts", photo: nil)
-    PlanningMealFrame(day: Date(), moment: .noon, meal1: meal1)
+    let pm1 = PlannedMeal(date: Date(), slot: .noon, position: 0, meal: meal1)
+    let pm2 = PlannedMeal(date: Date(), slot: .noon, position: 1, meal: meal2)
+    PlanningMealFrame(day: Date(), slot: .noon, plannedMeals: [pm1, pm2])
 }

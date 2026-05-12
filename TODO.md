@@ -6,10 +6,10 @@
 
 ## PLANNING
 - [ ] Mettre double repas (principal/accompagnement) en option ?
-- [X] Ajouter un marqueur du jour actuel
 - [ ] Pouvoir rechercher un plat dans la liste de plats
 - [ ] Exporter la liste de courses (idéalement vers une note sur iPhone)
 - [ ] Pouvoir imprimer le planning des repas
+- [ ] Possibilité de supprimer les repas renseignés
 
 ## EDIT MEAL VIEW
 - [ ] Ajouter une photo

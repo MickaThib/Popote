@@ -21,20 +21,8 @@ struct PlanningLine: View {
     
     var isToday: Bool { calendar.isDateInToday(day) }
     
-    // Récupère le DayMeals du jour donné
-    @Query private var dayMeals:[DayMeals]
-    
-    init(day:Date) {
-        self.day = day
-        let start = Calendar.current.startOfDay(for: day)
-        let end = Calendar.current.date(byAdding: .day, value: 1, to: start)!
-        
-        _dayMeals = Query(
-            filter: #Predicate<DayMeals> { item in
-                item.date >= start && item.date < end
-            }
-        )
-    }
+    @Environment(\.modelContext) private var context
+    @Query private var allPlanned:[PlannedMeal]
     
     var body: some View {
         HStack {
@@ -59,13 +47,20 @@ struct PlanningLine: View {
             )
             
             
-            PlanningMealFrame(day: day, moment: .noon)
+            PlanningMealFrame(day: day, slot: .noon, plannedMeals: planned(for: day, slot: .noon))
 
-            PlanningMealFrame(day: day, moment: .evening)
+            PlanningMealFrame(day: day, slot: .evening, plannedMeals: planned(for: day, slot: .evening))
 
         }
         .frame(height: 80)
         .padding(1)
+    }
+    
+    private func planned(for date: Date, slot: MealSlot) -> [PlannedMeal] {
+        let day = Calendar.current.startOfDay(for: date)
+        return allPlanned
+            .filter {$0.date == day && $0.slot == slot}
+            .sorted {$0.position < $1.position}
     }
 }
 
