@@ -59,6 +59,14 @@ struct OrganizerView: View {
             .padding()
             .frame(width: 300)
         }
+        .toolbar {
+            Button("Add test data") {
+                //
+            }
+            Button("Delete test data"){
+                //
+            }
+        }
     }
 }
 

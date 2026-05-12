@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PlanningLine: View {
     
@@ -19,6 +20,21 @@ struct PlanningLine: View {
         }()
     
     var isToday: Bool { calendar.isDateInToday(day) }
+    
+    // Récupère le DayMeals du jour donné
+    @Query private var dayMeals:[DayMeals]
+    
+    init(day:Date) {
+        self.day = day
+        let start = Calendar.current.startOfDay(for: day)
+        let end = Calendar.current.date(byAdding: .day, value: 1, to: start)!
+        
+        _dayMeals = Query(
+            filter: #Predicate<DayMeals> { item in
+                item.date >= start && item.date < end
+            }
+        )
+    }
     
     var body: some View {
         HStack {

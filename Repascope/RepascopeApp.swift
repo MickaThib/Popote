@@ -88,7 +88,8 @@ struct RepascopeApp: App {
             Ingredient.self,
             MealIngredient.self,
             MealItem.self,
-            ShoppingItem.self
+            ShoppingItem.self,
+            DayMeals.self
         ])
 
         // MARK: - Model Configuration
