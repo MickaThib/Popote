@@ -12,12 +12,12 @@ import SwiftData
 final class ShoppingItem {
     var name: String = ""
     var quantity: Int
-    var date: Date
     var isChecked: Bool = false
-
-    init(name: String, quantity: Int, date: Date = Date()) {
+    
+    var shoppingList: ShoppingList?
+    
+    init(name: String, quantity: Int = 1) {
         self.name = name
         self.quantity = quantity
-        self.date = date
     }
 }

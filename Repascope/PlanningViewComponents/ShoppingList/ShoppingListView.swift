@@ -8,24 +8,31 @@
 import SwiftUI
 import SwiftData
 
-struct ShoppingList: View {
+struct ShoppingListView: View {
     
     let date:Date
     
     @Environment(\.modelContext) private var modelContext
     
-    // Calcule le début et la fin du jour
-    private var startOfDay: Date {
-        Calendar.current.startOfDay(for: date)
+    // Calcule le début et la fin de la semaine
+    private var startOfWeek: Date {
+        Calendar.current.dateInterval(of: .weekOfYear, for: date)!.start
     }
-    private var endOfDay: Date {
-        Calendar.current.date(byAdding: .day, value: 1, to: startOfDay)!
+
+    private var endOfWeek: Date {
+        Calendar.current.date(byAdding: .day, value: 7, to: startOfWeek)!
     }
     
-    @Query private var shoppingList:[ShoppingItem]
+    @Query(sort: \ShoppingList.weekStart) private var shoppingLists:[ShoppingList]
+    
+    private var currentList:ShoppingList? {
+        shoppingLists.first {
+            Calendar.current.isDate($0.weekStart, equalTo: startOfWeek, toGranularity: .weekOfYear)
+        }
+    }
     
     private var sortedList: [ShoppingItem] {
-        shoppingList.sorted { !$0.isChecked && $1.isChecked }
+        (currentList?.items ?? []).sorted { !$0.isChecked && $1.isChecked }
     }
     
     @State private var isAddingItem: Bool = false
@@ -33,16 +40,9 @@ struct ShoppingList: View {
     @FocusState private var isInputFocused: Bool
     @State private var showEmptyListAlert: Bool = false
     
-    init(date:Date) {
+    
+    init(date: Date) {
         self.date = date
-        let start = Calendar.current.startOfDay(for: date)
-        let end = Calendar.current.date(byAdding: .day, value: 1, to: start)!
-        
-        _shoppingList = Query(
-            filter: #Predicate<ShoppingItem> { item in
-                item.date >= start && item.date < end
-            }
-        )
     }
     
     var body: some View {
@@ -56,7 +56,7 @@ struct ShoppingList: View {
                     .padding(.vertical, 10)
                 Spacer()
                 Button {
-                    exportToNotes(items: shoppingList)
+                    exportToNotes(items: currentList?.items ?? [])
                 } label: {
                     Image(systemName: "square.and.arrow.up")
                         .padding(.trailing)
@@ -137,7 +137,14 @@ struct ShoppingList: View {
             isAddingItem = false
             return
         }
-        modelContext.insert(ShoppingItem(name: name, quantity: 1, date: date))
+        let item = ShoppingItem(name: name)
+        
+        if let currentList {
+            currentList.items.append(item)
+        } else {
+            let newList = ShoppingList(weekStart: startOfWeek, items: [item])
+            modelContext.insert(newList)
+        }
         
         do {
             try modelContext.save()
@@ -163,7 +170,7 @@ struct ShoppingList: View {
     }
 
     func deleteAllItems() {
-        shoppingList.forEach { modelContext.delete($0) }
+        currentList?.items.forEach { modelContext.delete($0) }
         
         do {
             try modelContext.save()
@@ -182,7 +189,7 @@ struct ShoppingList: View {
         let html = "<ul class='checked'>\n\(htmlItems)\n</ul>"
         
         // Échapper les apostrophes éventuelles dans les noms d'articles
-        let safeName = "Liste de courses"
+        //let safeName = "Liste de courses"
         let safeHtml = html.replacingOccurrences(of: "\\", with: "\\\\")
                            .replacingOccurrences(of: "\"", with: "\\\"")
         
@@ -235,5 +242,5 @@ struct ShoppingListButtons: View {
 }
 
 #Preview {
-    ShoppingList(date: Date())
+    ShoppingListView(date: Date())
 }

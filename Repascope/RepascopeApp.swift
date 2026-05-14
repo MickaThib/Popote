@@ -88,6 +88,7 @@ struct RepascopeApp: App {
             Ingredient.self,
             MealIngredient.self,
             MealItem.self,
+            ShoppingList.self,
             ShoppingItem.self,
             PlannedMeal.self
         ])

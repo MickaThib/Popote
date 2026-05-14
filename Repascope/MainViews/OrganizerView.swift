@@ -60,7 +60,7 @@ struct OrganizerView: View {
                 .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
                                 
                 //Section basse
-                ShoppingList(date: weekToDisplay)
+                ShoppingListView(date: weekToDisplay)
                 .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
             }
             .padding()

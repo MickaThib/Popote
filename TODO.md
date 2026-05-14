@@ -3,11 +3,12 @@
 ## SHOPPING LIST
 
 - [X] Alerte avant de vider la liste
+- [X] Exporter la liste de courses (idéalement vers une note sur iPhone)
+- [ ] Améliorer le rendu de la note exportée
 
 ## PLANNING
 - [ ] Mettre double repas (principal/accompagnement) en option ?
 - [ ] Pouvoir rechercher un plat dans la liste de plats
-- [ ] Exporter la liste de courses (idéalement vers une note sur iPhone)
 - [ ] Pouvoir imprimer le planning des repas
 - [ ] Possibilité de supprimer les repas renseignés
 
