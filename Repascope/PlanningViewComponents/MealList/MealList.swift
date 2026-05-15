@@ -39,6 +39,7 @@ struct MealList: View {
                 ForEach(mealList) { meal in
                     MealListItem(meal: meal)
                         .listRowSeparator(.hidden)
+                        .draggable(MealTransfer(persistentID: meal.persistentModelID))
                 }
             }
             .listStyle(.plain)

@@ -7,11 +7,18 @@
 - [ ] Améliorer le rendu de la note exportée
 
 ## PLANNING
-- [ ] Mettre double repas (principal/accompagnement) en option ?
+- [X] Mettre double repas (principal/accompagnement) en option ?
 - [ ] Pouvoir rechercher un plat dans la liste de plats
 - [ ] Pouvoir imprimer le planning des repas
 - [X] Possibilité de supprimer les repas renseignés
 - [ ] Quand on supprime un meal qui est placé qq part dans le planning : crash
+
+### DRAG & DROP
+- [ ] Drag sur une case vide ou une case "+" possible.
+- [ ] Drag sur un meal existant = remplacement
+- [ ] Drag depuis une case du planning vers une autre
+- [ ] Drag depuis une case du planning vers l'extérieur = suppression ?
+
 
 ## EDIT MEAL VIEW
 - [ ] Ajouter une photo
