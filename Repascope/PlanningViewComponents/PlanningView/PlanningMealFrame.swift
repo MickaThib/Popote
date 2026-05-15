@@ -17,7 +17,6 @@ struct PlanningMealFrame: View {
     @State var guests: String = ""
     @State var notes: String = ""
     let plannedMeals: [PlannedMeal]
-
     
     var body: some View {
         VStack {
@@ -45,13 +44,9 @@ struct PlanningMealFrame: View {
             } else if plannedMeals.count < 2 {
                 // Si un seul repas est prévu : prévoir espace pour en ajouter un autre
                 HStack {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.blue.opacity(0.2))
+                    PlanningMealItem(meal: plannedMeals.first?.meal, deleteAction: {delete(plannedMeal: plannedMeals.first)})
                         .frame(minHeight: 40, maxHeight: .infinity)
-                        .overlay {
-                            Text(plannedMeals.first?.meal?.title ?? "Indéfini")
-                                .font(.headline)
-                        }
+                    
                     RoundedRectangle(cornerRadius: 5)
                         .fill(.clear)
                         .stroke(Color.gray.opacity(0.2))
@@ -66,13 +61,8 @@ struct PlanningMealFrame: View {
                 // Si deux repas (ou plus) sont prévus : répartir cases à égalité
                 HStack {
                     ForEach(plannedMeals) { pm in
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.blue.opacity(0.2))
+                        PlanningMealItem(meal: pm.meal, deleteAction: {delete(plannedMeal: pm)})
                             .frame(minHeight: 40, maxHeight: .infinity)
-                            .overlay {
-                                Text(pm.meal?.title ?? "Indéfini")
-                                    .font(.headline)
-                            }
                     }
                 }
                 .padding(.horizontal, 7)
@@ -84,6 +74,18 @@ struct PlanningMealFrame: View {
             RoundedRectangle(cornerRadius: 5)
                 .stroke(Color.gray)
         }
+    }
+    
+    func delete(plannedMeal: PlannedMeal?) {
+        if let plannedMeal {
+            context.delete(plannedMeal)
+            do {
+                try context.save()
+            } catch {
+                print("Error deleting plannedMeal \(plannedMeal.meal?.title ?? "Unknown")")
+            }
+        }
+        
     }
 }
 

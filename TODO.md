@@ -10,7 +10,8 @@
 - [ ] Mettre double repas (principal/accompagnement) en option ?
 - [ ] Pouvoir rechercher un plat dans la liste de plats
 - [ ] Pouvoir imprimer le planning des repas
-- [ ] Possibilité de supprimer les repas renseignés
+- [X] Possibilité de supprimer les repas renseignés
+- [ ] Quand on supprime un meal qui est placé qq part dans le planning : crash
 
 ## EDIT MEAL VIEW
 - [ ] Ajouter une photo
