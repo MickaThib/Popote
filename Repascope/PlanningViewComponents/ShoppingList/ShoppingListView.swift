@@ -148,7 +148,6 @@ struct ShoppingListView: View {
         
         do {
             try modelContext.save()
-            print("SAVE OK")
         } catch {
             print("SAVE ERROR:", error)
         }
@@ -163,7 +162,6 @@ struct ShoppingListView: View {
         
         do {
             try modelContext.save()
-            print("SAVE OK")
         } catch {
             print("SAVE ERROR:", error)
         }
@@ -174,7 +172,6 @@ struct ShoppingListView: View {
         
         do {
             try modelContext.save()
-            print("SAVE OK")
         } catch {
             print("SAVE ERROR:", error)
         }

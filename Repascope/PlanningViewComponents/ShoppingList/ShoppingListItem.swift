@@ -32,7 +32,6 @@ struct ShoppingListItem: View {
                 item.quantity += 1
                 do {
                     try modelContext.save()
-                    print("SAVE OK")
                 } catch {
                     print("SAVE ERROR:", error)
                 }
@@ -41,7 +40,11 @@ struct ShoppingListItem: View {
             Button {
                 if item.quantity > 1 {
                     item.quantity -= 1
-                    try? modelContext.save()
+                    do {
+                        try modelContext.save()
+                    } catch {
+                        print("SAVE ERROR:", error)
+                    }
                 } else {
                     showDeleteAlert = true
                 }
@@ -54,7 +57,6 @@ struct ShoppingListItem: View {
             item.isChecked.toggle()
             do {
                 try modelContext.save()
-                print("SAVE OK")
             } catch {
                 print("SAVE ERROR:", error)
             }
