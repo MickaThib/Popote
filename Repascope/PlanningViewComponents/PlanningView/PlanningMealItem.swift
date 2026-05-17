@@ -20,12 +20,12 @@ struct PlanningMealItem: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.blue.opacity(0.2))
+                        .fill(Color.accentColor.opacity(0.2))
                 )
         }
         .overlay {
             RoundedRectangle(cornerRadius: 5)
-                .fill(isHovering ? Color.blue.opacity(0.2) : .clear)
+                .fill(isHovering ? Color.accentColor.opacity(0.2) : .clear)
         }
         .overlay(alignment: .topTrailing, content: {
             if isHovering {

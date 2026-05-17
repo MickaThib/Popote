@@ -46,11 +46,11 @@ struct MealList: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color.blue.opacity(0.1))
+                .fill(Color.accentColor.opacity(0.1))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.blue.opacity(0.3), lineWidth: 3)
+                .stroke(Color.accentColor.opacity(0.3), lineWidth: 3)
         )
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.bottom)

@@ -21,7 +21,7 @@ struct MealListItem: View {
 
             
             RoundedRectangle(cornerRadius: 5)
-                .fill(Color.blue.opacity(0.2))
+                .fill(Color.accentColor.opacity(0.2))
         }
         .frame(height: 30)
         .frame(maxWidth: .infinity)

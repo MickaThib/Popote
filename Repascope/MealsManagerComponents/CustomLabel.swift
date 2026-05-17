@@ -91,7 +91,7 @@ enum ListLabelType: String {
         case .ingredient:
             return Color.green
         case .meal:
-            return Color.blue
+            return Color.accentColor
         }
     }
 }
