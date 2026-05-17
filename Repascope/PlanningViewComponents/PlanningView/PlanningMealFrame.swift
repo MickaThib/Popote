@@ -15,13 +15,14 @@ struct PlanningMealFrame: View {
     let day: Date
     let slot: MealSlot
     let viewModel:PlanningViewModel
+    @Query(sort: \MealItem.title) private var meals: [MealItem]
     let plannedMeals:[PlannedMeal]
     
     @State private var guests: String = ""
     @State private var notes: String = ""
     @State private var isTargeted:Bool = false
     @State private var targetedReplacementID: PersistentIdentifier?
-    
+    @State private var showMealPicker = false
     
     var body: some View {
         VStack {
@@ -70,6 +71,12 @@ struct PlanningMealFrame: View {
                     .padding(.horizontal, 7)
                     .padding(.bottom, 7)
             }
+            .onTapGesture {
+                showMealPicker = true
+            }
+            .popover(isPresented: $showMealPicker, attachmentAnchor: .point(.center), arrowEdge: .bottom) {
+                mealPickerPopover()
+            }
             .dropDestination(for: PlanningDropTransfer.self) { transfers, _ in
                 handlePlanningDrop(transfers)
             } isTargeted: { targeted in
@@ -102,6 +109,12 @@ struct PlanningMealFrame: View {
             }
             .overlay {
                 Image(systemName: "plus")
+            }
+            .onTapGesture {
+                showMealPicker = true
+            }
+            .popover(isPresented: $showMealPicker, attachmentAnchor: .point(.center), arrowEdge: .bottom) {
+                mealPickerPopover()
             }
             .dropDestination(for: PlanningDropTransfer.self) { transfers, _ in
                 handlePlanningDrop(transfers)
@@ -235,6 +248,20 @@ struct PlanningMealFrame: View {
             } else if targetedReplacementID == plannedMeal.persistentModelID {
                 targetedReplacementID = nil
             }
+        }
+    }
+    
+    private func mealPickerPopover() -> some View {
+        MealPickerPopover(meals: meals) { selectedMeal in
+            viewModel.setPlannedMeal(
+                selectedMeal,
+                date: day,
+                slot: slot,
+                existingPlannedMeals: plannedMeals,
+                modelContext: modelContext
+            )
+
+            showMealPicker = false
         }
     }
 }

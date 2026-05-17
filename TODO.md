@@ -9,13 +9,13 @@
 
 ## PLANNING
 - [ ] Pouvoir rechercher un plat dans la liste de plats
-- [ ] Rendre le bouton "+" cliquable pour ajouter un nouveau repas
-- [ ] Cliquer sur une case vide pour ajouter un repas
+- [X] Rendre le bouton "+" cliquable pour ajouter un nouveau repas
+- [X] Cliquer sur une case vide pour ajouter un repas
 - [ ] Pouvoir imprimer le planning des repas
 - [X] Quand on supprime un meal qui est placé qq part dans le planning : crash
 
 ### DRAG & DROP
-- [ ] Drag depuis une case du planning vers une autre
+- [X] Drag depuis une case du planning vers une autre
 - [ ] Drag depuis une case du planning vers l'extérieur = suppression ?
 
 
