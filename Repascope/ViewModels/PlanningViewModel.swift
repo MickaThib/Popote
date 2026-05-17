@@ -94,6 +94,7 @@ final class PlanningViewModel {
     
     func movePlannedMeal(_ plannedMeal: PlannedMeal, to date: Date, slot: MealSlot, plannedMealsForDestinationSlot: [PlannedMeal], modelContext: ModelContext) {
         
+        // Eviter le drop sur la source
         let day = calendar.startOfDay(for: date)
         
         let isSameDay = calendar.isDate(plannedMeal.date, inSameDayAs: day)
@@ -102,6 +103,7 @@ final class PlanningViewModel {
         if isSameDay && isSameSlot {
             return
         }
+        // --
         
         let destinationMeals = plannedMealsForDestinationSlot.filter {
             $0.persistentModelID != plannedMeal.persistentModelID
@@ -122,6 +124,32 @@ final class PlanningViewModel {
             try modelContext.save()
         } catch {
             print("Error moving plannedMeal")
+            print(error)
+        }
+    }
+    
+    func swapPlannedMeals(_ source: PlannedMeal, with target: PlannedMeal, modelContext:ModelContext) {
+        
+        guard source.persistentModelID != target.persistentModelID else {
+            return
+        }
+        
+        let sourceDate = source.date
+        let sourceSlot = source.slot
+        let sourcePosition = source.position
+        
+        source.date = target.date
+        source.slot = target.slot
+        source.position = target.position
+        
+        target.date = sourceDate
+        target.slot = sourceSlot
+        target.position = sourcePosition
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Erreur de swap")
             print(error)
         }
     }

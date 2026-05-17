@@ -163,7 +163,7 @@ struct PlanningMealFrame: View {
     
     private func handleReplacementDrop(
         _ transfers: [PlanningDropTransfer],
-        replacing plannedMeal: PlannedMeal
+        replacing targetPlannedMeal: PlannedMeal
     ) -> Bool {
         guard let transfer = transfers.first else {
             return false
@@ -178,7 +178,7 @@ struct PlanningMealFrame: View {
             }
             
             viewModel.replaceMeal(
-                in: plannedMeal,
+                in: targetPlannedMeal,
                 with: meal,
                 modelContext: modelContext
             )
@@ -186,8 +186,14 @@ struct PlanningMealFrame: View {
             return true
             
         case .plannedMeal:
-            print("🟠 Drop d’un PlannedMeal sur un autre PlannedMeal ignoré pour l’instant")
-            return false
+            guard let sourcePlannedMeal = modelContext.model(for: transfer.persistentID) as? PlannedMeal else {
+                print("PlannedMeal introuvable")
+                return false
+            }
+            
+            viewModel.swapPlannedMeals(sourcePlannedMeal, with: targetPlannedMeal, modelContext: modelContext)
+            
+            return true
         }
     }
     
