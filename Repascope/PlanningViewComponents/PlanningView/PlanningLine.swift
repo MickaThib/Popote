@@ -39,11 +39,11 @@ struct PlanningLine: View {
             .frame(maxHeight: .infinity)
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(isToday ? Color.accentColor : Color.gray)
+                    .stroke(isToday ? Color.accentColor : Color.clear)
             }
             .background(
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(isToday ? Color.accentColor.opacity(0.1) : Color.clear)
+                    .fill(isToday ? Color.accentColor.opacity(0.25) : Color.accentColor.opacity(0.15))
             )
             
             

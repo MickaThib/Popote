@@ -1,23 +1,16 @@
 # TODO LIST
 
 ## GLOBAL
-- [X] remplacer le .blue par .accent partout
 
 ## SHOPPING LIST
-
 - [ ] Améliorer le rendu de la note exportée
 
 ## PLANNING
 - [ ] Pouvoir rechercher un plat dans la liste de plats
-- [X] Rendre le bouton "+" cliquable pour ajouter un nouveau repas
-- [X] Cliquer sur une case vide pour ajouter un repas
 - [ ] Pouvoir imprimer le planning des repas
-- [X] Quand on supprime un meal qui est placé qq part dans le planning : crash
 
 ### DRAG & DROP
-- [X] Drag depuis une case du planning vers une autre
 - [ ] Drag depuis une case du planning vers l'extérieur = suppression ?
-
 
 ## EDIT MEAL VIEW
 - [ ] Ajouter une photo

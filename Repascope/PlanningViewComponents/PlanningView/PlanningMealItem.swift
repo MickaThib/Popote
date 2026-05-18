@@ -10,6 +10,7 @@ import SwiftUI
 struct PlanningMealItem: View {
     
     let meal: MealItem?
+    let slot: MealSlot
     let deleteAction: () -> Void
     @State private var isHovering: Bool = false
     
@@ -20,12 +21,8 @@ struct PlanningMealItem: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.accentColor.opacity(0.2))
+                        .fill(isHovering ? bgColor().opacity(0.7) : bgColor().opacity(0.6))
                 )
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(isHovering ? Color.accentColor.opacity(0.2) : .clear)
         }
         .overlay(alignment: .topTrailing, content: {
             if isHovering {
@@ -40,9 +37,17 @@ struct PlanningMealItem: View {
             isHovering = hover
         }
     }
+    
+    func bgColor() -> Color {
+        if slot == .noon {
+            return Color.mint
+        } else {
+            return Color.pink
+        }
+    }
 }
 
 #Preview {
     let mealItem = MealItem(title: "Pates carbo", photo: nil)
-    PlanningMealItem(meal: mealItem, deleteAction: {})
+    PlanningMealItem(meal: mealItem, slot: .noon, deleteAction: {})
 }

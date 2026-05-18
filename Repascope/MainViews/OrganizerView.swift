@@ -26,23 +26,36 @@ struct OrganizerView: View {
             //MARK: Contenu principal
             VStack (spacing: 0) {
                 //MARK: Navigation buttons
-                HStack {
-                    Button("Semaine précedente") {
+                HStack(spacing: 30) {
+                    Button {
                         if let newWeekToDisplay = calendarViewModel.calendar.date(byAdding: .day, value: -7, to: weekToDisplay) {
                             weekToDisplay = newWeekToDisplay
                         }
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16))
                     }
+                    .buttonStyle(.plain)
                     
-                    Button("Cette semaine") {
+                    Button {
                         weekToDisplay = Date()
+                    } label: {
+                        Text("Cette semaine")
+                            .font(.system(size: 16))
                     }
+                    .buttonStyle(.plain)
                     
-                    Button("Semaine suivante") {
+                    Button {
                         if let newWeekToDisplay = calendarViewModel.calendar.date(byAdding: .day, value: 7, to: weekToDisplay) {
                             weekToDisplay = newWeekToDisplay
                         }
+                    } label: {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 16))
                     }
+                    .buttonStyle(.plain)
                 }
+                .padding(.bottom, 10)
                 
                 PlanningView(weekToDisplay: weekToDisplay)
                     .frame(maxWidth: .infinity)

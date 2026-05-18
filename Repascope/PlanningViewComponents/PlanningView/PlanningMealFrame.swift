@@ -38,38 +38,46 @@ struct PlanningMealFrame: View {
             if plannedMeals.isEmpty {
                 // Si aucun repas n'est prévu
                 emptyMealView
+                    .padding(.horizontal, 7)
+                    .padding(.bottom, 7)
                 
             } else if plannedMeals.count == 1 {
                 // Si un seul repas est prévu : prévoir espace "plus" pour en ajouter un autre
                 singleMealView
+                    .padding(.horizontal, 7)
+                    .padding(.bottom, 7)
             } else {
                 // Si deux repas (ou plus) sont prévus : répartir cases à égalité
                 multipleMealsView
+                    .padding(.horizontal, 7)
+                    .padding(.bottom, 7)
             }
         }
         .frame(minWidth: 150, maxWidth: .infinity)
-        .overlay {
+        .background {
             RoundedRectangle(cornerRadius: 5)
-                .stroke(Color.gray)
+                .fill(bgColor().opacity(0.15))
         }
     }
     
     private var emptyMealView: some View {
         RoundedRectangle(cornerRadius: 5)
-            .fill(isTargeted ? Color.accentColor.opacity(0.15) : Color.gray.opacity(0.2))
+            .fill(isTargeted ? Color.white.opacity(0.6) : Color.white)
             .frame(minHeight: 40, maxHeight: .infinity)
-            .padding(.horizontal, 7)
-            .padding(.bottom, 7)
             .overlay {
-                Text("Aucun repas prévu")
-                    .font(.callout)
-                    .foregroundStyle(.gray)
+                HStack(alignment: .firstTextBaseline, spacing: 30) {
+                    Text("Aucun repas prévu")
+                        .font(.callout)
+                        .foregroundStyle(.gray)
+                    Spacer()
+                    Image(systemName: "plus")
+                        .foregroundStyle(.gray)
+                }
+                .padding(.horizontal, 14)
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(isTargeted ? Color.accentColor : Color.clear,lineWidth: 2)
-                    .padding(.horizontal, 7)
-                    .padding(.bottom, 7)
+                    .stroke(isTargeted ? bgColor().opacity(0.5) : Color.clear, lineWidth: 2)
             }
             .onTapGesture {
                 showMealPicker = true
@@ -92,18 +100,16 @@ struct PlanningMealFrame: View {
             
             addMealDropZone
         }
-        .padding(.horizontal, 7)
-        .padding(.bottom, 7)
     }
     
     private var addMealDropZone: some View {
         RoundedRectangle(cornerRadius: 5)
-            .fill(isTargeted ? Color.accentColor.opacity(0.15) : Color.clear)
+            .fill(isTargeted ? bgColor().opacity(0.2) : Color.clear)
             .frame(maxWidth: 40)
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
                     .stroke(
-                        isTargeted ? Color.accentColor : Color.gray.opacity(0.2),
+                        isTargeted ? bgColor().opacity(0.5) : bgColor().opacity(0.5),
                         lineWidth: isTargeted ? 2 : 1
                     )
             }
@@ -129,8 +135,6 @@ struct PlanningMealFrame: View {
                 replaceableMealItem(for: plannedMeal)
             }
         }
-        .padding(.horizontal, 7)
-        .padding(.bottom, 7)
     }
     
     private func handlePlanningDrop(_ transfers: [PlanningDropTransfer]) -> Bool {
@@ -213,6 +217,7 @@ struct PlanningMealFrame: View {
     private func replaceableMealItem(for plannedMeal: PlannedMeal) -> some View {
         PlanningMealItem(
             meal: plannedMeal.meal,
+            slot: plannedMeal.slot,
             deleteAction: {
                 viewModel.delete(
                     plannedMeal: plannedMeal,
@@ -226,7 +231,7 @@ struct PlanningMealFrame: View {
             RoundedRectangle(cornerRadius: 5)
                 .stroke(
                     targetedReplacementID == plannedMeal.persistentModelID
-                    ? Color.accentColor
+                    ? bgColor()
                     : Color.clear,
                     lineWidth: 2
                 )
@@ -236,6 +241,11 @@ struct PlanningMealFrame: View {
         ) {
             Text(plannedMeal.meal?.title ?? "Repas")
                 .padding(8)
+                .frame(height: 40)
+                .background(
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(bgColor().opacity(0.2))
+                )
         }
         .dropDestination(for: PlanningDropTransfer.self) { transfers, _ in
             handleReplacementDrop(
@@ -264,6 +274,14 @@ struct PlanningMealFrame: View {
             showMealPicker = false
         }
     }
+    
+    func bgColor() -> Color {
+        if slot == .noon {
+            return Color.mint
+        } else {
+            return Color.pink
+        }
+    }
 }
 
 #Preview {
@@ -276,6 +294,6 @@ struct PlanningMealFrame: View {
         day: Date(),
         slot: .noon,
         viewModel: PlanningViewModel(),
-        plannedMeals: [pm1, pm2]
+        plannedMeals: []
     )
 }
