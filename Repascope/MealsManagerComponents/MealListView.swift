@@ -26,7 +26,7 @@ struct MealListView: View {
             
             HStack(alignment: .lastTextBaseline) {
                 
-                Text("Repas")
+                Text("Mes repas")
                     .font(.largeTitle)
                     .padding(.top)
                     .padding(.horizontal)

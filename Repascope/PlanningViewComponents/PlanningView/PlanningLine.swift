@@ -30,20 +30,20 @@ struct PlanningLine: View {
                 Text(day.formatted(.dateTime.weekday(.wide)))
                     .font(.system(size: 14, weight: .bold))
                     .textCase(.uppercase)
-                    .foregroundStyle(isToday ? Color.accentColor : Color.primary)
+                    .foregroundStyle(Color.customGreenDark)
                 Text(day.formatted(.dateTime.day().month(.wide)))
                     .font(.system(size: 10))
-                    .foregroundStyle(isToday ? Color.accentColor : Color.primary)
+                    .foregroundStyle(Color.customGreenDark)
             }
             .frame(width: 150)
             .frame(maxHeight: .infinity)
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(isToday ? Color.accentColor : Color.clear)
+                    .stroke(isToday ? Color.customGreen : Color.clear)
             }
             .background(
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(isToday ? Color.accentColor.opacity(0.25) : Color.accentColor.opacity(0.15))
+                    .fill(isToday ? Color.customGreen.opacity(0.2) : Color.customGreen.opacity(0.1))
             )
             
             

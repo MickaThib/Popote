@@ -47,7 +47,7 @@ struct PlanningMealItem: View {
     
     func bgColor() -> Color {
         if slot == .noon {
-            return Color.mint
+            return Color.blue
         } else {
             return Color.pink
         }

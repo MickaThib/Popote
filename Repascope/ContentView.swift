@@ -36,7 +36,14 @@ struct ContentView: View {
             }
         }
         .background(
-            Color.white
+            LinearGradient(
+                colors: [
+                    .customGreenDark,
+                    .customGreen
+                ],
+                startPoint: .bottom,
+                endPoint: .top
+            )
         )
     }
 }

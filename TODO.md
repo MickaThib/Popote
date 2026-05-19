@@ -8,6 +8,7 @@
 ## PLANNING
 - [ ] Pouvoir rechercher un plat dans la liste de plats
 - [ ] Pouvoir imprimer le planning des repas
+- [ ] Prévoir un cas "pas de repas à prévoir" ou "absence"
 
 ### DRAG & DROP
 - [ ] Drag depuis une case du planning vers l'extérieur = suppression ?

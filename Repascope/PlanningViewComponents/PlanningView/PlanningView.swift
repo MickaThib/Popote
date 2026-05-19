@@ -31,10 +31,14 @@ struct PlanningView: View {
                         viewModel: planningViewModel,
                         plannedMeals: allPlannedMeals
                     )
-                        .padding(.horizontal)
                 }
             }
         }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.white)
+        )
     }
 }
 

@@ -21,49 +21,54 @@ struct OrganizerView: View {
         
     var body: some View {
         
-        HStack(spacing: 0) {
+        HStack(spacing: 20) {
             
             //MARK: Contenu principal
             VStack (spacing: 0) {
                 //MARK: Navigation buttons
-                HStack(spacing: 30) {
+                HStack {
                     Button {
                         if let newWeekToDisplay = calendarViewModel.calendar.date(byAdding: .day, value: -7, to: weekToDisplay) {
                             weekToDisplay = newWeekToDisplay
                         }
                     } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16))
+                        HStack {
+                            Image(systemName: "chevron.left")
+                            Text("Précédente")
+                        }
                     }
                     .buttonStyle(.plain)
+                    
+                    Spacer()
                     
                     Button {
                         weekToDisplay = Date()
                     } label: {
                         Text("Cette semaine")
-                            .font(.system(size: 16))
                     }
-                    .buttonStyle(.plain)
+                    .buttonBorderShape(.capsule)
+                    .buttonStyle(.bordered)
+                    
+                    Spacer()
                     
                     Button {
                         if let newWeekToDisplay = calendarViewModel.calendar.date(byAdding: .day, value: 7, to: weekToDisplay) {
                             weekToDisplay = newWeekToDisplay
                         }
                     } label: {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 16))
+                        HStack {
+                            Text("Suivante")
+                            Image(systemName: "chevron.right")
+                        }
                     }
                     .buttonStyle(.plain)
                 }
+                .padding(.horizontal)
                 .padding(.bottom, 10)
                 
                 PlanningView(weekToDisplay: weekToDisplay)
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 10)
-
             }
-            .padding(.top, 20)
-            .padding(.horizontal, 40)
             
             //MARK: Volet droit
             VSplitView {
@@ -76,9 +81,11 @@ struct OrganizerView: View {
                 ShoppingListView(date: weekToDisplay)
                 .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
             }
-            .padding()
             .frame(width: 300)
         }
+        .padding(.top, 20)
+        .padding(.horizontal, 30)
+        .padding(.bottom, 30)
     }
 }
 
