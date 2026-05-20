@@ -26,9 +26,7 @@ struct IngredientListView: View {
             HStack(alignment: .lastTextBaseline) {
                 
                 Text("Ingrédients")
-                    .font(.largeTitle)
-                    .padding(.top)
-                    .padding(.horizontal)
+                    .font(.system(size: 24, weight: .bold))
                 
                 Spacer()
                 
@@ -47,7 +45,8 @@ struct IngredientListView: View {
             TextField("Rechercher", text: .constant(""))
                 .textFieldStyle(.roundedBorder)
                 .padding(.horizontal)
-                .padding(.vertical)
+                .padding(.top)
+                .padding(.bottom, 1)
             
             List(ingredients, id: \.id) { ingredient in
                 CustomLabel(
@@ -65,7 +64,12 @@ struct IngredientListView: View {
                 .draggable(IngredientTransfer(persistentID: ingredient.persistentModelID))
             }
             .padding(.top, 0)
+            .padding(.bottom, 20)
         }
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.white)
+        )
         .alert("Supprimer \(ingredientToDelete?.name ?? "cet ingrédient") ?", isPresented: $showDeleteAlert) {
             Button("Annuler", role: .cancel) {
                 ingredientToDelete = nil

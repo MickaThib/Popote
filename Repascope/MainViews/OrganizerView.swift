@@ -14,10 +14,6 @@ struct OrganizerView: View {
     
     let calendarViewModel = CalendarViewModel()
     @State var weekToDisplay: Date = Date()
-    
-    // Pour test uniquement
-    @State private var testPlannedMeals: [PlannedMeal] = []
-    @State private var testMealItems: [MealItem] = []
         
     var body: some View {
         

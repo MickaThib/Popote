@@ -28,7 +28,8 @@ struct MealsManager: View {
                     isEditingNewMeal = true  // déclenché après que la vue est montée
                 }
             })
-                .frame(width: 270)
+                .frame(width: 300)
+                .padding(20)
             
             if let meal = selectedMeal {
                 EditMealView(meal: meal, startEditing: $isEditingNewMeal)
@@ -41,9 +42,20 @@ struct MealsManager: View {
             
             IngredientListView()
                 .frame(width: 300)
+                .padding(20)
             
         }
         .frame(maxWidth: .infinity)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                Button {
+                    //TODO: Settings
+                } label: {
+                    Label("Réglages", systemImage: "gear")
+                        .labelStyle(.iconOnly)
+                }
+            }
+        }
     }
 }
 

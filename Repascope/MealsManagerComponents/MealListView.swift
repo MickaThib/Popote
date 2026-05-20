@@ -27,9 +27,7 @@ struct MealListView: View {
             HStack(alignment: .lastTextBaseline) {
                 
                 Text("Mes repas")
-                    .font(.largeTitle)
-                    .padding(.top)
-                    .padding(.horizontal)
+                    .font(.system(size: 24, weight: .bold))
 
                 Spacer()
                 
@@ -48,7 +46,8 @@ struct MealListView: View {
             TextField("Rechercher", text: .constant(""))
                 .textFieldStyle(.roundedBorder)
                 .padding(.horizontal)
-                .padding(.vertical)
+                .padding(.top)
+                .padding(.bottom, 1)
             
             List(meals, id: \.id) { meal in
                 CustomLabel(
@@ -67,7 +66,12 @@ struct MealListView: View {
                     }
             }
             .padding(.top, 0)
+            .padding(.bottom, 20)
         }
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(.white)
+        )
         .alert("Supprimer \(mealToDelete?.title ?? "ce repas") ?", isPresented: $showDeleteAlert) {
             Button("Annuler", role: .cancel){
                 mealToDelete = nil
@@ -97,6 +101,37 @@ struct MealListView: View {
     }
 }
 
-#Preview {    
-    MealList()
+#Preview {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: MealItem.self,
+        configurations: config
+    )
+
+    let meals = [
+        MealItem(title: "Raclette", photo: nil, ingredients: []),
+        MealItem(title: "Hamburger maison", photo: nil, ingredients: []),
+        MealItem(title: "Hot dogs", photo: nil, ingredients: []),
+        MealItem(title: "Poisson pané", photo: nil, ingredients: []),
+        MealItem(title: "Quiche lorraine", photo: nil, ingredients: []),
+        MealItem(title: "Lasagnes", photo: nil, ingredients: [])
+    ]
+
+    for meal in meals {
+        container.mainContext.insert(meal)
+    }
+
+    return MealListViewPreviewWrapper()
+        .modelContainer(container)
+}
+
+private struct MealListViewPreviewWrapper: View {
+    @State private var selectedMeal: MealItem?
+
+    var body: some View {
+        MealListView(
+            selectedMeal: $selectedMeal,
+            addMeal: {}
+        )
+    }
 }

@@ -23,7 +23,7 @@ struct CustomLabel: View {
         ZStack(alignment: .leading) {
             
             RoundedRectangle(cornerRadius: 5)
-                .fill(isSelected ? type.ItemColor().opacity(0.2) : type.ItemColor().opacity(0.1))
+                .fill(isSelected ? type.ItemColor().opacity(0.3) : type.ItemColor().opacity(0.2))
                 .stroke(isSelected ? type.ItemColor() : .clear, lineWidth: 1)
             
             HStack {
@@ -89,9 +89,9 @@ enum ListLabelType: String {
     func ItemColor() -> Color {
         switch self {
         case .ingredient:
-            return Color.green
+            return Color.noon
         case .meal:
-            return Color.accentColor
+            return Color.theme
         }
     }
 }
