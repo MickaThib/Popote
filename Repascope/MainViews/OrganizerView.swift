@@ -42,7 +42,7 @@ struct OrganizerView: View {
                     
                     Spacer()
                     
-                    Text("Semaine du XX au XX xxxxxxxxx")
+                    Text(createWeekTitleString())
                         .font(.title2)
                     
                     Spacer()
@@ -93,6 +93,19 @@ struct OrganizerView: View {
                 weekToDisplay = Date()
             }
         }
+    }
+    
+    func createWeekTitleString() -> String {
+        
+        guard let startOfWeek = calendarViewModel.firstDayOfWeek(startWeekday: .friday, from: weekToDisplay),
+              let finalDate = calendarViewModel.calendar.date(byAdding: .day, value: 7, to: startOfWeek)
+        else {
+            return "Planning de la semaine"
+        }
+                        
+        let startDateStr = startOfWeek.formatted(.dateTime.day().month())
+        let finalDateStr = finalDate.formatted(.dateTime.day().month().year())
+        return "Semaine du " + startDateStr + " au " + finalDateStr
     }
 }
 
