@@ -29,20 +29,27 @@ struct MealsManager: View {
                 }
             })
                 .frame(width: 300)
-                .padding(20)
+                .padding(.vertical, 20)
+                .padding(.leading, 20)
+                .padding(.trailing, 5)
             
             if let meal = selectedMeal {
                 EditMealView(meal: meal, startEditing: $isEditingNewMeal)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.vertical, 20)
+                    .padding(.horizontal, 5)
             } else {
                 //TODO: a terminer
-                Text("Aucun repas sélectionné")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                NoMealSelectedView()
+                    .padding(.vertical, 20)
+                    .padding(.horizontal, 5)
             }
             
             IngredientListView()
                 .frame(width: 300)
-                .padding(20)
+                .padding(.vertical, 20)
+                .padding(.leading, 5)
+                .padding(.trailing, 20)
             
         }
         .frame(maxWidth: .infinity)

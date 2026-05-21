@@ -62,8 +62,6 @@ struct EditMealView: View {
                         try? modelContext.save()
                     }
                     .buttonStyle(.borderless)
-                    //.labelStyle(.iconOnly)
-                    //.font(.system(size: 18))
                 }
                 .frame(maxWidth: 500)
                 
@@ -91,11 +89,11 @@ struct EditMealView: View {
                     .frame(maxWidth: .infinity, minHeight: 80)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.green.opacity(0.1))
+                            .fill(isTargeted ? Color.theme.opacity(0.1) : Color.theme.opacity(0.05))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(isTargeted ? Color.green : Color.clear, lineWidth: 2)
+                            .stroke(Color.theme, lineWidth: isTargeted ? 2 : 1)
                     )
                     .animation(.easeInOut(duration: 0.15), value: isTargeted)
                     .dropDestination(for: IngredientTransfer.self, action: { transfers, _ in
@@ -122,6 +120,12 @@ struct EditMealView: View {
                 
                 Spacer()
             }
+        }
+            .frame(minWidth: 600)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.white)
+            )
             .onChange(of: startEditing) { _, newValue in
                 if newValue {
                     isEditing = true
@@ -134,7 +138,6 @@ struct EditMealView: View {
             .onChange(of: meal) { _, _ in
                 isEditing = false
             }
-        }
     }
 }
 
