@@ -27,6 +27,7 @@ struct IngredientListView: View {
                 
                 Text("Ingrédients")
                     .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(Color.noon)
                 
                 Spacer()
                 
@@ -49,18 +50,15 @@ struct IngredientListView: View {
                 .padding(.bottom, 1)
             
             List(ingredients, id: \.id) { ingredient in
-                CustomLabel(
+                IngredientCustomLabel(
                     title: ingredient.name,
-                    type: .ingredient,
-                    isSelected: false,
                     newTitleAction: { newName in
                         ingredient.name = newName
                         try? modelContext.save()
                     },
                     deleteAction: {deleteIngredient(ingredient: ingredient)}
                 )
-                .listRowSeparator(.hidden)
-                .frame(height: 25)
+                .listRowSeparator(.visible)
                 .draggable(IngredientTransfer(persistentID: ingredient.persistentModelID))
             }
             .padding(.top, 0)

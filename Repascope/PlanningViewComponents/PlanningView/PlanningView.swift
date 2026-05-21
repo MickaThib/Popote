@@ -27,22 +27,22 @@ struct PlanningView: View {
                 
                 Text("MIDI")
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(Color.noon)
+                    .foregroundStyle(Color.themeContrast)
                     .font(.system(size: 14, weight: .bold))
                     .padding(.vertical, 3)
                     .background(
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.noon.opacity(0.1))
+                            .fill(Color.theme.opacity(0.1))
                     )
 
                 Text("SOIR")
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(Color.evening)
+                    .foregroundStyle(Color.themeContrast)
                     .font(.system(size: 14, weight: .bold))
                     .padding(.vertical, 3)
                     .background(
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.evening.opacity(0.1))
+                            .fill(Color.theme.opacity(0.1))
                     )
             }
             .padding(.vertical, 0)

@@ -28,6 +28,7 @@ struct MealListView: View {
                 
                 Text("Mes repas")
                     .font(.system(size: 24, weight: .bold))
+                    .foregroundStyle(Color.theme)
 
                 Spacer()
                 
@@ -50,9 +51,8 @@ struct MealListView: View {
                 .padding(.bottom, 1)
             
             List(meals, id: \.id) { meal in
-                CustomLabel(
+                MealCustomLabel(
                     title: meal.title,
-                    type: .meal,
                     isSelected: selectedMeal === meal, // triple "=" -> Comparaison par référence
                     deleteAction: {
                         mealToDelete = meal

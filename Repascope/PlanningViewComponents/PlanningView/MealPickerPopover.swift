@@ -23,6 +23,7 @@ struct MealPickerPopover: View {
                     HStack {
                         Text(meal.title)
                             .fontWeight(.medium)
+                            .foregroundStyle(Color.themeContrast)
 
                         Spacer()
                     }
@@ -30,7 +31,11 @@ struct MealPickerPopover: View {
                     .padding(.horizontal, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(hoveredMealID == meal.id ? Color.theme.opacity(0.2) : Color.theme.opacity(0.1))
+                            .fill(hoveredMealID == meal.id ? Color.theme.opacity(0.2) : Color.white)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.theme)
                     )
                     .onHover { hover in
                         hoveredMealID = hover ? meal.id : nil

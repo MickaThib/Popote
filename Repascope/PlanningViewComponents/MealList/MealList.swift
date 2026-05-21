@@ -15,8 +15,8 @@ struct MealList: View {
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
             HStack (alignment: .firstTextBaseline) {
-                Text("Mes plats")
-                    .font(.title2)
+                Text("Mes repas")
+                    .font(.system(size: 22))
                     .fontWeight(.bold)
                     .padding(.horizontal)
                     .padding(.vertical, 12)

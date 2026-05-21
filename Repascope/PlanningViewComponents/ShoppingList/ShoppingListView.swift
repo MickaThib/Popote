@@ -50,7 +50,7 @@ struct ShoppingListView: View {
             
             HStack(alignment: .firstTextBaseline) {
                 Text("Liste de courses")
-                    .font(.title2)
+                    .font(.system(size: 22))
                     .fontWeight(.bold)
                     .padding(.horizontal)
                     .padding(.vertical, 12)

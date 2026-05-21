@@ -34,7 +34,6 @@ struct OrganizerView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(Color.theme)
                     
                     Spacer()
                     
@@ -54,9 +53,9 @@ struct OrganizerView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(Color.theme)
 
                 }
+                .foregroundStyle(Color.themeContrast)
                 .padding([.horizontal, .top])
                 .padding(.bottom, 0)
                 
@@ -118,8 +117,8 @@ struct OrganizerView: View {
             return "Planning de la semaine"
         }
                         
-        let startDateStr = startOfWeek.formatted(.dateTime.day().month())
-        let finalDateStr = finalDate.formatted(.dateTime.day().month().year())
+        let startDateStr = startOfWeek.formatted(.dateTime.day().month(.wide))
+        let finalDateStr = finalDate.formatted(.dateTime.day().month(.wide).year())
         return "Semaine du " + startDateStr + " au " + finalDateStr
     }
 }

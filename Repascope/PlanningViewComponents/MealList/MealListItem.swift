@@ -14,14 +14,19 @@ struct MealListItem: View {
     var body: some View {
         ZStack(alignment: .leading) {
             
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color.white)
+            
             Text(meal.title)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(Color.themeContrast)
                 .padding(.leading)
 
-            
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Color.theme.opacity(0.2))
         }
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(Color.theme, lineWidth: 1)
+        )
         .frame(height: 30)
         .frame(maxWidth: .infinity)
     }

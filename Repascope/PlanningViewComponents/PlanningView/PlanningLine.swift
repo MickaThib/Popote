@@ -30,10 +30,10 @@ struct PlanningLine: View {
                 Text(day.formatted(.dateTime.weekday(.wide)))
                     .font(.system(size: 14, weight: .bold))
                     .textCase(.uppercase)
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(isToday ? Color.theme : Color.themeContrast)
                 Text(day.formatted(.dateTime.day().month(.wide)))
                     .font(.system(size: 10))
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(isToday ? Color.theme : Color.themeContrast)
             }
             .frame(width: 150)
             .frame(maxHeight: .infinity)

@@ -46,6 +46,7 @@ struct EditMealView: View {
                         TextField("Nom de la recette", text: $meal.title)
                             .font(.system(size: 30))
                             .fontWeight(.bold)
+                            .foregroundStyle(Color.themeContrast)
                             .padding(.vertical, 16)
                             .focused($titleFocused)
                             .onSubmit {
@@ -55,6 +56,7 @@ struct EditMealView: View {
                     } else {
                         Text(meal.title)
                             .font(.system(size: 30))
+                            .foregroundStyle(Color.theme)
                             .fontWeight(.bold)
                             .padding(.vertical, 20)
                     }
@@ -71,6 +73,7 @@ struct EditMealView: View {
                     
                     Text("Ingrédients")
                         .font(.headline)
+                        .foregroundStyle(Color.themeContrast)
                     
                     VStack(alignment: .center, spacing: 0) {
                         if meal.ingredients.isEmpty {
@@ -113,6 +116,7 @@ struct EditMealView: View {
                     
                     Text("Notes")
                         .font(.headline)
+                        .foregroundStyle(Color.themeContrast)
                     
                     TextField("Ajouter des notes...", text: $meal.notes, axis: .vertical)
                         .lineLimit(5...10)
