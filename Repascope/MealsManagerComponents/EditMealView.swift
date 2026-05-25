@@ -21,7 +21,7 @@ struct EditMealView: View {
         VStack {
             
             // Photo
-            photoView(meal: meal)
+            PhotoView(meal: meal)
             
             ScrollView {
                 
@@ -59,9 +59,9 @@ struct EditMealView: View {
     }
 }
 
-struct photoView: View {
+struct PhotoView: View {
     
-    @State var meal: MealItem
+    let meal: MealItem
     
     var body: some View {
         
