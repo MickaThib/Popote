@@ -9,8 +9,8 @@
 ## PLANNING
 - [ ] Pouvoir rechercher un plat dans la liste de plats
 – [ ] Supprimer ingrédients à la suppression d'un plat
-- [ ] Mettre en évidence les ingrédients nouvellement ajoutés
-- [ ] Supprimer la mise en évidence a la prochaine opération
+- [X] Mettre en évidence les ingrédients nouvellement ajoutés
+- [X] Supprimer la mise en évidence a la prochaine opération
 - [ ] Pouvoir imprimer le planning des repas
 - [ ] Prévoir un cas "pas de repas à prévoir" ou "absence"
 - [ ] Quand on drop un plat sur un autre : pas de changement de couleur de fond

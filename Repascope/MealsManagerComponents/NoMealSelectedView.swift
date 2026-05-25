@@ -10,8 +10,23 @@ import SwiftUI
 struct NoMealSelectedView: View {
     var body: some View {
         VStack {
+            Image("chef")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 300)
+            
             Text("Aucun repas sélectionné")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .font(.system(size: 24, weight: .semibold))
+                .foregroundStyle(Color.theme)
+                .padding(.top, 10)
+                .padding(.bottom, 2)
+            
+            HStack {
+                Image(systemName: "arrow.left")
+                    .font(.system(size: 14))
+                Text("Sélectionnez un repas dans la colonne de gauche")
+            }
+            .foregroundStyle(Color.theme.opacity(0.7))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(

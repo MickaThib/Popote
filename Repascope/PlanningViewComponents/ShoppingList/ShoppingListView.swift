@@ -122,6 +122,9 @@ struct ShoppingListView: View {
     
     func startAddingItem() {
         if isAddingItem == false {
+            if let currentList {
+                removeJustAddedAspect(for: currentList.items)
+            }
             newItemName = ""
             isAddingItem = true
             isInputFocused = true
@@ -175,6 +178,12 @@ struct ShoppingListView: View {
             try modelContext.save()
         } catch {
             print("SAVE ERROR:", error)
+        }
+    }
+    
+    func removeJustAddedAspect(for shoppingItems: [ShoppingItem]) {
+        for item in shoppingItems {
+            item.justAdded = false
         }
     }
     

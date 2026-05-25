@@ -167,7 +167,6 @@ struct PlanningMealFrame: View {
                 modelContext: modelContext
             )
             
-            //TODO: Ajouter les ingrédients à la liste de courses
             addIngredientsToShoppingListFor(meal: meal, to: day)
             
             return true
@@ -211,7 +210,7 @@ struct PlanningMealFrame: View {
                 with: meal,
                 modelContext: modelContext
             )
-            
+            //TODO: Supprimer les ingrédients des repas remplacés
             addIngredientsToShoppingListFor(meal: meal, to: day)
             
             return true
@@ -238,6 +237,7 @@ struct PlanningMealFrame: View {
                     plannedMealsForSlot: plannedMeals,
                     modelContext: modelContext
                 )
+                //TODO: Supprimer les ingrédients des repas remplacés
             }
         )
         .frame(minHeight: 40, maxHeight: .infinity)
@@ -299,8 +299,14 @@ struct PlanningMealFrame: View {
         
         let shoppingList: ShoppingList
         
+        
         if let currentShoppingList {
             shoppingList = currentShoppingList
+            
+            for item in shoppingList.items {
+                item.justAdded = false
+            }
+            
         } else {
             shoppingList = ShoppingList(weekStart: normalizedStartOfWeek)
             modelContext.insert(shoppingList)
@@ -309,6 +315,7 @@ struct PlanningMealFrame: View {
         for ingredient in meal.ingredients {
             if let existingItem = shoppingList.items.first(where: { $0.name == ingredient.ingredient.name }) {
                 existingItem.quantity += ingredient.quantity
+                existingItem.justAdded = true
             } else {
                 let item = ShoppingItem(
                     name: ingredient.ingredient.name,
