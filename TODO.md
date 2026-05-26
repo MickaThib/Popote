@@ -4,7 +4,8 @@
 
 ## SHOPPING LIST
 - [ ] Améliorer le rendu de la note exportée / Exporter via le partage iOS
-- [ ] Compartimenter la liste de courses en différentes catégories (alimentaire, gouter, petit dej, non alimentaire etc.)
+- [X] Compartimenter la liste de courses en différentes catégories (alimentaire, gouter, petit dej, non alimentaire etc.)
+- [ ] Pouvoir ajouter des éléments dans les autres catégories
 
 ## PLANNING
 - [ ] Pouvoir rechercher un plat dans la liste de plats

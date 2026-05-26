@@ -47,51 +47,10 @@ struct ShoppingListView: View {
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
             
-            HStack(alignment: .firstTextBaseline) {
-                Text("Liste de courses")
-                    .font(.system(size: 22))
-                    .fontWeight(.bold)
-                    .padding(.horizontal)
-                    .padding(.vertical, 12)
-                Spacer()
-                Button {
-                    exportToNotes(items: currentList?.items ?? [])
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                        .padding(.trailing)
-                        .font(.system(size: 18))
-                }
-                .buttonStyle(.plain)
-            }
-            .foregroundStyle(Color.white)
-            .frame(height: 45)
-            .background(
-                Color.noon
-            )
+            header
             
             Group {
-                List {
-                    ForEach(sortedList, id: \.self) { item in
-                        ShoppingListItem(item: item, deleteAction: { delete(item: item) })
-                            .listRowSeparator(.hidden)
-                    }
-                    
-                    if isAddingItem {
-                        HStack {
-                            Image(systemName: "circle")
-                                .font(.system(size: 18))
-                            TextField("Nouvel élément", text: $newItemName)
-                                .focused($isInputFocused)
-                                .onSubmit { confirmNewItem() }
-                        }
-                        .listRowSeparator(.hidden)
-                    }
-                }
-                .listStyle(.plain)
-                .safeAreaInset(edge: .top) {
-                    Color.clear
-                        .frame(height: 1)
-                }
+                shoppingListView
                 
                 let emptyAction = { showEmptyListAlert = true }
                 let addAction = { startAddingItem() }
@@ -117,6 +76,70 @@ struct ShoppingListView: View {
                 deleteAllItems()
             }
             Button("Annuler", role: .cancel) {}
+        }
+    }
+    
+    private var header: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text("Liste de courses")
+                .font(.system(size: 22))
+                .fontWeight(.bold)
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+            Spacer()
+            Button {
+                exportToNotes(items: currentList?.items ?? [])
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+                    .padding(.trailing)
+                    .font(.system(size: 18))
+            }
+            .buttonStyle(.plain)
+        }
+        .foregroundStyle(Color.white)
+        .frame(height: 45)
+        .background(Color.noon)
+    }
+    
+    private var shoppingListView: some View {
+        List {
+            ForEach(shoppingCategory.allCases, id: \.self) { cat in
+                Section(cat.rawValue) {
+                    
+                    let itemsToShow = sortedList
+                        .filter{$0.category == cat}
+                        .sorted{
+                            if $0.isChecked != $1.isChecked {
+                                return !$0.isChecked
+                            } else {
+                                return $0.name < $1.name
+                            }
+                        }
+                    
+                    ForEach(itemsToShow, id: \.self) { item in
+                        ShoppingListItem(item: item, deleteAction: { delete(item: item) })
+                            .listRowSeparator(.hidden)
+                    }
+                    
+                    //TODO: Pouvoir ajouter des éléments dans les autres catégories
+                }
+            }
+            
+            if isAddingItem {
+                HStack {
+                    Image(systemName: "circle")
+                        .font(.system(size: 18))
+                    TextField("Nouvel élément", text: $newItemName)
+                        .focused($isInputFocused)
+                        .onSubmit { confirmNewItem() }
+                }
+                .listRowSeparator(.hidden)
+            }
+        }
+        .listStyle(.plain)
+        .safeAreaInset(edge: .top) {
+            Color.clear
+                .frame(height: 1)
         }
     }
     
@@ -250,5 +273,28 @@ struct ShoppingListButtons: View {
 }
 
 #Preview {
-    ShoppingListView(date: Date())
+    
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: ShoppingList.self, ShoppingItem.self, configurations: config)
+    
+    let previewDate = Date()
+    let weekStart = CalendarViewModel.firstDayOfWeek(
+        startWeekday: .saturday,
+        from: previewDate
+    )!
+    
+    let shoppingList = ShoppingList(weekStart: weekStart, items: [
+        ShoppingItem(name: "Pâtes", quantity: 1, category: .food, justAdded: false),
+        ShoppingItem(name: "Gel douche", quantity: 1, category: .other, justAdded: false),
+        ShoppingItem(name: "Viande hachée", quantity: 1, category: .food, justAdded: true),
+        ShoppingItem(name: "Brioche", quantity: 1, category: .breakfast, justAdded: false),
+        ShoppingItem(name: "Biscuits", quantity: 1, category: .snackTime, justAdded: false)
+    ])
+    
+    container.mainContext.insert(shoppingList)
+    
+    try? container.mainContext.save()
+    
+    return ShoppingListView(date: previewDate)
+        .modelContainer(container)
 }

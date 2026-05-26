@@ -26,8 +26,8 @@ final class ShoppingItem {
     }
 }
 
-enum shoppingCategory: String, Codable {
-    case food = "Alimentaire"
+enum shoppingCategory: String, Codable, CaseIterable {
+    case food = "Repas"
     case breakfast = "Petit déjeuner"
     case snackTime = "Goûter"
     case other = "Autres"
