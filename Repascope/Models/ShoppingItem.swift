@@ -12,13 +12,13 @@ import SwiftData
 final class ShoppingItem {
     var name: String = ""
     var quantity: Int
-    var category: shoppingCategory
+    var category: ShoppingCategory
     var isChecked: Bool = false
     var justAdded: Bool
     
     var shoppingList: ShoppingList?
     
-    init(name: String, quantity: Int = 1, category: shoppingCategory = .food, justAdded: Bool = false) {
+    init(name: String, quantity: Int = 1, category: ShoppingCategory = .food, justAdded: Bool = false) {
         self.name = name
         self.quantity = quantity
         self.category = category
@@ -26,9 +26,8 @@ final class ShoppingItem {
     }
 }
 
-enum shoppingCategory: String, Codable, CaseIterable {
+enum ShoppingCategory: String, Codable, CaseIterable {
     case food = "Repas"
-    case breakfast = "Petit déjeuner"
-    case snackTime = "Goûter"
+    case snack = "Petit déjeuner/Goûter"
     case other = "Autres"
 }

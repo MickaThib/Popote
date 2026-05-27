@@ -24,3 +24,11 @@ class ShoppingList {
         self.items = items
     }
 }
+
+extension ShoppingList {
+    func clearJustAddedFlags() {
+        for item in items {
+            item.justAdded = false
+        }
+    }
+}

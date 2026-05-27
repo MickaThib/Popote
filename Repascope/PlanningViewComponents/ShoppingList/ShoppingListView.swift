@@ -10,60 +10,39 @@ import SwiftData
 
 struct ShoppingListView: View {
     
-    let date:Date
+    let date: Date
+    let startOfWeek: Date
     
     @Environment(\.modelContext) private var modelContext
     
-    // Calcule le début et la fin de la semaine
-    private var startOfWeek: Date {
-        CalendarViewModel.firstDayOfWeek(
-            startWeekday: .saturday,
-            from: date
-        )!
-    }
+    @Query private var shoppingLists: [ShoppingList]
+    private var currentList: ShoppingList? { shoppingLists.first }
+    private var items: [ShoppingItem] { currentList?.items ?? [] }
     
-    @Query(sort: \ShoppingList.weekStart) private var shoppingLists:[ShoppingList]
-    
-    private var currentList: ShoppingList? {
-        shoppingLists.first {
-            CalendarViewModel.calendar.isDate($0.weekStart, inSameDayAs: startOfWeek)
-        }
-    }
-    
-    private var sortedList: [ShoppingItem] {
-        (currentList?.items ?? []).sorted { !$0.isChecked && $1.isChecked }
-    }
-    
-    @State private var isAddingItem: Bool = false
-    @State private var newItemName: String = ""
-    @FocusState private var isInputFocused: Bool
     @State private var showEmptyListAlert: Bool = false
-    
     
     init(date: Date) {
         self.date = date
+        
+        let start = CalendarViewModel.firstDayOfWeek(startWeekday: .saturday, from: date)!
+        
+        self.startOfWeek = start
+        
+        let end = CalendarViewModel.calendar.date(byAdding: .day, value: 1, to: start)!
+        
+        _shoppingLists = Query(
+            filter: #Predicate<ShoppingList> { list in
+                list.weekStart >= start && list.weekStart < end
+            },
+            sort: \.weekStart
+        )
     }
+    
     
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
-            
             header
-            
-            Group {
-                shoppingListView
-                
-                let emptyAction = { showEmptyListAlert = true }
-                let addAction = { startAddingItem() }
-
-                ShoppingListButtons(
-                    emptyListAction: emptyAction,
-                    startAddingItemAction: addAction,
-                    isAddingItem: isAddingItem
-                )
-                .frame(maxWidth: .infinity)
-                .padding()
-            }
-            .background(Color.white)
+            shoppingListView
         }
         .background(
             RoundedRectangle(cornerRadius: 10)
@@ -87,8 +66,18 @@ struct ShoppingListView: View {
                 .padding(.horizontal)
                 .padding(.vertical, 12)
             Spacer()
+            
             Button {
-                exportToNotes(items: currentList?.items ?? [])
+                showEmptyListAlert = true
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 18))
+                    .padding(.trailing, 10)
+            }
+            .buttonStyle(.plain)
+            
+            Button {
+                //TODO: Share list
             } label: {
                 Image(systemName: "square.and.arrow.up")
                     .padding(.trailing)
@@ -103,37 +92,17 @@ struct ShoppingListView: View {
     
     private var shoppingListView: some View {
         List {
-            ForEach(shoppingCategory.allCases, id: \.self) { cat in
+            ForEach(ShoppingCategory.allCases, id: \.self) { cat in
                 Section(cat.rawValue) {
                     
-                    let itemsToShow = sortedList
-                        .filter{$0.category == cat}
-                        .sorted{
-                            if $0.isChecked != $1.isChecked {
-                                return !$0.isChecked
-                            } else {
-                                return $0.name < $1.name
-                            }
-                        }
-                    
-                    ForEach(itemsToShow, id: \.self) { item in
+                    ForEach(items(for: cat), id: \.self) { item in
                         ShoppingListItem(item: item, deleteAction: { delete(item: item) })
                             .listRowSeparator(.hidden)
                     }
                     
-                    //TODO: Pouvoir ajouter des éléments dans les autres catégories
+                    CategoryTextField(category: cat, startOfWeek: startOfWeek, currentList: currentList)
+                        .listRowSeparator(.hidden)
                 }
-            }
-            
-            if isAddingItem {
-                HStack {
-                    Image(systemName: "circle")
-                        .font(.system(size: 18))
-                    TextField("Nouvel élément", text: $newItemName)
-                        .focused($isInputFocused)
-                        .onSubmit { confirmNewItem() }
-                }
-                .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
@@ -143,48 +112,19 @@ struct ShoppingListView: View {
         }
     }
     
-    func startAddingItem() {
-        if isAddingItem == false {
-            if let currentList {
-                removeJustAddedAspect(for: currentList.items)
+    private func items(for category: ShoppingCategory) -> [ShoppingItem] {
+        items
+            .filter { $0.category == category }
+            .sorted {
+                if $0.isChecked != $1.isChecked {
+                    return !$0.isChecked
+                } else {
+                    return $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+                }
             }
-            newItemName = ""
-            isAddingItem = true
-            isInputFocused = true
-        } else {
-            // Action "Terminer"
-            confirmNewItem()
-            isAddingItem = false
-        }
     }
     
-    func confirmNewItem() {
-        let name = newItemName.trimmingCharacters(in: .whitespaces)
-        guard !name.isEmpty else {
-            isAddingItem = false
-            return
-        }
-        let item = ShoppingItem(name: name)
-        
-        if let currentList {
-            currentList.items.append(item)
-        } else {
-            let newList = ShoppingList(weekStart: startOfWeek, items: [item])
-            modelContext.insert(newList)
-        }
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("SAVE ERROR:", error)
-        }
-        
-        newItemName = ""
-        // reste en mode saisie pour enchaîner les ajouts
-        isInputFocused = true
-    }
-    
-    func delete(item: ShoppingItem) {
+    private func delete(item: ShoppingItem) {
         modelContext.delete(item)
         
         do {
@@ -193,83 +133,67 @@ struct ShoppingListView: View {
             print("SAVE ERROR:", error)
         }
     }
-
-    func deleteAllItems() {
-        currentList?.items.forEach { modelContext.delete($0) }
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("SAVE ERROR:", error)
-        }
-    }
     
-    func removeJustAddedAspect(for shoppingItems: [ShoppingItem]) {
-        for item in shoppingItems {
-            item.justAdded = false
+    private func deleteAllItems() {
+        
+        let itemsToDelete = items
+        
+        for item in itemsToDelete {
+            modelContext.delete(item)
         }
-    }
-    
-    func exportToNotes(items: [ShoppingItem]) {
-        let htmlItems = items.map { item in
-            let checked = item.isChecked ? "true" : "false"
-            return "<li data-checked='\(checked)'>\(item.name)</li>"  // ← apostrophes
-        }.joined(separator: "\n")
         
-        let html = "<ul class='checked'>\n\(htmlItems)\n</ul>"
-        
-        // Échapper les apostrophes éventuelles dans les noms d'articles
-        //let safeName = "Liste de courses"
-        let safeHtml = html.replacingOccurrences(of: "\\", with: "\\\\")
-                           .replacingOccurrences(of: "\"", with: "\\\"")
-        
-        let script = """
-        tell application "Notes"
-            activate
-            set noteBody to "\(safeHtml)"
-            make new note with properties {name:"Liste de courses", body:noteBody}
-        end tell
-        """
-        
-        var appleScriptError: NSDictionary?
-        if let result = NSAppleScript(source: script)?.executeAndReturnError(&appleScriptError) {
-            print("AppleScript OK:", result)
-        } else if let err = appleScriptError {
-            print("AppleScript ERROR:", err)
-        }
+        do { try modelContext.save() } catch { print("SAVE ERROR:", error) }
     }
 }
 
-struct ShoppingListButtons: View {
+struct CategoryTextField: View {
     
-    let emptyListAction: () -> Void
-    let startAddingItemAction: () -> Void
-    let isAddingItem: Bool
+    @Environment(\.modelContext) private var modelContext
+    
+    let category: ShoppingCategory
+    let startOfWeek: Date
+    let currentList: ShoppingList?
+    
+    @State private var newItemName: String = ""
+    @FocusState private var isInputFocused: Bool
     
     var body: some View {
+        
         HStack {
-            Button(role: .destructive) {
-                emptyListAction()
-            } label: {
-                Label("Vider la liste", systemImage: "trash")
-            }
-            .buttonStyle(.bordered)
+            Image(systemName: "circle")
+                .font(.system(size: 18))
+                .opacity(0.8)
             
-            Button(role: .none) {
-                startAddingItemAction()
-            } label: {
-                if isAddingItem {
-                    Label("Terminer", systemImage: "xmark")
-                } else {
-                    Label("Ajouter", systemImage: "plus")
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(Color.noon)
+            TextField("", text: $newItemName)
+                .focused($isInputFocused)
+                .onSubmit { confirmNewItem() }
         }
     }
     
-    
+    private func confirmNewItem() {
+        let name = newItemName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else {
+            isInputFocused = true
+            return
+        }
+        let item = ShoppingItem(name: name, category: category)
+        
+        if let currentList {
+            currentList.clearJustAddedFlags()
+            currentList.items.append(item)
+        } else {
+            let newList = ShoppingList(weekStart: startOfWeek, items: [item])
+            modelContext.insert(newList)
+        }
+        
+        do { try modelContext.save() } catch { print("SAVE ERROR:", error) }
+        
+        newItemName = ""
+        
+        DispatchQueue.main.async {
+            isInputFocused = true
+        }
+    }
 }
 
 #Preview {
@@ -287,8 +211,8 @@ struct ShoppingListButtons: View {
         ShoppingItem(name: "Pâtes", quantity: 1, category: .food, justAdded: false),
         ShoppingItem(name: "Gel douche", quantity: 1, category: .other, justAdded: false),
         ShoppingItem(name: "Viande hachée", quantity: 1, category: .food, justAdded: true),
-        ShoppingItem(name: "Brioche", quantity: 1, category: .breakfast, justAdded: false),
-        ShoppingItem(name: "Biscuits", quantity: 1, category: .snackTime, justAdded: false)
+        ShoppingItem(name: "Brioche", quantity: 1, category: .snack, justAdded: false),
+        ShoppingItem(name: "Biscuits", quantity: 2, category: .snack, justAdded: true)
     ])
     
     container.mainContext.insert(shoppingList)
