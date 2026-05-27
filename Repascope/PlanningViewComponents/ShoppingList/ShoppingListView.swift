@@ -166,16 +166,18 @@ struct CategoryTextField: View {
             
             TextField("", text: $newItemName)
                 .focused($isInputFocused)
-                .onSubmit { confirmNewItem() }
+                .onSubmit { confirmNewItem(keepFocus: true) }
+                .onChange(of: isInputFocused) { _, isFocused in
+                    confirmNewItem(keepFocus: false)
+                }
         }
     }
     
-    private func confirmNewItem() {
+    private func confirmNewItem(keepFocus: Bool = true) {
+        
         let name = newItemName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !name.isEmpty else {
-            isInputFocused = true
-            return
-        }
+        guard !name.isEmpty else { return }
+        
         let item = ShoppingItem(name: name, category: category)
         
         if let currentList {
@@ -190,8 +192,10 @@ struct CategoryTextField: View {
         
         newItemName = ""
         
-        DispatchQueue.main.async {
-            isInputFocused = true
+        if keepFocus {
+            DispatchQueue.main.async {
+                isInputFocused = true
+            }
         }
     }
 }
