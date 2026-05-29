@@ -62,8 +62,12 @@ struct EditMealView: View {
 
 struct PhotoView: View {
     
+    @Environment(\.modelContext) private var modelContext
+    
     let meal: MealItem
     @State private var showImporter = false
+    @State private var isHovering = false
+    @State private var showDeleteImageAlert = false
     
     var body: some View {
         
@@ -97,6 +101,30 @@ struct PhotoView: View {
                 .background(Color.theme.opacity(0.5))
             }
         }
+        .overlay(alignment: .topTrailing) {
+            if isHovering && meal.imageData != nil {
+                Button {
+                    showDeleteImageAlert = true
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.white)
+                        .font(.system(size: 20))
+                        .shadow(radius: 5)
+                        .padding()
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .alert("Supprimer l'image de couverture ?", isPresented: $showDeleteImageAlert, actions: {
+            Button(role: .destructive) {
+                meal.imageData = nil
+                do { try modelContext.save() } catch { print(error) }
+            }
+            Button(role: .cancel) {}
+        })
+        .onHover { hover in
+            isHovering = hover
+        }
         .dropDestination(for: URL.self) { urls, location in
             
             guard let url = urls.first else { return false }
@@ -106,29 +134,36 @@ struct PhotoView: View {
                 return false
             }
             
-            do {
-                let data = try Data(contentsOf: url)
-                meal.imageData = data
-                return true
-            } catch {
-                print("Erreur import image : ", error)
-                return false
-            }
+            return setImageData(from: url)
         }
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.image]) { result in
             
             switch result {
             case .success(let url):
-                do {
-                    let data = try Data(contentsOf: url)
-                    meal.imageData = data
-                } catch {
-                    print(error)
-                }
+                _ = setImageData(from: url)
                 
             case .failure(let error):
                 print(error)
             }
+        }
+    }
+    
+    private func setImageData(from url: URL) -> Bool {
+        let didAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if didAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            meal.imageData = data
+            try modelContext.save()
+            return true
+        } catch {
+            print("Erreur import image :", error)
+            return false
         }
     }
 }
