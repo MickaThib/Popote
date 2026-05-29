@@ -16,15 +16,19 @@ struct GuestIconView: View {
     }
     
     var body: some View {
-        Circle()
-            .fill(guestColor.opacity(0.3))
-            .strokeBorder(guestColor)
-            .overlay {
-                let firstLetter = String(guest.name.first ?? Character("?"))
-                Text(firstLetter)
-                    .foregroundStyle(guestColor)
-                    .font(.system(size: 26, weight: .bold, design: .rounded))
-            }
+        GeometryReader { geo in
+            Circle()
+                .fill(guestColor.opacity(0.3))
+                .strokeBorder(guestColor)
+                .overlay {
+                    let firstLetter = String(guest.name.first ?? Character("?"))
+                    Text(firstLetter)
+                        .foregroundStyle(guestColor)
+                        .font(.system(size: geo.size.width * 0.5, weight: .bold, design: .rounded))
+                        .minimumScaleFactor(0.5)
+                }
+        }
+        .aspectRatio(1, contentMode: .fit)
     }
 }
 

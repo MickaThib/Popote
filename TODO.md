@@ -17,5 +17,9 @@
 ## EDIT MEAL VIEW
 - [ ] Modifier le stepper pour réduire la hauteur des lignes ?
 
+## GUESTS VIEW
+- [ ] Modifier un guest (nom et couleur)
+- [ ] Si la couleur de l'icone est trop sombre, texte blanc ?
+
 ## SETTINGS
 - [ ] Choisir la durée de la semaine et quel jour elle commence
