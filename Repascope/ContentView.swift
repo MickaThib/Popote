@@ -23,7 +23,7 @@ struct ContentView: View {
                 }
                 
                 Tab("Convives", systemImage: "person.2.fill") {
-                    Text("Convives à venir")
+                    GuestsView()
                 }
             }
         }

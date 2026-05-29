@@ -52,10 +52,10 @@
 		CAB0FF802FA20D9600D76087 = {
 			isa = PBXGroup;
 			children = (
-				CAF218612FA257BE0066C02C /* TODO.md */,
-				CAB0FF8B2FA20D9600D76087 /* Repascope */,
-				CAB0FF8A2FA20D9600D76087 /* Products */,
 				CAD9F5A92FA22F8E00507B5B /* .gitignore */,
+				CAF218612FA257BE0066C02C /* TODO.md */,
+				CAB0FF8A2FA20D9600D76087 /* Products */,
+				CAB0FF8B2FA20D9600D76087 /* Repascope */,
 			);
 			sourceTree = "<group>";
 		};

@@ -85,6 +85,7 @@ struct RepascopeApp: App {
         let schema = Schema([
 
             Guest.self,
+            GuestsGroup.self,
             Ingredient.self,
             MealIngredient.self,
             MealItem.self,

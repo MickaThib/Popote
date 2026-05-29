@@ -11,10 +11,12 @@ import SwiftData
 @Model
 final class Guest {
     var name: String
-    var icon: String
+    var colorHex: String
     
-    init(name: String, icon: String = "Unknown") {
+    var groups: [GuestsGroup] = []
+    
+    init(name: String, colorHex: String = "0000FFFF") {
         self.name = name
-        self.icon = icon
+        self.colorHex = colorHex
     }
 }
