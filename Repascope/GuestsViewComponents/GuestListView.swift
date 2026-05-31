@@ -14,7 +14,6 @@ struct GuestListView: View {
     
     let guests: [Guest]
     
-    @State private var showAddGuestSheet = false
     @State private var showDeleteGuestAlert = false
     @State private var newGuestTextField = ""
     @State private var newGuestColor: Color = Color.theme
@@ -32,7 +31,7 @@ struct GuestListView: View {
                 Spacer()
                 
                 Button {
-                    showAddGuestSheet = true
+                    addGuestAction()
                 } label: {
                     Label("Ajouter", systemImage: "plus")
                 }
@@ -59,6 +58,11 @@ struct GuestListView: View {
                             editingGuest = guest
                         },
                         stopEditing: {
+                            if var editedName = editingGuest?.name {
+                                if editedName.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
+                                    editingGuest?.name = "Inconnu"
+                                }
+                            }
                             editingGuest = nil
                         })
                     .frame(height: 50)
@@ -66,62 +70,23 @@ struct GuestListView: View {
                 }
             }
         }
-        .sheet(isPresented: $showAddGuestSheet) {
-            addGuestSheetContent
-        }
-        .alert("Supprimer ce convive ?", isPresented: $showDeleteGuestAlert) {
-            Button(role: .cancel) {
-                showDeleteGuestAlert = false
-            }
+        .alert("Supprimer \(guestToDelete?.name ?? "ce convive") ?", isPresented: $showDeleteGuestAlert) {
             Button(role: .destructive) {
                 if let guestToDelete {
                     deleteGuest(guest: guestToDelete)
                 }
             }
+            
+            Button(role: .cancel, action: {})
+            
         }
     }
     
-    private var addGuestSheetContent: some View {
-        VStack {
-            
-            Text("Ajouter un convive")
-                .font(.title2)
-                .fontWeight(.semibold)
-            
-            TextField("Nom", text: $newGuestTextField)
-                .onSubmit {
-                    addNewGuest(name: newGuestTextField, color: newGuestColor)
-                }
-            
-            ColorPicker(selection: $newGuestColor) {
-                Label("Couleur", systemImage: "paintpalette")
-            }
-            
-            HStack {
-                Spacer()
-                Button(role: .cancel) {
-                    showAddGuestSheet = false
-                    newGuestTextField = ""
-                    newGuestColor = Color.theme
-                }
-                Button(role: .confirm) {
-                    addNewGuest(name: newGuestTextField, color: newGuestColor)
-                }
-                .buttonStyle(.borderedProminent)
-            }
-        }
-        .padding()
-    }
-    
-    func addNewGuest(name: String, color: Color) {
-        let guestName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        let colorHex = color.displayP3HexString
-        let newGuest = Guest(name: guestName, colorHex: colorHex)
-        
+    func addGuestAction() {
+        let newGuest = Guest(name: "Invité", colorHex: Color.theme.displayP3HexString)
         modelContext.insert(newGuest)
-        do { try modelContext.save() } catch { print("Erreur de sauvegarde new guest", error)}
-        
-        showAddGuestSheet = false
+        do { try modelContext.save() } catch { print(error) }
+        editingGuest = newGuest
     }
     
     func deleteGuest(guest: Guest) {

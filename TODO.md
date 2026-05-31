@@ -19,7 +19,7 @@
 
 ## GUESTS VIEW
 - [X] Modifier un guest (nom et couleur)
-- [ ] Remplacer la sheet d'ajout de guest par une insertion de ligne vide dans la liste
+- [X] Remplacer la sheet d'ajout de guest par une insertion de ligne vide dans la liste
 - [ ] Si la couleur de l'icone est trop sombre, texte blanc ?
 
 ## SETTINGS
