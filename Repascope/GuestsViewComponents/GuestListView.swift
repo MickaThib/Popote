@@ -42,7 +42,7 @@ struct GuestListView: View {
             .padding(.horizontal)
             .padding(.vertical, 10)
             .background(
-                Color.theme
+                Color.noon
             )
             
             List {
