@@ -16,6 +16,12 @@
 
 ## EDIT MEAL VIEW
 - [ ] Modifier le stepper pour réduire la hauteur des lignes ?
+- [ ] Retirer les lignes verticales en passant à un HStack ordinaire
+
+### GROUP VIEW
+- [ ] Attribuer une couleur au group ?
+- [ ] Drop destination
+- [ ] Edit action
 
 ## GUESTS VIEW
 - [ ] Si la couleur de l'icone est trop sombre, texte blanc ?

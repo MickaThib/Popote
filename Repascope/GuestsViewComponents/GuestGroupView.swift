@@ -16,7 +16,56 @@ struct GuestGroupView: View {
     
     var body: some View {
         VStack {
-            Text(guestsGroup.title)
+            HStack {
+                Text(guestsGroup.title)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(Color.theme)
+            }
+            .padding(.vertical)
+            .frame(maxWidth: .infinity)
+            .background(
+                Rectangle()
+                    .fill(Color.theme.opacity(0.1))
+                    .stroke(Color.theme)
+            )
+            .overlay(alignment: .trailing) {
+                if isHovering {
+                    HStack(spacing: 6) {
+                        Button {
+                            //TODO: Edit action
+                        } label: {
+                            Image(systemName: "pencil.circle")
+                                .foregroundStyle(Color.theme)
+                                .font(.system(size: 16, weight: .light))
+                        }
+                        
+                        Button {
+                            deleteAction()
+                        } label: {
+                            Image(systemName: "xmark.circle")
+                                .foregroundStyle(Color.theme)
+                                .font(.system(size: 16, weight: .light))
+                                .padding(.trailing)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .onHover { hover in
+                isHovering = hover
+            }
+            
+            VStack {
+                ForEach(guestsGroup.guests) { guest in
+                    GuestListLineView(guest: guest, deleteAction: {}, isEditing: false, startEditing: {}, stopEditing: {})
+                        .padding(.horizontal)
+                }
+        
+                Spacer()
+            }
+            .frame(maxHeight: .infinity)
+            .padding(.top)
+            //TODO: Drop destination
         }
         .frame(maxWidth: .infinity, minHeight: 300)
         .background(Color.white)
@@ -24,26 +73,18 @@ struct GuestGroupView: View {
             RoundedRectangle(cornerRadius: 10)
                 .strokeBorder(Color.theme)
         }
-        .overlay (alignment: .topTrailing) {
-            if isHovering {
-                Button {
-                    deleteAction()
-                } label: {
-                    Image(systemName: "xmark.circle")
-                        .foregroundStyle(Color.theme)
-                        .font(.system(size: 20, weight: .light))
-                        .padding()
-                }
-                .buttonStyle(.plain)
-            }
-        }
+        
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .onHover { hover in
-            isHovering = hover
-        }
     }
 }
 
 #Preview {
-    GuestGroupView(guestsGroup: GuestsGroup(title: "Mini tribu"), deleteAction: {})
+    let guestsGroup = GuestsGroup(title: "Mini tribu", guests: [
+        Guest(name: "Mickael", colorHex: "3b56cc"),
+        Guest(name: "Erwann", colorHex: "121256"),
+        Guest(name: "Eliott", colorHex: "ccaa00"),
+        Guest(name: "Soline", colorHex: "ff0055")
+    ])
+    GuestGroupView(guestsGroup: guestsGroup, deleteAction: {})
+        .frame(width: 270)
 }
