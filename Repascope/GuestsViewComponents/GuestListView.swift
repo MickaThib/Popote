@@ -58,7 +58,7 @@ struct GuestListView: View {
                             editingGuest = guest
                         },
                         stopEditing: {
-                            if var editedName = editingGuest?.name {
+                            if let editedName = editingGuest?.name {
                                 if editedName.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
                                     editingGuest?.name = "Inconnu"
                                 }

@@ -17,7 +17,7 @@ struct GuestsGroupsView: View {
     @State private var groupToDelete: GuestsGroup? = nil
         
     let columns = [
-        GridItem(.adaptive(minimum: 270, maximum: 300), spacing: 20)
+        GridItem(.adaptive(minimum: 250, maximum: 270), spacing: 20)
     ]
     
     var body: some View {
@@ -56,6 +56,7 @@ struct GuestsGroupsView: View {
                         })
                     }
                 }
+                .frame(minWidth: 320)
                 .padding()
             }
         }

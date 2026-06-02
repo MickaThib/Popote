@@ -13,13 +13,35 @@ struct GuestGroupView: View {
     let deleteAction: () -> Void
     
     @State private var isHovering = false
+    @State private var isEditing = false
+    @State private var newName: String = ""
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack {
             HStack {
-                Text(guestsGroup.title)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(Color.theme)
+                if isEditing {
+                    
+                    TextField(guestsGroup.title, text: $newName)
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundStyle(Color.theme)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal)
+                        .focused($isFocused)
+                        .onSubmit {
+                            commitEdit()
+                        }
+                        .onChange(of: isFocused) { _, focused in
+                            if !focused && isEditing {
+                                commitEdit()
+                            }
+                        }
+                    
+                } else {
+                    Text(guestsGroup.title)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(Color.theme)
+                }
             }
             .padding(.vertical)
             .frame(maxWidth: .infinity)
@@ -32,7 +54,14 @@ struct GuestGroupView: View {
                 if isHovering {
                     HStack(spacing: 6) {
                         Button {
-                            //TODO: Edit action
+                            if isEditing {
+                                commitEdit()
+                                isEditing = false
+                            } else {
+                                isEditing = true
+                                isFocused = true
+                            }
+                            
                         } label: {
                             Image(systemName: "pencil.circle")
                                 .foregroundStyle(Color.theme)
@@ -75,6 +104,12 @@ struct GuestGroupView: View {
         }
         
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    private func commitEdit() {
+        guard !newName.isEmpty else { return }
+        guestsGroup.title = newName
+        isEditing = false
     }
 }
 
