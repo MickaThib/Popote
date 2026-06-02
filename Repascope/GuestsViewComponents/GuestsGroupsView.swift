@@ -17,7 +17,7 @@ struct GuestsGroupsView: View {
     @State private var groupToDelete: GuestsGroup? = nil
         
     let columns = [
-        GridItem(.adaptive(minimum: 250, maximum: 270), spacing: 20)
+        GridItem(.adaptive(minimum: 200, maximum: 230), spacing: 20)
     ]
     
     var body: some View {
@@ -30,7 +30,7 @@ struct GuestsGroupsView: View {
                 Spacer()
                 
                 Button {
-                    let newGuestsGroup = GuestsGroup(title: "Nouveau groupe")
+                    let newGuestsGroup = GuestsGroup(title: "Groupe")
                     modelContext.insert(newGuestsGroup)
                     
                     do { try modelContext.save() } catch { print(error) }

@@ -46,7 +46,7 @@ struct GuestGroupView: View {
                         .foregroundStyle(Color.theme)
                 }
             }
-            .padding(.vertical)
+            .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
             .background(
                 Rectangle()
@@ -55,7 +55,7 @@ struct GuestGroupView: View {
             )
             .overlay(alignment: .trailing) {
                 if isHovering {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 4) {
                         Button {
                             if isEditing {
                                 commitEdit()
@@ -66,7 +66,7 @@ struct GuestGroupView: View {
                             }
                             
                         } label: {
-                            Image(systemName: "pencil.circle")
+                            Image(systemName: "pencil")
                                 .foregroundStyle(Color.theme)
                                 .font(.system(size: 16, weight: .light))
                         }
@@ -77,7 +77,7 @@ struct GuestGroupView: View {
                             Image(systemName: "xmark.circle")
                                 .foregroundStyle(Color.theme)
                                 .font(.system(size: 16, weight: .light))
-                                .padding(.trailing)
+                                .padding(.trailing, 8)
                         }
                     }
                     .buttonStyle(.plain)
@@ -88,18 +88,37 @@ struct GuestGroupView: View {
             }
             
             VStack {
-                ForEach(guestsGroup.guests) { guest in
-                    GuestListLineView(guest: guest, deleteAction: {}, isEditing: false, startEditing: {}, stopEditing: {})
-                        .padding(.horizontal)
+                if guestsGroup.guests.isEmpty {
+                    
+                    Text("Il n'y a aucun convive\ndans ce groupe")
+                        .multilineTextAlignment(.center)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(Color.theme.opacity(0.7))
+                        .padding(.bottom, 0.5)
+                    Text("Glissez des convives ici")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Color.theme.opacity(0.5))
+                    
+                } else {
+                    let sortedGuestsList = guestsGroup.guests.sorted(by: { $0.name < $1.name })
+                    ForEach(sortedGuestsList) { guest in
+                        GroupedGuestItem(guest: guest, deleteAction: {
+                            guestsGroup.guests.removeAll { $0 == guest }
+                            do { try modelContext.save() } catch { print(error) }
+                            }
+                        )
+                            .padding(.horizontal)
+                            .background(.white)
+                    }
+                    
+                    Spacer()
                 }
-        
-                Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.top)
+            .padding(.vertical)
             .dropDestination(for: GuestTransfer.self,
                              action: handleDrop,
-                             //TODO: isTargeted: { isTargeted = $0 }
+                             //isTargeted: { isTargeted = $0 }
             )
         }
         .frame(maxWidth: .infinity, minHeight: 300)
@@ -133,13 +152,46 @@ struct GuestGroupView: View {
     }
 }
 
+struct GroupedGuestItem: View {
+    
+    let guest: Guest
+    let deleteAction: () -> Void
+    
+    @State private var isHovering = false
+    
+    var body: some View {
+        HStack {
+            GuestIconView(guest: guest)
+                .frame(width: 35, height: 35)
+            Text(guest.name)
+                .font(.system(size: 14))
+            Spacer()
+            
+            if isHovering {
+                Button {
+                    deleteAction()
+                } label: {
+                    Image(systemName: "xmark.circle")
+                        .font(.system(size: 14))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .onHover { hover in
+            isHovering = hover
+        }
+    }
+}
+
 #Preview {
     let guestsGroup = GuestsGroup(title: "Mini tribu", guests: [
-//        Guest(name: "Mickael", colorHex: "3b56cc"),
-//        Guest(name: "Erwann", colorHex: "121256"),
-//        Guest(name: "Eliott", colorHex: "ccaa00"),
-//        Guest(name: "Soline", colorHex: "ff0055")
+        Guest(name: "Mickael", colorHex: "3b56cc"),
+        Guest(name: "Erwann", colorHex: "121256"),
+        Guest(name: "Eliott", colorHex: "ccaa00"),
+        Guest(name: "Soline", colorHex: "ff0055")
     ])
     GuestGroupView(guestsGroup: guestsGroup, deleteAction: {})
-        .frame(width: 270)
+        .frame(width: 200)
+    GuestGroupView(guestsGroup: GuestsGroup(title: "Kidz"), deleteAction: {})
+        .frame(width: 200)
 }

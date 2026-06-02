@@ -22,11 +22,12 @@
 ### GROUP VIEW
 - [ ] Attribuer une couleur au group ?
 - [ ] Déplacer/réorganiser les groups ?
-- [ ] Si personne dans le group, mettre "Glisser un convive dans le groupe"
+- [X] Si personne dans le group, mettre "Glisser un convive dans le groupe"
 - [X] Drop destination
-- [ ] Les guests dans le group ne sont pas éditables
+- [X] Les guests dans le group ne sont pas éditables
 – [X] Drop : eviter les doublons
-- [ ] Drop : suppression
+- [X] Drop : suppression
+- [ ] Drop : ajout d'une réaction au drop (isTargeted commenté) ?
 
 ## GUESTS VIEW
 - [ ] Si la couleur de l'icone est trop sombre, texte blanc ?
