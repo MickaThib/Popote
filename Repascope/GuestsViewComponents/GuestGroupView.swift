@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GuestGroupView: View {
+    
+    @Environment(\.modelContext) private var modelContext
     
     let guestsGroup: GuestsGroup
     let deleteAction: () -> Void
@@ -92,12 +95,14 @@ struct GuestGroupView: View {
         
                 Spacer()
             }
-            .frame(maxHeight: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.top)
-            //TODO: Drop destination
+            .dropDestination(for: GuestTransfer.self,
+                             action: handleDrop,
+                             //TODO: isTargeted: { isTargeted = $0 }
+            )
         }
         .frame(maxWidth: .infinity, minHeight: 300)
-        .background(Color.white)
         .overlay {
             RoundedRectangle(cornerRadius: 10)
                 .strokeBorder(Color.theme)
@@ -111,14 +116,29 @@ struct GuestGroupView: View {
         guestsGroup.title = newName
         isEditing = false
     }
+    
+    private func handleDrop(_ transfers: [GuestTransfer], _ location: CGPoint) -> Bool {
+        for transfer in transfers {
+            guard let guest = modelContext.model(for: transfer.persistentID) as? Guest else {
+                print("Guest introuvable")
+                continue
+            }
+            
+            if guestsGroup.guests.contains(guest) { continue }
+            guestsGroup.guests.append(guest)
+        }
+        
+        do { try modelContext.save() } catch { print(error) }
+        return true
+    }
 }
 
 #Preview {
     let guestsGroup = GuestsGroup(title: "Mini tribu", guests: [
-        Guest(name: "Mickael", colorHex: "3b56cc"),
-        Guest(name: "Erwann", colorHex: "121256"),
-        Guest(name: "Eliott", colorHex: "ccaa00"),
-        Guest(name: "Soline", colorHex: "ff0055")
+//        Guest(name: "Mickael", colorHex: "3b56cc"),
+//        Guest(name: "Erwann", colorHex: "121256"),
+//        Guest(name: "Eliott", colorHex: "ccaa00"),
+//        Guest(name: "Soline", colorHex: "ff0055")
     ])
     GuestGroupView(guestsGroup: guestsGroup, deleteAction: {})
         .frame(width: 270)

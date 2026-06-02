@@ -67,6 +67,7 @@ struct GuestListView: View {
                         })
                     .frame(height: 50)
                     .listRowSeparator(.hidden)
+                    .draggable((GuestTransfer(persistentID: guest.persistentModelID)))
                 }
             }
         }

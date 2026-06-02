@@ -2,6 +2,7 @@
 
 ## GLOBAL
 - [ ] Prévoir des données pré-enregistrées
+- [ ] Placer largeurs minimales
 
 ## SHOPPING LIST
 - [ ] Améliorer le rendu de la note exportée / Exporter via le partage iOS
@@ -20,8 +21,12 @@
 
 ### GROUP VIEW
 - [ ] Attribuer une couleur au group ?
-- [ ] Drop destination
-- [ ] Edit action
+- [ ] Déplacer/réorganiser les groups ?
+- [ ] Si personne dans le group, mettre "Glisser un convive dans le groupe"
+- [X] Drop destination
+- [ ] Les guests dans le group ne sont pas éditables
+– [X] Drop : eviter les doublons
+- [ ] Drop : suppression
 
 ## GUESTS VIEW
 - [ ] Si la couleur de l'icone est trop sombre, texte blanc ?
