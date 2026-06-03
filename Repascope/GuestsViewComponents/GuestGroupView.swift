@@ -15,6 +15,21 @@ struct GuestGroupView: View {
     let guestsGroup: GuestsGroup
     let deleteAction: () -> Void
     
+    private var groupColor: Color {
+        Color.init(displayP3Hex: guestsGroup.colorHex)
+    }
+    
+    private var colorBinding: Binding<Color> {
+        Binding(
+            get: {
+                Color(displayP3Hex: guestsGroup.colorHex)
+            },
+            set: { newColor in
+                guestsGroup.colorHex = newColor.displayP3HexString
+            }
+        )
+    }
+    
     @State private var isHovering = false
     @State private var isEditing = false
     @State private var newName: String = ""
@@ -25,62 +40,44 @@ struct GuestGroupView: View {
             HStack {
                 if isEditing {
                     
-                    TextField(guestsGroup.title, text: $newName)
-                        .font(.system(size: 18, weight: .regular))
-                        .foregroundStyle(Color.theme)
-                        .textFieldStyle(.plain)
-                        .padding(.horizontal)
-                        .focused($isFocused)
-                        .onSubmit {
-                            commitEdit()
-                        }
-                        .onChange(of: isFocused) { _, focused in
-                            if !focused && isEditing {
+                    HStack {
+                        TextField(guestsGroup.title, text: $newName)
+                            .font(.system(size: 18, weight: .regular))
+                            .foregroundStyle(groupColor)
+                            .textFieldStyle(.plain)
+                            .padding(.horizontal)
+                            .focused($isFocused)
+                            .onSubmit {
                                 commitEdit()
                             }
-                        }
+                            .onChange(of: isFocused) { _, focused in
+                                if !focused && isEditing {
+                                    commitEdit()
+                                }
+                            }
+                        
+                        ColorPicker("Couleur", selection: colorBinding, supportsOpacity: false)
+                            .labelsHidden()
+                        
+                        editDeleteButtons
+                    }
                     
                 } else {
                     Text(guestsGroup.title)
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(Color.theme)
+                        .foregroundStyle(groupColor)
                 }
             }
             .padding(.vertical, 10)
             .frame(maxWidth: .infinity)
             .background(
                 Rectangle()
-                    .fill(Color.theme.opacity(0.1))
-                    .stroke(Color.theme)
+                    .fill(groupColor.opacity(0.1))
+                    .stroke(groupColor)
             )
             .overlay(alignment: .trailing) {
-                if isHovering {
-                    HStack(spacing: 4) {
-                        Button {
-                            if isEditing {
-                                commitEdit()
-                                isEditing = false
-                            } else {
-                                isEditing = true
-                                isFocused = true
-                            }
-                            
-                        } label: {
-                            Image(systemName: "pencil")
-                                .foregroundStyle(Color.theme)
-                                .font(.system(size: 16, weight: .light))
-                        }
-                        
-                        Button {
-                            deleteAction()
-                        } label: {
-                            Image(systemName: "xmark.circle")
-                                .foregroundStyle(Color.theme)
-                                .font(.system(size: 16, weight: .light))
-                                .padding(.trailing, 8)
-                        }
-                    }
-                    .buttonStyle(.plain)
+                if isHovering && !isEditing {
+                    editDeleteButtons
                 }
             }
             .onHover { hover in
@@ -93,11 +90,11 @@ struct GuestGroupView: View {
                     Text("Il n'y a aucun convive\ndans ce groupe")
                         .multilineTextAlignment(.center)
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(Color.theme.opacity(0.7))
+                        .foregroundStyle(groupColor.opacity(0.7))
                         .padding(.bottom, 0.5)
                     Text("Glissez des convives ici")
                         .font(.system(size: 12))
-                        .foregroundStyle(Color.theme.opacity(0.5))
+                        .foregroundStyle(groupColor.opacity(0.5))
                     
                 } else {
                     let sortedGuestsList = guestsGroup.guests.sorted(by: { $0.name < $1.name })
@@ -124,10 +121,40 @@ struct GuestGroupView: View {
         .frame(maxWidth: .infinity, minHeight: 300)
         .overlay {
             RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(Color.theme)
+                .strokeBorder(groupColor)
         }
         
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    private var editDeleteButtons: some View {
+        HStack(spacing: 4) {
+            
+            Button {
+                if isEditing {
+                    commitEdit()
+                    isEditing = false
+                } else {
+                    isEditing = true
+                    isFocused = true
+                }
+                
+            } label: {
+                Image(systemName: "pencil")
+                    .foregroundStyle(groupColor)
+                    .font(.system(size: 16, weight: .light))
+            }
+            
+            Button {
+                deleteAction()
+            } label: {
+                Image(systemName: "xmark.circle")
+                    .foregroundStyle(groupColor)
+                    .font(.system(size: 16, weight: .light))
+                    .padding(.trailing, 8)
+            }
+        }
+        .buttonStyle(.plain)
     }
     
     private func commitEdit() {
@@ -184,7 +211,7 @@ struct GroupedGuestItem: View {
 }
 
 #Preview {
-    let guestsGroup = GuestsGroup(title: "Mini tribu", guests: [
+    let guestsGroup = GuestsGroup(title: "Mini tribu", colorHex: "CC1067", guests: [
         Guest(name: "Mickael", colorHex: "3b56cc"),
         Guest(name: "Erwann", colorHex: "121256"),
         Guest(name: "Eliott", colorHex: "ccaa00"),
@@ -192,6 +219,6 @@ struct GroupedGuestItem: View {
     ])
     GuestGroupView(guestsGroup: guestsGroup, deleteAction: {})
         .frame(width: 200)
-    GuestGroupView(guestsGroup: GuestsGroup(title: "Kidz"), deleteAction: {})
+    GuestGroupView(guestsGroup: GuestsGroup(title: "Kidz", colorHex: "4020BB"), deleteAction: {})
         .frame(width: 200)
 }

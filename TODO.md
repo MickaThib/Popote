@@ -20,13 +20,10 @@
 - [ ] Retirer les lignes verticales en passant à un HStack ordinaire
 
 ### GROUP VIEW
-- [ ] Attribuer une couleur au group ?
+- [ ] Create group : mettre en mode edition lors de la creation
+- [ ] Un seul groupe de convives en mode edition à la fois
+- [X] Attribuer une couleur au group ?
 - [ ] Déplacer/réorganiser les groups ?
-- [X] Si personne dans le group, mettre "Glisser un convive dans le groupe"
-- [X] Drop destination
-- [X] Les guests dans le group ne sont pas éditables
-– [X] Drop : eviter les doublons
-- [X] Drop : suppression
 - [ ] Drop : ajout d'une réaction au drop (isTargeted commenté) ?
 
 ## GUESTS VIEW

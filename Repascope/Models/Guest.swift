@@ -15,7 +15,7 @@ final class Guest {
     
     var groups: [GuestsGroup] = []
     
-    init(name: String, colorHex: String = "0000FFFF") {
+    init(name: String, colorHex: String = "6762A4") {
         self.name = name
         self.colorHex = colorHex
     }

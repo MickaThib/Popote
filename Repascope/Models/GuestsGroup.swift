@@ -11,12 +11,14 @@ import SwiftData
 @Model
 final class GuestsGroup {
     var title: String
+    var colorHex: String
     
     @Relationship(inverse: \Guest.groups)
     var guests: [Guest]
     
-    init(title: String, guests: [Guest] = []) {
+    init(title: String, colorHex: String = "6762A4", guests: [Guest] = []) {
         self.title = title
+        self.colorHex = colorHex
         self.guests = guests
     }
 }
