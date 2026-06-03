@@ -63,6 +63,10 @@ class CalendarViewModel: ObservableObject {
             to: planningWeekStart
         ) ?? planningDate
     }
+    
+    static func isWeekend(_ date: Date) -> Bool {
+        Calendar.current.isDateInWeekend(date)
+    }
 }
 
 enum Weekday: Int {

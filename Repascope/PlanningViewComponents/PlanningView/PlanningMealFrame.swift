@@ -29,10 +29,14 @@ struct PlanningMealFrame: View {
     var body: some View {
         VStack {
             HStack {
-                TextField("Convives", text: $guests)
+                TextField("Convives", text: $guests, prompt: Text("Ajouter des convives"))
                     .textFieldStyle(.plain)
-                TextField("Notes", text: $notes)
-                    .textFieldStyle(.plain)
+                    .foregroundStyle(itemColor())
+                    .padding(6)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 5)
+                            .strokeBorder(.white)
+                    }
             }
             .padding(.horizontal, 7)
             .padding(.top, 7)
@@ -405,12 +409,12 @@ struct PlanningMealFrame: View {
         slot: .noon,
         planningViewModel: PlanningViewModel(),
         plannedMeals: []
-    ).frame(width: 400, height: 80)
+    ).frame(width: 400, height: 92)
     
     PlanningMealFrame(
         day: Date(),
         slot: .evening,
         planningViewModel: PlanningViewModel(),
         plannedMeals: []
-    ).frame(width: 400, height: 80)
+    ).frame(width: 400, height: 92)
 }

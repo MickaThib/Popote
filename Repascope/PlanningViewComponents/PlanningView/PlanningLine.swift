@@ -24,6 +24,34 @@ struct PlanningLine: View {
     
     var isToday: Bool { calendar.isDateInToday(day) }
     
+    var dayStrokeColor: Color {
+        if isToday {
+            return Color.theme
+        } else if CalendarViewModel.isWeekend(day){
+            return Color.theme.opacity(0.2)
+        } else {
+            return Color.clear
+        }
+    }
+    
+    var dayFillColor: Color {
+        if CalendarViewModel.isWeekend(day){
+            return Color.white
+        } else {
+            return Color.theme
+        }
+    }
+    
+    var dayTextColor: Color {
+        if isToday {
+            return Color.theme
+        } else if CalendarViewModel.isWeekend(day){
+            return Color.themeContrast
+        } else {
+            return Color.themeContrast
+        }
+    }
+    
     
     var body: some View {
         HStack {
@@ -31,20 +59,21 @@ struct PlanningLine: View {
                 Text(day.formatted(.dateTime.weekday(.wide)))
                     .font(.system(size: 14, weight: .bold))
                     .textCase(.uppercase)
-                    .foregroundStyle(isToday ? Color.theme : Color.themeContrast)
+                    .foregroundStyle(dayTextColor)
                 Text(day.formatted(.dateTime.day().month(.wide)))
                     .font(.system(size: 10))
-                    .foregroundStyle(isToday ? Color.theme : Color.themeContrast)
+                    .foregroundStyle(dayTextColor)
             }
             .frame(width: 150)
             .frame(maxHeight: .infinity)
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(isToday ? Color.theme : Color.clear)
+                    .stroke(dayStrokeColor)
             }
             .background(
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(isToday ? Color.theme.opacity(0.2) : Color.theme.opacity(0.1))
+                    .fill(dayFillColor)
+                    .opacity(isToday ? 0.2 : 0.1)
             )
             
             
@@ -71,7 +100,7 @@ struct PlanningLine: View {
             )
 
         }
-        .frame(height: 80)
+        .frame(height: 92)
         .padding(1)
     }
     
