@@ -226,7 +226,7 @@ struct ShoppingListView: View {
                 $0.name.localizedCompare($1.name) == .orderedAscending
             }
         
-        var list: String = ""
+        var list: String = "Liste de courses du \(Date().formatted(.dateTime.day().month().year()))\n\n"
         
         for category in ShoppingCategory.allCases {
             

@@ -15,6 +15,7 @@
 
 ### LISTE DE COURSE
 - [ ] Partage en texte : le pop-up s'affiche en haut de la fenêtre
+- [ ] Partage en texte : formater le texte (en gros, en gras)
 - [ ] Partage en rappels : créer des sur-catégories ?
 - [ ] Partage en rappels : ordre alphabétique ?
 - [ ] Menu de partage plus visuel : utiliser des icones d'app ?
