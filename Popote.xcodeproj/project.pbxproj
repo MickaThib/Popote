@@ -18,7 +18,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F77F39FF2FAA48F80052466F /* Exceptions for "Repascope" folder in "Popote" target */ = {
+		F77F39FF2FAA48F80052466F /* Exceptions for "Popote" folder in "Popote" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -28,12 +28,12 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CAB0FF8B2FA20D9600D76087 /* Repascope */ = {
+		CAB0FF8B2FA20D9600D76087 /* Popote */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				F77F39FF2FAA48F80052466F /* Exceptions for "Repascope" folder in "Popote" target */,
+				F77F39FF2FAA48F80052466F /* Exceptions for "Popote" folder in "Popote" target */,
 			);
-			path = Repascope;
+			path = Popote;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -55,7 +55,7 @@
 				CAD9F5A92FA22F8E00507B5B /* .gitignore */,
 				CAF218612FA257BE0066C02C /* TODO.md */,
 				CAB0FF8A2FA20D9600D76087 /* Products */,
-				CAB0FF8B2FA20D9600D76087 /* Repascope */,
+				CAB0FF8B2FA20D9600D76087 /* Popote */,
 			);
 			sourceTree = "<group>";
 		};
@@ -83,7 +83,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				CAB0FF8B2FA20D9600D76087 /* Repascope */,
+				CAB0FF8B2FA20D9600D76087 /* Popote */,
 			);
 			name = Popote;
 			packageProductDependencies = (
@@ -285,7 +285,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 7NJ9S77LDZ;
 				ENABLE_APP_SANDBOX = NO;
@@ -299,7 +299,7 @@
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Repascope/Info.plist;
+				INFOPLIST_FILE = Popote/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Popote;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -308,7 +308,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.3;
+				MARKETING_VERSION = 0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = fr.mickathib.Popote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -336,7 +336,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 7NJ9S77LDZ;
 				ENABLE_APP_SANDBOX = NO;
@@ -350,7 +350,7 @@
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Repascope/Info.plist;
+				INFOPLIST_FILE = Popote/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Popote;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -359,7 +359,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.3;
+				MARKETING_VERSION = 0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = fr.mickathib.Popote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
