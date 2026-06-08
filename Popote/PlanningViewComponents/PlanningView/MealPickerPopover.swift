@@ -15,7 +15,22 @@ struct MealPickerPopover: View {
     @State private var hoveredMealID: MealItem.ID?
     
     var body: some View {
-                    
+        
+        if meals.isEmpty {
+            VStack {
+                Spacer()
+                Text("Aucun repas enrgistré")
+                    .font(.headline)
+                Text("Ajoutez des repas\ndans l'onglet \"Repas\"")
+                    .font(.callout)
+                    .multilineTextAlignment(.center)
+                
+                Spacer()
+            }
+            .padding(.vertical)
+            .padding(.horizontal, 20)
+        } else {
+            
             List(meals) { meal in
                 Button {
                     onSelect(meal)
@@ -24,7 +39,7 @@ struct MealPickerPopover: View {
                         Text(meal.title)
                             .fontWeight(.medium)
                             .foregroundStyle(Color.themeContrast)
-
+                        
                         Spacer()
                     }
                     .padding(.vertical, 7)
@@ -43,8 +58,9 @@ struct MealPickerPopover: View {
                 }
                 .buttonStyle(.plain)
                 .listRowSeparator(.hidden)
+            }
+            .frame(width: 300, height: 350)
         }
-        .frame(width: 300, height: 350)
     }
 }
 

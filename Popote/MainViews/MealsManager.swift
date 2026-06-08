@@ -10,14 +10,13 @@ import SwiftData
 
 struct MealsManager: View {
     
-    // Ne sert que pour les données test -> a supprimer ensuite
     @Environment(\.modelContext) private var modelContext
-    // Ne sert que pour les données test -> a supprimer ensuite
+
     @State var selectedMeal: MealItem? = nil
     @State var isEditingNewMeal: Bool = false
     
     var body: some View {
-        HSplitView {
+        HStack {
             
             MealListView(selectedMeal: $selectedMeal, addMeal: {
                 let newMeal = MealItem(title: "Nouveau plat")
@@ -52,6 +51,7 @@ struct MealsManager: View {
                 .frame(minWidth: 300, maxWidth: 350)
             
         }
+        .frame(minWidth: 1150)
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 Button {

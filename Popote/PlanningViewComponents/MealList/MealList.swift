@@ -13,7 +13,7 @@ struct MealList: View {
     @Query(sort: \MealItem.title) var mealList: [MealItem]
     
     var body: some View {
-        VStack (alignment: .leading, spacing: 0) {
+        VStack (spacing: 0) {
             HStack (alignment: .firstTextBaseline) {
                 Text("Mes repas")
                     .font(.system(size: 22))
@@ -36,18 +36,33 @@ struct MealList: View {
             .background(
                 Color.theme
             )
-                        
-            List {
-                ForEach(mealList) { meal in
-                    MealListItem(meal: meal)
-                        .listRowSeparator(.hidden)
-                        .draggable(PlanningDropTransfer(persistentID: meal.persistentModelID, kind: .mealItem))
+            
+            if mealList.isEmpty {
+                VStack {
+                    Spacer()
+                    Text("Aucun repas enrgistré")
+                        .font(.headline)
+                    Text("Ajoutez des repas dans l'onglet \"Repas\"")
+                        .font(.callout)
+                        .multilineTextAlignment(.center)
+                    
+                    Spacer()
                 }
-            }
-            .listStyle(.plain)
-            .safeAreaInset(edge: .top) {
-                Color.clear
-                    .frame(height: 1)
+                    
+            } else {
+                
+                List {
+                    ForEach(mealList) { meal in
+                        MealListItem(meal: meal)
+                            .listRowSeparator(.hidden)
+                            .draggable(PlanningDropTransfer(persistentID: meal.persistentModelID, kind: .mealItem))
+                    }
+                }
+                .listStyle(.plain)
+                .safeAreaInset(edge: .top) {
+                    Color.clear
+                        .frame(height: 1)
+                }
             }
         }
         .background(

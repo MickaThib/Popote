@@ -54,21 +54,29 @@ struct ConvivesField: View {
 
             Menu {
                 Section("Groupes") {
-                    ForEach(availableGroups) { group in
-                        Button {
-                            addGroup(group)
-                        } label: {
-                            Text(group.title)
+                    if availableGroups.isEmpty {
+                        Text("Aucun groupe")
+                    } else {
+                        ForEach(availableGroups) { group in
+                            Button {
+                                addGroup(group)
+                            } label: {
+                                Text(group.title)
+                            }
                         }
                     }
                 }
                 
                 Section("Convives") {
-                    ForEach(availableGuests) { guest in
-                        Button {
-                            addGuest(guest)
-                        } label: {
-                            Text(guest.name)
+                    if availableGuests.isEmpty {
+                        Text("Aucun convive")
+                    } else {
+                        ForEach(availableGuests) { guest in
+                            Button {
+                                addGuest(guest)
+                            } label: {
+                                Text(guest.name)
+                            }
                         }
                     }
                 }
