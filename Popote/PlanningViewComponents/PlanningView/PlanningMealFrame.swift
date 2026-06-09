@@ -24,24 +24,55 @@ struct PlanningMealFrame: View {
         plannedMeals.filter { $0.meal != nil }
     }
     
+    private var slotNotes: String {
+        plannedMeals.first?.notes ?? ""
+    }
+
+    private var notesBinding: Binding<String> {
+        Binding(
+            get: {
+                slotNotes
+            },
+            set: { newValue in
+                planningViewModel.updateNotes(
+                    newValue,
+                    date: day,
+                    slot: slot,
+                    existingPlannedMeals: plannedMeals,
+                    modelContext: modelContext
+                )
+            }
+        )
+    }
+    
     let allGuests: [Guest]
     let allGroups: [GuestsGroup]
     
     //@State private var guests: String = ""
-    @State private var notes: String = ""
     @State private var isTargeted:Bool = false
     @State private var targetedReplacementID: PersistentIdentifier?
     @State private var showMealPicker = false
     
     var body: some View {
         VStack {
-            ConvivesField(
-                day: day,
-                slot: slot,
-                plannedMeals: plannedMeals,
-                allGuests: allGuests,
-                allGroups: allGroups
-            )
+            HStack {
+                ConvivesField(
+                    day: day,
+                    slot: slot,
+                    plannedMeals: plannedMeals,
+                    allGuests: allGuests,
+                    allGroups: allGroups,
+                    planningViewModel: planningViewModel
+                )
+                .layoutPriority(10)
+                
+                TextField("Notes", text: notesBinding)
+                    .foregroundColor(itemColor())
+                    .multilineTextAlignment(.trailing)
+                    .textFieldStyle(.plain)
+                    .frame(minWidth: 100, maxWidth: .infinity, alignment: .trailing)
+                    .layoutPriority(0)
+            }
             .padding(.horizontal, 7)
             .padding(.top, 7)
             

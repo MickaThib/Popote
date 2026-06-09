@@ -154,4 +154,66 @@ final class PlanningViewModel {
             print(error)
         }
     }
+    
+    func ensurePlannedMeal(
+        date: Date,
+        slot: MealSlot,
+        existingPlannedMeals: [PlannedMeal],
+        modelContext: ModelContext
+    ) -> [PlannedMeal] {
+        
+        if !existingPlannedMeals.isEmpty {
+            return existingPlannedMeals
+        }
+        
+        let plannedMeal = PlannedMeal(
+            date: date,
+            slot: slot,
+            position: 0
+        )
+        
+        modelContext.insert(plannedMeal)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Erreur lors de la création du PlannedMeal vide : \(error)")
+        }
+        
+        return [plannedMeal]
+    }
+    
+    func updateNotes(
+        _ newValue: String,
+        date: Date,
+        slot: MealSlot,
+        existingPlannedMeals: [PlannedMeal],
+        modelContext: ModelContext
+    ) {
+        
+        let trimmedValue = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Si l'utilisateur ne saisit rien et qu'il n'y a encore aucun PlannedMeal,
+        // on évite de créer une donnée vide inutile.
+        if existingPlannedMeals.isEmpty && trimmedValue.isEmpty {
+            return
+        }
+        
+        let plannedMeals = ensurePlannedMeal(
+            date: date,
+            slot: slot,
+            existingPlannedMeals: existingPlannedMeals,
+            modelContext: modelContext
+        )
+        
+        for plannedMeal in plannedMeals {
+            plannedMeal.notes = trimmedValue.isEmpty ? nil : newValue
+        }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Erreur lors de la sauvegarde de la note : \(error)")
+        }
+    }
 }

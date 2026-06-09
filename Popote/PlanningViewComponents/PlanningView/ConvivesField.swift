@@ -16,6 +16,8 @@ struct ConvivesField: View {
     let plannedMeals: [PlannedMeal]
     let allGuests: [Guest]
     let allGroups: [GuestsGroup]
+    
+    let planningViewModel: PlanningViewModel
 
     private var selectedGuests: [Guest] {
         unique(plannedMeals.flatMap(\.guests))
@@ -33,23 +35,23 @@ struct ConvivesField: View {
                     .font(.callout)
                     .foregroundStyle(slot.color())
                     .padding(.horizontal, 6)
-                    .fixedSize(horizontal: true, vertical: true)
-            }
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(selectedGuests) { guest in
-                        chipView(title: guest.name, color: Color(displayP3Hex: guest.colorHex)) {
-                            removeGuest(guest)
+                    .fixedSize(horizontal: true, vertical: false)
+            } else {
+                //ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(selectedGuests) { guest in
+                            chipView(title: guest.name, color: Color(displayP3Hex: guest.colorHex)) {
+                                removeGuest(guest)
+                            }
+                        }
+                        
+                        ForEach(selectedGroups) { group in
+                            chipView(title: group.title, color: Color(displayP3Hex: group.colorHex)) {
+                                removeGroup(group)
+                            }
                         }
                     }
-
-                    ForEach(selectedGroups) { group in
-                        chipView(title: group.title, color: Color(displayP3Hex: group.colorHex)) {
-                            removeGroup(group)
-                        }
-                    }
-                }
+                //}
             }
 
             Menu {
@@ -105,26 +107,14 @@ struct ConvivesField: View {
             }
         }
     }
-    
-    private func ensurePlannedMeal() -> [PlannedMeal] {
-        if !plannedMeals.isEmpty {
-            return plannedMeals
-        }
-
-        let plannedMeal = PlannedMeal(
-            date: day,
-            slot: slot,
-            position: 0
-        )
-
-        modelContext.insert(plannedMeal)
-
-        return [plannedMeal]
-    }
 
     private func addGuest(_ guest: Guest) {
-        let meals = ensurePlannedMeal()
-
+        let meals = planningViewModel.ensurePlannedMeal(
+            date: day,
+            slot: slot,
+            existingPlannedMeals: plannedMeals,
+            modelContext: modelContext
+        )
         for plannedMeal in meals {
             if !plannedMeal.guests.contains(where: {
                 $0.persistentModelID == guest.persistentModelID
@@ -137,8 +127,13 @@ struct ConvivesField: View {
     }
 
     private func addGroup(_ group: GuestsGroup) {
-        let meals = ensurePlannedMeal()
-
+        let meals = planningViewModel.ensurePlannedMeal(
+            date: day,
+            slot: slot,
+            existingPlannedMeals: plannedMeals,
+            modelContext: modelContext
+        )
+        
         for plannedMeal in meals {
             if !plannedMeal.guestsGroups.contains(where: {
                 $0.persistentModelID == group.persistentModelID
@@ -191,6 +186,7 @@ struct chipView: View {
         HStack(spacing: 4) {
             Text(title)
                 .fontWeight(.medium)
+                .fixedSize(horizontal: true, vertical: false)
 
             if isHovering {
                 Button {
@@ -204,6 +200,7 @@ struct chipView: View {
         .font(.system(size: 11))
         .textCase(.uppercase)
         .foregroundStyle(color)
+        .fixedSize(horizontal: true, vertical: false)
         .padding(.horizontal, 8)
         .frame(height: 20)
         .background {
@@ -217,12 +214,23 @@ struct chipView: View {
 }
 
 #Preview {
-    let group = GuestsGroup(title: "Tribu")
+    let group = GuestsGroup(title: "Tribu", colorHex: "669966")
     
     ConvivesField(
         day: Date(),
         slot: .evening,
         plannedMeals: [],
         allGuests: [],
-        allGroups: [group])
+        allGroups: [group],
+        planningViewModel: PlanningViewModel()
+    )
+    
+    ConvivesField(
+        day: Date(),
+        slot: .evening,
+        plannedMeals: [PlannedMeal(date: Date(), slot: .evening, position: 1, guestsGroups: [group])],
+        allGuests: [],
+        allGroups: [group],
+        planningViewModel: PlanningViewModel()
+    )
 }

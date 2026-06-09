@@ -11,7 +11,8 @@
 
 ## PLANNING
 - [X] Pouvoir rechercher un plat dans la liste de plats
-- [ ] Champ de notes (dépliable ?) y compris dans la vue imprimée
+- [ ] Défaut de comportement : quand trop de convives, ça déborde !
+- [ ] Champ de notes dans la vue imprimée
 - [ ] Prévoir un cas "pas de repas à prévoir" ou "absence" ?
 
 ### LISTE DE COURSE
