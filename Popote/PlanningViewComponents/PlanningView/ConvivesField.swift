@@ -18,8 +18,12 @@ struct ConvivesField: View {
     let allGroups: [GuestsGroup]
     let planningViewModel: PlanningViewModel
 
-    /// Largeur totale du HStack parent (fournie par PlanningMealFrame via GeometryReader)
-    let availableWidth: CGFloat
+    /// Largeur allouée par PlanningMealFrame après calcul de répartition
+    let allocatedWidth: CGFloat
+    /// true si les chips doivent scroller (dépassement du seuil 70%)
+    let shouldScroll: Bool
+    /// Binding pour remonter la largeur naturelle des chips vers PlanningMealFrame
+    @Binding var chipsNaturalWidth: CGFloat
 
     private var selectedGuests: [Guest] {
         unique(plannedMeals.flatMap(\.guests))
@@ -29,11 +33,6 @@ struct ConvivesField: View {
         unique(plannedMeals.flatMap(\.guestsGroups))
     }
 
-    @State private var chipsNaturalWidth: CGFloat = 0
-
-    private var threshold: CGFloat { availableWidth * 0.6 }
-    private var shouldScroll: Bool { chipsNaturalWidth > threshold }
-
     var body: some View {
         HStack(spacing: 6) {
             if shouldScroll {
@@ -41,7 +40,7 @@ struct ConvivesField: View {
                     chipsContent
                         .fixedSize(horizontal: true, vertical: false)
                 }
-                .frame(width: threshold)
+                .frame(width: allocatedWidth)
             } else {
                 chipsContent
                     .fixedSize(horizontal: true, vertical: false)
@@ -50,8 +49,8 @@ struct ConvivesField: View {
             menuButton
         }
         .frame(height: 20)
-        // Fantôme de mesure : overlay invisible, ne perturbe pas le layout
-        .overlay(
+        // Fantôme de mesure : ne perturbe pas le layout
+        .overlay(alignment: .leading) {
             chipsContent
                 .fixedSize(horizontal: true, vertical: false)
                 .hidden()
@@ -60,8 +59,7 @@ struct ConvivesField: View {
                         Color.clear.preference(key: ChipsWidthKey.self, value: g.size.width)
                     }
                 )
-            , alignment: .leading
-        )
+        }
         .onPreferenceChange(ChipsWidthKey.self) { w in
             chipsNaturalWidth = w
         }
@@ -217,7 +215,7 @@ struct chipView: View {
 
 // MARK: - PreferenceKey
 
-private struct ChipsWidthKey: PreferenceKey {
+struct ChipsWidthKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
         value = max(value, nextValue())
@@ -234,7 +232,9 @@ private struct ChipsWidthKey: PreferenceKey {
         plannedMeals: [],
         allGuests: [], allGroups: [group],
         planningViewModel: PlanningViewModel(),
-        availableWidth: 300
+        allocatedWidth: 210,
+        shouldScroll: false,
+        chipsNaturalWidth: .constant(0)
     )
 
     ConvivesField(
@@ -242,6 +242,8 @@ private struct ChipsWidthKey: PreferenceKey {
         plannedMeals: [PlannedMeal(date: Date(), slot: .evening, position: 1, guestsGroups: [group])],
         allGuests: [], allGroups: [group],
         planningViewModel: PlanningViewModel(),
-        availableWidth: 300
+        allocatedWidth: 210,
+        shouldScroll: false,
+        chipsNaturalWidth: .constant(0)
     )
 }

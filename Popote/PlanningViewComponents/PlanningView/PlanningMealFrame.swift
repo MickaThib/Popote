@@ -50,12 +50,22 @@ struct PlanningMealFrame: View {
     @State private var targetedReplacementID: PersistentIdentifier?
     @State private var showMealPicker = false
 
+    // Largeurs naturelles mesurées par les fantômes
+    @State private var chipsNaturalWidth: CGFloat = 0
+    @State private var textFieldNaturalWidth: CGFloat = 0
+
     var body: some View {
         VStack {
-            // GeometryReader pour connaître la largeur totale disponible
-            // et la passer à ConvivesField, qui l'utilise pour calculer le seuil 70%
             GeometryReader { geo in
-                HStack {
+                let totalWidth = geo.size.width
+
+                // Le TextField a la priorité : il prend toujours sa largeur naturelle
+                // Les chips prennent ce qui reste, avec scroll si nécessaire
+                let spacing: CGFloat = 6
+                let chipsAllocated = max(0, totalWidth - textFieldNaturalWidth - spacing)
+                let shouldScroll   = chipsNaturalWidth > chipsAllocated
+
+                HStack(spacing: spacing) {
                     ConvivesField(
                         day: day,
                         slot: slot,
@@ -63,14 +73,34 @@ struct PlanningMealFrame: View {
                         allGuests: allGuests,
                         allGroups: allGroups,
                         planningViewModel: planningViewModel,
-                        availableWidth: geo.size.width
+                        allocatedWidth: chipsAllocated,
+                        shouldScroll: shouldScroll,
+                        chipsNaturalWidth: $chipsNaturalWidth
                     )
+
+                    Spacer()
 
                     TextField("Notes", text: notesBinding)
                         .fontWeight(.semibold)
                         .foregroundColor(itemColor())
                         .multilineTextAlignment(.trailing)
                         .textFieldStyle(.plain)
+                        .fixedSize(horizontal: true, vertical: false)
+                        // Fantôme de mesure du texte
+                        .overlay(alignment: .trailing) {
+                            Text(slotNotes.isEmpty ? "Notes" : slotNotes)
+                                .fontWeight(.semibold)
+                                .fixedSize(horizontal: true, vertical: false)
+                                .hidden()
+                                .background(
+                                    GeometryReader { g in
+                                        Color.clear.preference(
+                                            key: TextFieldWidthKey.self,
+                                            value: g.size.width
+                                        )
+                                    }
+                                )
+                        }
                 }
             }
             .frame(height: 20)
@@ -78,6 +108,9 @@ struct PlanningMealFrame: View {
             .padding(.horizontal, 7)
             .padding(.top, 7)
             .padding(.bottom, 1)
+            .onPreferenceChange(TextFieldWidthKey.self) { w in
+                textFieldNaturalWidth = w
+            }
 
             if plannedMealsWithMeal.isEmpty {
                 emptyMealView
@@ -377,6 +410,15 @@ struct PlanningMealFrame: View {
 
     func itemColor() -> Color {
         slot == .noon ? Color.noon : Color.evening
+    }
+}
+
+// MARK: - PreferenceKey
+
+private struct TextFieldWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 
