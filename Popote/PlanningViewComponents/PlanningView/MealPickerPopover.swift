@@ -53,8 +53,11 @@ struct MealPickerPopover: View {
                     .overlay(alignment: .trailing) {
                         if !searchText.isEmpty || isSearchFocused {
                             Button {
-                                searchText = ""
-                                isSearchFocused = false
+                                if searchText.isEmpty {
+                                    isSearchFocused = false
+                                } else {
+                                    searchText = ""
+                                }
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
                                     .foregroundStyle(.secondary)
@@ -105,7 +108,7 @@ struct MealPickerPopover: View {
         MealItem(title: "Pâtes carbo"),
         MealItem(title: "Spaghetti bolognaise"),
         MealItem(title: "Quiche lorraine"),
-
+        
     ]
     MealPickerPopover(meals: meals, onSelect: {_ in })
 }

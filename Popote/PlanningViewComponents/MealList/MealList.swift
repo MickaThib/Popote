@@ -72,6 +72,23 @@ struct MealList: View {
                         .focused($isSearchFocused)
                         .padding(.horizontal)
                         .padding(.top)
+                        .overlay(alignment: .trailing) {
+                            if !searchText.isEmpty || isSearchFocused {
+                                Button {
+                                    if searchText.isEmpty {
+                                        isSearchFocused = false
+                                    } else {
+                                        searchText = ""
+                                    }
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                                .padding(.top)
+                                .padding(.trailing, 25)
+                            }
+                        }
             }
             
             if mealList.isEmpty {
