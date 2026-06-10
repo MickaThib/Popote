@@ -10,69 +10,36 @@ import SwiftData
 
 struct ConvivesField: View {
     @Environment(\.modelContext) private var modelContext
-
+    
     let day: Date
     let slot: MealSlot
     let plannedMeals: [PlannedMeal]
     let allGuests: [Guest]
     let allGroups: [GuestsGroup]
     let planningViewModel: PlanningViewModel
-
-    /// Largeur allouée par PlanningMealFrame après calcul de répartition
-    let allocatedWidth: CGFloat
-    /// true si les chips doivent scroller (dépassement du seuil 70%)
-    let shouldScroll: Bool
-    /// Binding pour remonter la largeur naturelle des chips vers PlanningMealFrame
-    @Binding var convivesNaturalWidth: CGFloat
     
-    @State private var menuWidth: CGFloat = 0
-
     private var selectedGuests: [Guest] {
         unique(plannedMeals.flatMap(\.guests))
     }
-
+    
     private var selectedGroups: [GuestsGroup] {
         unique(plannedMeals.flatMap(\.guestsGroups))
     }
-
+    
     var body: some View {
-        let spacing: CGFloat = 6
-        let hoverReserve: CGFloat = 18
-        let scrollWidth = max(0, allocatedWidth - menuWidth - spacing - hoverReserve)
-
-        HStack(spacing: spacing) {
-            if shouldScroll {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    chipsContent
-                        .fixedSize(horizontal: true, vertical: false)
-                }
-                .frame(width: scrollWidth, alignment: .leading)
-            } else {
-                chipsContent
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-
+                
+        HStack(spacing: 6) {
+            
             menuButton
-                .background {
-                    GeometryReader { geo in
-                        Color.clear
-                            .preference(key: MenuWidthKey.self, value: geo.size.width)
-                    }
-                }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                chipsContent
+            }
+            
         }
         .frame(height: 20)
-        .overlay(alignment: .leading) {
-            naturalConvivesLine
-                .hidden()
-        }
-        .onPreferenceChange(MenuWidthKey.self) { width in
-            menuWidth = width
-        }
-        .onPreferenceChange(ConvivesLineWidthKey.self) { width in
-            convivesNaturalWidth = width
-        }
     }
-
+    
     @ViewBuilder
     private var chipsContent: some View {
         if selectedGroups.isEmpty && selectedGuests.isEmpty {
@@ -96,35 +63,18 @@ struct ConvivesField: View {
         }
     }
     
-    private var naturalConvivesLine: some View {
-        HStack(spacing: 6) {
-            chipsContent
-                .fixedSize(horizontal: true, vertical: false)
-
-            menuButton
-                .fixedSize(horizontal: true, vertical: false)
-        }
-        .fixedSize(horizontal: true, vertical: false)
-        .background {
-            GeometryReader { geo in
-                Color.clear
-                    .preference(key: ConvivesLineWidthKey.self, value: geo.size.width)
-            }
-        }
-    }
-
     private var availableGuests: [Guest] {
         allGuests.filter { guest in
             !selectedGuests.contains { $0.persistentModelID == guest.persistentModelID }
         }
     }
-
+    
     private var availableGroups: [GuestsGroup] {
         allGroups.filter { group in
             !selectedGroups.contains { $0.persistentModelID == group.persistentModelID }
         }
     }
-
+    
     private var menuButton: some View {
         Menu {
             Section("Groupes") {
@@ -153,7 +103,7 @@ struct ConvivesField: View {
         .tint(slot.color())
         .fixedSize(horizontal: true, vertical: false)
     }
-
+    
     private func addGuest(_ guest: Guest) {
         let meals = planningViewModel.ensurePlannedMeal(
             date: day, slot: slot,
@@ -167,7 +117,7 @@ struct ConvivesField: View {
         }
         try? modelContext.save()
     }
-
+    
     private func addGroup(_ group: GuestsGroup) {
         let meals = planningViewModel.ensurePlannedMeal(
             date: day, slot: slot,
@@ -181,21 +131,21 @@ struct ConvivesField: View {
         }
         try? modelContext.save()
     }
-
+    
     private func removeGuest(_ guest: Guest) {
         for plannedMeal in plannedMeals {
             plannedMeal.guests.removeAll { $0.persistentModelID == guest.persistentModelID }
         }
         try? modelContext.save()
     }
-
+    
     private func removeGroup(_ group: GuestsGroup) {
         for plannedMeal in plannedMeals {
             plannedMeal.guestsGroups.removeAll { $0.persistentModelID == group.persistentModelID }
         }
         try? modelContext.save()
     }
-
+    
     private func unique<T: PersistentModel>(_ items: [T]) -> [T] {
         var seen = Set<PersistentIdentifier>()
         return items.filter { seen.insert($0.persistentModelID).inserted }
@@ -205,17 +155,17 @@ struct ConvivesField: View {
 // MARK: - chipView
 
 struct chipView: View {
-
+    
     let title: String
     let color: Color
     let remove: () -> Void
     @State private var isHovering: Bool = false
-
+    
     var body: some View {
         HStack(spacing: 4) {
             Text(title)
                 .fontWeight(.medium)
-
+            
             if isHovering {
                 Button { remove() } label: {
                     Image(systemName: "xmark.circle")
@@ -238,46 +188,22 @@ struct chipView: View {
     }
 }
 
-// MARK: - PreferenceKey
-
-struct ConvivesLineWidthKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = max(value, nextValue())
-    }
-}
-
-struct MenuWidthKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = max(value, nextValue())
-    }
-}
-
 // MARK: - Preview
 
 #Preview {
     let group = GuestsGroup(title: "Tribu", colorHex: "669966")
-
+    
     ConvivesField(
         day: Date(), slot: .evening,
         plannedMeals: [],
         allGuests: [], allGroups: [group],
-        planningViewModel: PlanningViewModel(),
-        allocatedWidth: 210,
-        shouldScroll: false,
-        convivesNaturalWidth: .constant(0)
+        planningViewModel: PlanningViewModel()
     )
-
+    
     ConvivesField(
         day: Date(), slot: .evening,
         plannedMeals: [PlannedMeal(date: Date(), slot: .evening, position: 1, guestsGroups: [group])],
         allGuests: [], allGroups: [group],
-        planningViewModel: PlanningViewModel(),
-        allocatedWidth: 210,
-        shouldScroll: false,
-        convivesNaturalWidth: .constant(0)
+        planningViewModel: PlanningViewModel()
     )
 }

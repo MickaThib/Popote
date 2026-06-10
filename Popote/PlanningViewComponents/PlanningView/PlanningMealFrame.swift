@@ -49,42 +49,22 @@ struct PlanningMealFrame: View {
     @State private var isTargeted: Bool = false
     @State private var targetedReplacementID: PersistentIdentifier?
     @State private var showMealPicker = false
-    @State private var convivesNaturalWidth: CGFloat = 0
-
-    // Largeur fixe réservée au TextField — toujours garantie quoi qu'il arrive
-    private let textFieldWidth: CGFloat = 100
 
     var body: some View {
         VStack {
-            GeometryReader { geo in
-                let spacing: CGFloat = 6
-                let maxConvivesWidth = geo.size.width * 0.7
-                let hoverReserve: CGFloat = 18
-                let shouldScroll = convivesNaturalWidth + hoverReserve > maxConvivesWidth
-
-                HStack(spacing: spacing) {
+                HStack(spacing: 6) {
                     ConvivesField(
                         day: day,
                         slot: slot,
                         plannedMeals: plannedMeals,
                         allGuests: allGuests,
                         allGroups: allGroups,
-                        planningViewModel: planningViewModel,
-                        allocatedWidth: maxConvivesWidth,
-                        shouldScroll: shouldScroll,
-                        convivesNaturalWidth: $convivesNaturalWidth
+                        planningViewModel: planningViewModel
                     )
-                    
-                    Spacer()
+                    //Spacer()
+                    Divider()
 
-                    TextField("Notes", text: notesBinding)
-                        .fontWeight(.semibold)
-                        .foregroundColor(itemColor())
-                        .multilineTextAlignment(.trailing)
-                        .textFieldStyle(.plain)
-                        .frame(width: textFieldWidth)
-                        .fixedSize(horizontal: true, vertical: false)
-                }
+                    notesTextField
             }
             .frame(height: 20)
             .padding(.horizontal, 7)
@@ -111,6 +91,28 @@ struct PlanningMealFrame: View {
         .background {
             RoundedRectangle(cornerRadius: 5)
                 .fill(itemColor().opacity(0.3))
+        }
+    }
+    
+    //MARK: - Custom TextField
+    
+    private var notesTextField: some View {
+        
+        ZStack(alignment: .trailing) {
+            
+            if notesBinding.wrappedValue.isEmpty {
+                Text("Notes")
+                    .foregroundStyle(itemColor())
+                    .opacity(0.7)
+            }
+            
+            TextField("", text: notesBinding)
+                .fontWeight(.semibold)
+                .foregroundColor(itemColor())
+                .multilineTextAlignment(.trailing)
+                .textFieldStyle(.plain)
+                .frame(width: 90)
+                .fixedSize(horizontal: true, vertical: false)
         }
     }
 
