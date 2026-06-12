@@ -13,7 +13,7 @@ import PDFKit
 @MainActor
 struct PDFExporter {
     
-    static func print(view: some View) {
+    static func print(view: some View, title: String = "Planning de la semaine") {
         
         let pageSize = CGSize(width: 842, height: 595) // A4 paysage en points
         let margin: CGFloat = 24
@@ -85,10 +85,13 @@ struct PDFExporter {
         printInfo.isHorizontallyCentered = true
         printInfo.isVerticallyCentered = true
         
-        pdfDocument.printOperation(
+        let printOperation = pdfDocument.printOperation(
             for: printInfo,
             scalingMode: .pageScaleToFit,
             autoRotate: true
-        )?.run()
+        )
+        
+        printOperation?.jobTitle = title
+        printOperation?.run()
     }
 }

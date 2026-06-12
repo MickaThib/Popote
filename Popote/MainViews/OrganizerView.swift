@@ -13,6 +13,13 @@ struct OrganizerView: View {
     @Environment(\.modelContext) private var modelContext
         
     @State var weekToDisplay: Date = Date()
+    
+    var title: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.dateFormat = "d MMMM yyyy"
+        return "Planning de la semaine du \(formatter.string(from: weekToDisplay))"
+    }
         
     var body: some View {
         
@@ -101,7 +108,7 @@ struct OrganizerView: View {
                 Button {
                     let exportView = PlanningPrintView(weekToDisplay: weekToDisplay)
                         .environment(\.modelContext, modelContext)
-                    PDFExporter.print(view: exportView)
+                    PDFExporter.print(view: exportView, title: title)
                 } label: {
                     Label("Imprimer le planning", systemImage: "printer")
                         .labelStyle(.iconOnly)
