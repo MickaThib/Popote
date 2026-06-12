@@ -2,16 +2,17 @@
 
 ## GLOBAL
 - [ ] Prévoir des données pré-enregistrées
-- [ ] Icone de l'app !
+- [X] Icone de l'app !
 
 
 ## SHOPPING LIST
 - [ ] Améliorer le rendu de la note exportée / Exporter via le partage iOS
-- [ ] Améliorer le rendu de la liste détachée (Header différent)
+- [X] Améliorer le rendu de la liste détachée (Header différent)
 
 
 ## PLANNING
-- [ ] Prévoir un cas "pas de repas à prévoir" ou "absence" ?
+- [ ] Prévoir un cas "pas de repas à prévoir" ou "absence"
+- [ ] Impression : donner un nom plus explicite (que "document sans titre")
 
 ### LISTE DE COURSE
 - [ ] Partage en texte : le pop-up s'affiche en haut de la fenêtre

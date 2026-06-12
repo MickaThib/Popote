@@ -4,6 +4,7 @@
 //
 //  Created by Mickael on 29/04/2026.
 //
+// Un élément des listes de courses
 
 import SwiftUI
 import SwiftData

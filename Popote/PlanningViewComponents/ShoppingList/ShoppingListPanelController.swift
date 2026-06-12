@@ -10,7 +10,6 @@ import SwiftData
 import AppKit
 import Combine
 
-@MainActor
 final class ShoppingListPanelController: ObservableObject {
     
     private var panel: NSPanel?
@@ -28,7 +27,9 @@ final class ShoppingListPanelController: ObservableObject {
             return
         }
         
-        let contentView = ShoppingListView(date: weekToDisplay)
+        let contentView = ShoppingListPanelView(date: weekToDisplay, closePanelAction: { [weak self] in
+            self?.close()
+        })
             .modelContainer(modelContainer)
             .frame(minWidth: 360, minHeight: 500)
         
