@@ -52,9 +52,21 @@ final class PlanningViewModel {
         }
     }
     
-    func setPlannedMeal(_ meal: MealItem, date: Date, slot: MealSlot, existingPlannedMeals: [PlannedMeal], modelContext: ModelContext) {
+    func setPlannedMeal(
+        _ meal: MealItem,
+        date: Date,
+        slot: MealSlot,
+        existingPlannedMeals: [PlannedMeal],
+        modelContext: ModelContext
+    ) {
+        let day = calendar.startOfDay(for: date)
         
-        let mealsForSlot = planned(for: date, slot: slot, in: existingPlannedMeals)
+        let mealsForSlot = planned(
+            for: day,
+            slot: slot,
+            in: existingPlannedMeals
+        )
+        
         let visibleMealsForSlot = mealsForSlot.filter { $0.meal != nil }
         
         guard visibleMealsForSlot.count < 2 else {
@@ -62,16 +74,27 @@ final class PlanningViewModel {
             return
         }
         
-        let day = calendar.startOfDay(for: date)
+        // 1. Le créneau n'est plus en mode "aucun repas à prévoir"
+        for plannedMeal in mealsForSlot {
+            plannedMeal.noMealRequired = false
+        }
         
-        let plannedMeal = PlannedMeal(
-            date: day,
-            slot: slot,
-            position: visibleMealsForSlot.count,
-            meal: meal
-        )
-        
-        modelContext.insert(plannedMeal)
+        // 2. Si un PlannedMeal vide existe déjà, on le réutilise
+        if let emptyPlannedMeal = mealsForSlot.first(where: { $0.meal == nil }) {
+            emptyPlannedMeal.meal = meal
+            emptyPlannedMeal.noMealRequired = false
+            emptyPlannedMeal.position = visibleMealsForSlot.count
+        } else {
+            let plannedMeal = PlannedMeal(
+                date: day,
+                slot: slot,
+                position: visibleMealsForSlot.count,
+                meal: meal,
+                noMealRequired: false
+            )
+            
+            modelContext.insert(plannedMeal)
+        }
         
         do {
             try modelContext.save()
@@ -84,6 +107,7 @@ final class PlanningViewModel {
     func replaceMeal(in plannedMeal:PlannedMeal, with newMeal:MealItem, modelContext:ModelContext) {
         
         plannedMeal.meal = newMeal
+        plannedMeal.noMealRequired = false
         
         do {
             try modelContext.save()
@@ -121,6 +145,12 @@ final class PlanningViewModel {
         plannedMeal.slot = slot
         plannedMeal.position = destinationMealsWithMeal.count
         
+        for destinationMeal in destinationMeals {
+            destinationMeal.noMealRequired = false
+        }
+
+        plannedMeal.noMealRequired = false
+        
         do {
             try modelContext.save()
         } catch {
@@ -155,12 +185,7 @@ final class PlanningViewModel {
         }
     }
     
-    func ensurePlannedMeal(
-        date: Date,
-        slot: MealSlot,
-        existingPlannedMeals: [PlannedMeal],
-        modelContext: ModelContext
-    ) -> [PlannedMeal] {
+    func ensurePlannedMeal(date: Date, slot: MealSlot, existingPlannedMeals: [PlannedMeal], modelContext: ModelContext) -> [PlannedMeal] {
         
         if !existingPlannedMeals.isEmpty {
             return existingPlannedMeals
@@ -181,6 +206,79 @@ final class PlanningViewModel {
         }
         
         return [plannedMeal]
+    }
+    
+    func markMealAsRequired(
+        date: Date,
+        slot: MealSlot,
+        existingPlannedMeals: [PlannedMeal],
+        modelContext: ModelContext
+    ) -> [PlannedMeal] {
+        
+        let meals = ensurePlannedMeal(
+            date: date,
+            slot: slot,
+            existingPlannedMeals: existingPlannedMeals,
+            modelContext: modelContext
+        )
+        
+        for plannedMeal in meals {
+            plannedMeal.noMealRequired = false
+        }
+        
+        return meals
+    }
+    
+    func markNoMealRequired(
+        date: Date,
+        slot: MealSlot,
+        existingPlannedMeals: [PlannedMeal],
+        modelContext: ModelContext
+    ) {
+        let mealsForSlot = planned(
+            for: date,
+            slot: slot,
+            in: existingPlannedMeals
+        )
+        
+        let day = calendar.startOfDay(for: date)
+        
+        let marker: PlannedMeal
+        
+        if let existingMeal = mealsForSlot.first {
+            marker = existingMeal
+        } else {
+            marker = PlannedMeal(
+                date: day,
+                slot: slot,
+                position: 0
+            )
+            modelContext.insert(marker)
+        }
+        
+        // On transforme ce PlannedMeal en simple marqueur :
+        // "aucun repas à prévoir"
+        marker.date = day
+        marker.slot = slot
+        marker.position = 0
+        marker.meal = nil
+        marker.noMealRequired = true
+        marker.guests.removeAll()
+        marker.guestsGroups.removeAll()
+        
+        // S'il y avait plusieurs PlannedMeal dans ce créneau,
+        // on supprime les autres.
+        for plannedMeal in mealsForSlot {
+            if plannedMeal.persistentModelID != marker.persistentModelID {
+                modelContext.delete(plannedMeal)
+            }
+        }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Erreur lors du passage en mode aucun repas à prévoir : \(error)")
+        }
     }
     
     func updateNotes(

@@ -1,14 +1,14 @@
 # TODO LIST
 
 ## GLOBAL
-- [ ] Prévoir des données pré-enregistrées
+- [ ] Prévoir des données pré-enregistrées ?
 
 ## SHOPPING LIST
 - [ ] Améliorer le rendu de la note exportée / Exporter via le partage iOS
 
 ## PLANNING
-- [ ] Prévoir un cas "pas de repas à prévoir" ou "absence"
-- [X] Impression : donner un nom plus explicite (que "document sans titre")
+- [X] Prévoir un cas "pas de repas à prévoir" ou "absence"
+- [ ] Revoir le design du planning imprimé
 
 ### LISTE DE COURSE
 - [ ] Partage en texte : le pop-up s'affiche en haut de la fenêtre
@@ -19,9 +19,6 @@
 
 ### DRAG & DROP
 - [ ] Drag depuis une case du planning vers l'extérieur = suppression ?
-
-
-## EDIT MEAL VIEW
 
 
 ## GROUP VIEW

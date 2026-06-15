@@ -17,6 +17,7 @@ struct ConvivesField: View {
     let allGuests: [Guest]
     let allGroups: [GuestsGroup]
     let planningViewModel: PlanningViewModel
+    let markNoMealRequiredAction: () -> Void
     
     private var selectedGuests: [Guest] {
         unique(plannedMeals.flatMap(\.guests))
@@ -24,6 +25,10 @@ struct ConvivesField: View {
     
     private var selectedGroups: [GuestsGroup] {
         unique(plannedMeals.flatMap(\.guestsGroups))
+    }
+    
+    private var noMealRequired: Bool {
+        plannedMeals.contains { $0.noMealRequired }
     }
     
     var body: some View {
@@ -45,7 +50,7 @@ struct ConvivesField: View {
         if selectedGroups.isEmpty && selectedGuests.isEmpty {
             Text("Ajouter des convives")
                 .font(.callout)
-                .foregroundStyle(slot.color())
+                .foregroundStyle(noMealRequired ? .white : slot.color())
                 .padding(.horizontal, 6)
         } else {
             HStack(spacing: 6) {
@@ -95,41 +100,81 @@ struct ConvivesField: View {
                     }
                 }
             }
+            Section {
+                Button {
+                    toggleMealRequired()
+                } label: {
+                    HStack {
+                        if noMealRequired {
+                            Image(systemName: "checkmark")
+                        } else {
+                            Image(systemName: "minus")
+                        }
+                        Text("Aucun repas à prévoir")
+                    }
+                    .tint(.black)
+                }
+            }
         } label: {
             Image(systemName: "plus.circle")
                 .imageScale(.large)
         }
         .menuStyle(.borderlessButton)
-        .tint(slot.color())
+        .tint(noMealRequired ? .white : slot.color())
         .fixedSize(horizontal: true, vertical: false)
     }
     
     private func addGuest(_ guest: Guest) {
-        let meals = planningViewModel.ensurePlannedMeal(
-            date: day, slot: slot,
+        let meals = planningViewModel.markMealAsRequired(
+            date: day,
+            slot: slot,
             existingPlannedMeals: plannedMeals,
             modelContext: modelContext
         )
+        
         for plannedMeal in meals {
             if !plannedMeal.guests.contains(where: { $0.persistentModelID == guest.persistentModelID }) {
                 plannedMeal.guests.append(guest)
             }
         }
+        
         try? modelContext.save()
     }
     
     private func addGroup(_ group: GuestsGroup) {
-        let meals = planningViewModel.ensurePlannedMeal(
-            date: day, slot: slot,
+        let meals = planningViewModel.markMealAsRequired(
+            date: day,
+            slot: slot,
             existingPlannedMeals: plannedMeals,
             modelContext: modelContext
         )
+        
         for plannedMeal in meals {
             if !plannedMeal.guestsGroups.contains(where: { $0.persistentModelID == group.persistentModelID }) {
                 plannedMeal.guestsGroups.append(group)
             }
         }
+        
         try? modelContext.save()
+    }
+    
+    private func toggleMealRequired() {
+        if noMealRequired {
+            let meals = planningViewModel.ensurePlannedMeal(
+                date: day,
+                slot: slot,
+                existingPlannedMeals: plannedMeals,
+                modelContext: modelContext
+            )
+            
+            for plannedMeal in meals {
+                plannedMeal.noMealRequired = false
+            }
+            
+            try? modelContext.save()
+        } else {
+            markNoMealRequiredAction()
+        }
     }
     
     private func removeGuest(_ guest: Guest) {
@@ -197,13 +242,14 @@ struct chipView: View {
         day: Date(), slot: .evening,
         plannedMeals: [],
         allGuests: [], allGroups: [group],
-        planningViewModel: PlanningViewModel()
+        planningViewModel: PlanningViewModel(), markNoMealRequiredAction: {}
     )
     
     ConvivesField(
         day: Date(), slot: .evening,
         plannedMeals: [PlannedMeal(date: Date(), slot: .evening, position: 1, guestsGroups: [group])],
         allGuests: [], allGroups: [group],
-        planningViewModel: PlanningViewModel()
+        planningViewModel: PlanningViewModel(), markNoMealRequiredAction: {}
     )
 }
+

@@ -45,6 +45,10 @@ struct PlanningMealFrame: View {
 
     let allGuests: [Guest]
     let allGroups: [GuestsGroup]
+    
+    var isDesactivated: Bool {
+        plannedMeals.contains { $0.noMealRequired }
+    }
 
     @State private var isTargeted: Bool = false
     @State private var targetedReplacementID: PersistentIdentifier?
@@ -59,7 +63,10 @@ struct PlanningMealFrame: View {
                         plannedMeals: plannedMeals,
                         allGuests: allGuests,
                         allGroups: allGroups,
-                        planningViewModel: planningViewModel
+                        planningViewModel: planningViewModel,
+                        markNoMealRequiredAction: {
+                            markNoMealRequired()
+                        }
                     )
                     //Spacer()
                     Divider()
@@ -90,7 +97,7 @@ struct PlanningMealFrame: View {
         .frame(minWidth: 150, maxWidth: .infinity)
         .background {
             RoundedRectangle(cornerRadius: 5)
-                .fill(itemColor().opacity(0.3))
+                .fill(isDesactivated ? .gray.opacity(0.5) : itemColor().opacity(0.3))
         }
     }
     
@@ -102,13 +109,13 @@ struct PlanningMealFrame: View {
             
             if notesBinding.wrappedValue.isEmpty {
                 Text("Notes")
-                    .foregroundStyle(itemColor())
+                    .foregroundStyle(isDesactivated ? .white : itemColor())
                     .opacity(0.7)
             }
             
             TextField("", text: notesBinding)
                 .fontWeight(.semibold)
-                .foregroundColor(itemColor())
+                .foregroundColor(isDesactivated ? .white : itemColor())
                 .multilineTextAlignment(.trailing)
                 .textFieldStyle(.plain)
                 .frame(width: 90)
@@ -120,7 +127,7 @@ struct PlanningMealFrame: View {
 
     private var emptyMealView: some View {
         HStack(alignment: .firstTextBaseline, spacing: 30) {
-            Text("Aucun repas prévu")
+            Text(isDesactivated ? "Aucun repas à prévoir" : "Aucun repas prévu")
                 .font(.callout)
                 .foregroundStyle(.gray)
 
@@ -195,6 +202,21 @@ struct PlanningMealFrame: View {
                 replaceableMealItem(for: plannedMeal)
             }
         }
+    }
+    
+    private func markNoMealRequired() {
+        for plannedMeal in plannedMealsWithMeal {
+            if let meal = plannedMeal.meal {
+                removeIngredientsFromShoppingList(for: meal, on: day)
+            }
+        }
+        
+        planningViewModel.markNoMealRequired(
+            date: day,
+            slot: slot,
+            existingPlannedMeals: plannedMeals,
+            modelContext: modelContext
+        )
     }
 
     // MARK: - Drop handling
@@ -384,6 +406,7 @@ struct PlanningMealFrame: View {
                 existingPlannedMeals: plannedMeals,
                 modelContext: modelContext
             )
+            
             addIngredientsToShoppingListFor(meal: selectedMeal, to: day)
             showMealPicker = false
         }

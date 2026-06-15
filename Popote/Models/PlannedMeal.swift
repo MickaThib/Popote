@@ -16,17 +16,19 @@ class PlannedMeal {
     var position: Int        // 0 = premier repas, 1 = deuxième
     
     var meal: MealItem?
+    var noMealRequired: Bool = false
     
     var guests: [Guest]
     var guestsGroups: [GuestsGroup]
     
     var notes: String?
 
-    init(date: Date, slot: MealSlot, position: Int, meal: MealItem? = nil, guests: [Guest] = [], guestsGroups: [GuestsGroup] = [], notes: String? = nil) {
+    init(date: Date, slot: MealSlot, position: Int, meal: MealItem? = nil, noMealRequired: Bool = false, guests: [Guest] = [], guestsGroups: [GuestsGroup] = [], notes: String? = nil) {
         self.date = Calendar.current.startOfDay(for: date)
         self.slot = slot
         self.position = position
         self.meal = meal
+        self.noMealRequired = noMealRequired
         self.guests = guests
         self.guestsGroups = guestsGroups
         self.notes = notes
