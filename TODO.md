@@ -8,7 +8,7 @@
 
 ## PLANNING
 - [X] Prévoir un cas "pas de repas à prévoir" ou "absence"
-- [ ] Revoir le design du planning imprimé
+- [X] Revoir le design du planning imprimé
 
 ### LISTE DE COURSE
 - [ ] Partage en texte : le pop-up s'affiche en haut de la fenêtre
@@ -34,3 +34,4 @@
 
 ## SETTINGS
 - [ ] Choisir la durée de la semaine et quel jour elle commence
+- [ ] Possibilité de modifier les couleurs du theme de l'app

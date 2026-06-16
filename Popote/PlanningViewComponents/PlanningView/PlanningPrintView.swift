@@ -13,7 +13,7 @@ struct PlanningPrintView: View {
     @Environment(\.modelContext) private var modelContext
 
     let weekToDisplay: Date
-    private let printContentWidth: CGFloat = 1000
+    private let printContentWidth: CGFloat = 800
     
     private let calendarViewModel = CalendarViewModel()
     private let planningViewModel = PlanningViewModel()
@@ -24,11 +24,28 @@ struct PlanningPrintView: View {
     @Query(sort: \Guest.name) private var allGuests: [Guest]
     @Query(sort: \GuestsGroup.title) private var allGroups: [GuestsGroup]
     
+    var title: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "fr_FR")
+        formatter.dateFormat = "d MMMM yyyy"
+        if let dateStart = CalendarViewModel.firstDayOfWeek(startWeekday: .friday, from: weekToDisplay) {
+            return "Planning de la semaine du \(formatter.string(from: dateStart))"
+        } else {
+            return "Planning de la semaine"
+        }
+    }
+    
     var body: some View {
                 
         VStack(spacing: 6) {
+            
+            Text(title)
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(Color.theme)
+                .padding(.bottom, 36)
+            
             HStack {
-                Spacer().frame(width: 158)
+                Spacer().frame(width: 118)
                 
                 Text("MIDI")
                     .frame(maxWidth: .infinity)
@@ -119,7 +136,7 @@ struct PlanningLinePrintView: View {
                     .font(.system(size: 10))
                     .foregroundStyle(Color.themeContrast)
             }
-            .frame(width: 150)
+            .frame(width: 110)
             .frame(maxHeight: .infinity)
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
@@ -176,6 +193,10 @@ struct PlanningLinePrintView: View {
         
         let allGuests: [Guest]
         let allGroups: [GuestsGroup]
+        
+        var isDesactivated: Bool {
+            plannedMeals.contains { $0.noMealRequired }
+        }
                 
         var body: some View {
             VStack {
@@ -193,7 +214,7 @@ struct PlanningLinePrintView: View {
                         if !pmNotes.isEmpty {
                             Spacer()
                             Text(pmNotes)
-                                .foregroundStyle(slot.color())
+                                .foregroundStyle(isDesactivated ? Color.gray : slot.color())
                                 .font(.system(size: 11, weight: .medium))
                         }
                     }
@@ -224,29 +245,29 @@ struct PlanningLinePrintView: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(itemColor().opacity(0.2))
+                    .fill(isDesactivated ? Color.gray.opacity(0.2) : itemColor().opacity(0.2))
             )
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(itemColor())
+                    .stroke(isDesactivated ? Color.gray : itemColor())
             }
         }
         
         private var emptyMealView: some View {
             HStack(alignment: .firstTextBaseline, spacing: 30) {
-                Text("Aucun repas prévu")
-                    .font(.callout)
+                Text(isDesactivated ? "Aucun repas à prévoir" : "Aucun repas prévu")
+                    .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(.gray)
             }
             .padding(.leading, 14)
-            .frame(maxWidth: .infinity, minHeight: 40, maxHeight: .infinity)
+            .frame(maxWidth: .infinity, minHeight: 60, maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 5)
                     .fill(Color.white)
             )
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(itemColor(), lineWidth: 1)
+                    .stroke(isDesactivated ? Color.gray : itemColor(), lineWidth: 1)
             }
         }
         
@@ -273,13 +294,12 @@ struct PlanningLinePrintView: View {
             }
             
             return AnyView(
-                PlanningMealItem(
+                PlanningPrintMealItem(
                     meal: meal,
                     slot: plannedMeal.slot,
-                    deleteAction: {},
-                    isTargetedForReplacement: false
+                    deleteAction: {}
                 )
-                .frame(minHeight: 40, maxHeight: .infinity)
+                .frame(minHeight: 60, maxHeight: .infinity)
                 .overlay {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(itemColor(), lineWidth: 2)
@@ -293,6 +313,55 @@ struct PlanningLinePrintView: View {
             } else {
                 return Color.evening
             }
+        }
+    }
+}
+
+struct PlanningPrintMealItem: View {
+    
+    let meal: MealItem
+    let slot: MealSlot
+    let deleteAction: () -> Void
+    @State private var isHovering: Bool = false
+    
+    var body: some View {
+        HStack {
+            Text(meal.title)
+                .font(.system(size: 20, weight: .bold))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(itemColor())
+                .padding(.vertical, 5)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color.white)
+                )
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(itemColor(), lineWidth: 2)
+        }
+        .overlay(alignment: .topTrailing, content: {
+            if isHovering {
+                Button("Supprimer", systemImage: "xmark.circle.fill") {
+                    deleteAction()
+                }
+                .foregroundStyle(itemColor())
+                .buttonStyle(.plain)
+                .labelStyle(.iconOnly)
+                .padding(5)
+            }
+        })
+        .onHover { hover in
+            isHovering = hover
+        }
+    }
+    
+    func itemColor() -> Color {
+        if slot == .noon {
+            return Color.noon
+        } else {
+            return Color.evening
         }
     }
 }
@@ -314,13 +383,17 @@ struct GuestFieldPrintView: View {
         unique(plannedMeals.flatMap(\.guestsGroups))
     }
     
+    private var noMealRequired: Bool {
+        plannedMeals.contains { $0.noMealRequired }
+    }
+    
     var body: some View {
         
         HStack(spacing: 6) {
             
             if selectedGuests.isEmpty && selectedGroups.isEmpty {
                 Text("Personne")
-                    .foregroundStyle(slot.color())
+                    .foregroundStyle(noMealRequired ? Color.gray : slot.color())
                     .font(.system(size: 11, weight: .medium))
                     .textCase(.uppercase)
             }

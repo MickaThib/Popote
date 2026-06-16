@@ -15,10 +15,10 @@ struct PDFExporter {
     
     static func print(view: some View, title: String = "Planning de la semaine") {
         
-        let pageSize = CGSize(width: 842, height: 595) // A4 paysage en points
+        let pageSize = CGSize(width: 595, height: 842) // A4 paysage en points
         let margin: CGFloat = 24
         
-        let availableHeight = pageSize.height - margin * 2
+        let availableWidth = pageSize.width - margin * 2
         
         /*
          On propose une largeur confortable au planning.
@@ -54,7 +54,7 @@ struct PDFExporter {
             
             pdfContext.beginPDFPage(nil)
             
-            let scale = min(1, availableHeight / renderedSize.height)
+            let scale = min(1, availableWidth / renderedSize.width)
             
             let scaledWidth = renderedSize.width * scale
             let scaledHeight = renderedSize.height * scale
@@ -78,7 +78,7 @@ struct PDFExporter {
         guard let pdfDocument = PDFDocument(data: data as Data) else { return }
         
         let printInfo = NSPrintInfo.shared.copy() as! NSPrintInfo
-        printInfo.orientation = .landscape
+        printInfo.orientation = .portrait
         printInfo.paperSize = pageSize
         printInfo.horizontalPagination = .fit
         printInfo.verticalPagination = .fit
