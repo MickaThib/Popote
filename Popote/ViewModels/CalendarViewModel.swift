@@ -69,7 +69,7 @@ class CalendarViewModel: ObservableObject {
     }
 }
 
-enum Weekday: Int {
+enum Weekday: Int, CaseIterable {
     case monday = 2
     case tuesday = 3
     case wednesday = 4
@@ -77,6 +77,18 @@ enum Weekday: Int {
     case friday = 6
     case saturday = 7
     case sunday = 1
+    
+    var string: String {
+        switch self {
+        case .monday: return "Lundi"
+        case .tuesday: return "Mardi"
+        case .wednesday: return "Mercredi"
+        case .thursday: return "Jeudi"
+        case .friday: return "Vendredi"
+        case .saturday: return "Samedi"
+        case .sunday: return "Dimanche"
+        }
+    }
 }
 
 struct Week: Identifiable, Hashable {

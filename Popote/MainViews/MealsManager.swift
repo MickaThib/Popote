@@ -14,6 +14,7 @@ struct MealsManager: View {
 
     @State var selectedMeal: MealItem? = nil
     @State var isEditingNewMeal: Bool = false
+    @State var showSettings: Bool = false
     
     var body: some View {
         HStack {
@@ -54,12 +55,15 @@ struct MealsManager: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
                 Button {
-                    //TODO: Settings
+                    showSettings = true
                 } label: {
                     Label("Réglages", systemImage: "gear")
                         .labelStyle(.iconOnly)
                 }
             }
+        }
+        .sheet(isPresented: $showSettings) {
+           SettingsView()
         }
     }
 }

@@ -1,7 +1,10 @@
 {
   "color-space-for-untagged-svg-colors" : "display-p3",
   "fill" : {
-    "automatic-gradient" : "srgb:0.40392,0.38431,0.64314,1.00000",
+    "linear-gradient" : [
+      "display-p3:0.73519,0.35667,1.00000,1.00000",
+      "srgb:0.44649,0.32521,1.00000,1.00000"
+    ],
     "orientation" : {
       "start" : {
         "x" : 0.5,
@@ -17,17 +20,14 @@
     {
       "layers" : [
         {
-          "blend-mode" : "normal",
-          "fill" : "none",
           "glass" : false,
-          "hidden" : false,
-          "image-name" : "4885e81b-200f-4e11-9a25-d80d03c38353.png",
-          "name" : "4885e81b-200f-4e11-9a25-d80d03c38353",
+          "image-name" : "4885e81b-200f-4e11-9a25-d80d03c38353 2.png",
+          "name" : "4885e81b-200f-4e11-9a25-d80d03c38353 2",
           "position" : {
-            "scale" : 1.19,
+            "scale" : 1.06,
             "translation-in-points" : [
-              -3.359375,
-              -0.9296875
+              -3.7099999999999227,
+              10.6640625
             ]
           }
         }

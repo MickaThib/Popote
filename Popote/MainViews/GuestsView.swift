@@ -12,6 +12,8 @@ struct GuestsView: View {
     
     @Query(sort: \Guest.name) var guests: [Guest]
     
+    @State var showSettings: Bool = false
+    
     var body: some View {
         
         HStack(spacing: 20) {
@@ -28,6 +30,19 @@ struct GuestsView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .shadow(color: Color.theme.opacity(0.3),radius: 6, x: 5, y: 5)
                 .padding(EdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 20))
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                Button {
+                    showSettings = true
+                } label: {
+                    Label("Réglages", systemImage: "gear")
+                        .labelStyle(.iconOnly)
+                }
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+           SettingsView()
         }
     }
 }

@@ -20,6 +20,8 @@ struct OrganizerView: View {
         formatter.dateFormat = "d MMMM yyyy"
         return "Planning de la semaine du \(formatter.string(from: weekToDisplay))"
     }
+    
+    @State var showSettings: Bool = false
         
     var body: some View {
         
@@ -130,12 +132,15 @@ struct OrganizerView: View {
             //MARK: Réglages
             ToolbarItemGroup(placement: .navigation) {
                 Button {
-                    //TODO: Settings
+                    showSettings = true
                 } label: {
                     Label("Réglages", systemImage: "gear")
                         .labelStyle(.iconOnly)
                 }
             }
+        }
+        .sheet(isPresented: $showSettings) {
+           SettingsView()
         }
     }
     
