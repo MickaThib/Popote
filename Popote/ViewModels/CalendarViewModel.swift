@@ -69,7 +69,11 @@ class CalendarViewModel: ObservableObject {
     }
 }
 
-enum Weekday: Int, CaseIterable {
+enum Weekday: Int, CaseIterable, Identifiable {
+    var id: Int {
+        self.rawValue
+    }
+    
     case monday = 2
     case tuesday = 3
     case wednesday = 4

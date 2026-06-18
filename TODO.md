@@ -32,4 +32,4 @@
 
 ## SETTINGS
 - [ ] Choisir la durée de la semaine et quel jour elle commence
-- [ ] Possibilité de modifier les couleurs du theme de l'app
+- [X] Possibilité de modifier les couleurs du theme de l'app

@@ -11,8 +11,9 @@ struct SettingsView: View {
     
     @Environment(AppSettings.self) private var appSettings
     @Environment(\.dismiss) var dismiss
-    @State var firstDay: Weekday = .friday
-    @State var numberOfDaysInPlanning: DaysInPlanning = .eightDays
+    @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
+    @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = 8
+    
     
     var body: some View {
         
@@ -29,15 +30,29 @@ struct SettingsView: View {
             
             Form {
                 Section(header: Text("Préférences")) {
-                    Picker(selection: $firstDay) {
-                        ForEach(Weekday.allCases, id: \.self) { day in
-                            Text(day.string)
+                    Picker(selection: Binding<Weekday>(
+                        get: {
+                            Weekday(rawValue: planningFirstDayRawValue) ?? .friday
+                        },
+                        set: { newValue in
+                            planningFirstDayRawValue = newValue.rawValue
+                        }
+                    )){
+                        ForEach(Weekday.allCases) { day in
+                            Text(day.string).tag(day)
                         }
                     } label: {
                         Text("Premier jour de la semaine")
                     }
-
-                    Picker(selection: $numberOfDaysInPlanning) {
+                    
+                    Picker(selection: Binding<DaysInPlanning>(
+                        get: {
+                            DaysInPlanning(rawValue: numberOfDaysInPlanningRawValue) ?? .eightDays
+                        },
+                        set: { newValue in
+                            numberOfDaysInPlanningRawValue = newValue.rawValue
+                        }
+                    )) {
                         ForEach(DaysInPlanning.allCases) { days in
                             Text(days.label).tag(days)
                         }
@@ -46,7 +61,6 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
                     
-                    //Text("Choix : \(numberOfDaysInPlanning.rawValue)")
                 }
                 Section(header: Text("Interface")) {
                     
@@ -56,7 +70,7 @@ struct SettingsView: View {
                             get: { Color(displayP3Hex: appSettings.mainColorHex) },
                             set: { newColor in
                                 appSettings.mainColorHex = newColor.displayP3HexString
-                        })
+                            })
                     )
                     
                     ColorPicker(
@@ -65,7 +79,7 @@ struct SettingsView: View {
                             get: { Color(displayP3Hex: appSettings.secondaryColorHex) },
                             set: { newColor in
                                 appSettings.secondaryColorHex = newColor.displayP3HexString
-                        })
+                            })
                     )
                     
                     Button("Réinitialiser les couleurs") {
