@@ -9,6 +9,8 @@ import SwiftUI
 
 struct IngredientCustomLabel: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     let title:String
     var newTitleAction: ((String) -> Void)?
     var deleteAction: () -> Void
@@ -60,7 +62,7 @@ struct IngredientCustomLabel: View {
             .padding(.trailing)
         }
         .frame(maxWidth: .infinity)
-        .foregroundStyle(Color.themeContrast)
+        .foregroundStyle(appSettings.mainColorContrast)
     }
     
     private func commitEdit() {

@@ -11,6 +11,7 @@ import SwiftData
 struct MealListView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     
     @Query(sort: \MealItem.title) private var meals: [MealItem]
     
@@ -54,7 +55,7 @@ struct MealListView: View {
             .padding(.horizontal)
             .padding(.vertical, 10)
             .background(
-                Color.theme
+                appSettings.mainColor
             )
             
             //MARK: Recherche

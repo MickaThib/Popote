@@ -9,6 +9,8 @@ import SwiftUI
 
 struct PlanningMealItem: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     let meal: MealItem
     let slot: MealSlot
     let deleteAction: () -> Void
@@ -54,9 +56,9 @@ struct PlanningMealItem: View {
     
     func itemColor() -> Color {
         if slot == .noon {
-            return Color.noon
+            return appSettings.secondaryColor
         } else {
-            return Color.evening
+            return appSettings.mainColor
         }
     }
 }

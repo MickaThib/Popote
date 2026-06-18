@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MealCustomLabel: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     let title:String
     let isSelected: Bool
     var newTitleAction: ((String) -> Void)?
@@ -22,14 +24,14 @@ struct MealCustomLabel: View {
         ZStack(alignment: .leading) {
             
             RoundedRectangle(cornerRadius: 5)
-                .fill(isSelected ? Color.theme.opacity(0.2) : Color.theme.opacity(0.1))
-                .stroke(isSelected ? Color.theme : .clear, lineWidth: 1)
+                .fill(isSelected ? appSettings.mainColor.opacity(0.2) : appSettings.mainColor.opacity(0.1))
+                .stroke(isSelected ? appSettings.mainColor : .clear, lineWidth: 1)
             
             HStack {
                 
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Color.theme)
+                    .foregroundStyle(appSettings.mainColor)
                     .padding(.leading)
                 
                 Spacer()

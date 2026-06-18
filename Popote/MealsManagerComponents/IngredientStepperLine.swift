@@ -9,6 +9,8 @@ import SwiftUI
 
 struct IngredientStepperLine: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     @Binding var ingredient: MealIngredient
     var onDelete: (() -> Void)?
     
@@ -27,7 +29,7 @@ struct IngredientStepperLine: View {
                     }
                 }
         }
-        .foregroundStyle(Color.themeContrast)
+        .foregroundStyle(appSettings.mainColorContrast)
         .padding(.horizontal)
     }
 }

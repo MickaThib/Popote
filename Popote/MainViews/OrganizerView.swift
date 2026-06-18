@@ -11,6 +11,7 @@ import SwiftData
 struct OrganizerView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
         
     @State var weekToDisplay: Date = Date()
     
@@ -68,7 +69,7 @@ struct OrganizerView: View {
                 .padding(.top, 12)
                 .padding(.bottom, 12)
                 .background(
-                    Color.theme
+                    appSettings.mainColor
                 )
                 
                 PlanningView(weekToDisplay: weekToDisplay)
@@ -80,7 +81,7 @@ struct OrganizerView: View {
             .clipShape(
                 RoundedRectangle(cornerRadius: 10)
             )
-            .shadow(color: Color.theme.opacity(0.3),radius: 6, x: 5, y: 5)
+            .shadow(color: appSettings.mainColor.opacity(0.3),radius: 6, x: 5, y: 5)
             
             //MARK: Volet droit
             VSplitView {
@@ -97,7 +98,7 @@ struct OrganizerView: View {
                 .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
             }
             .frame(width: 300)
-            .shadow(color: Color.theme.opacity(0.3),radius: 6, x: 5, y: 5)
+            .shadow(color: appSettings.mainColor.opacity(0.3),radius: 6, x: 5, y: 5)
 
         }
         .padding(.top, 20)
@@ -110,7 +111,7 @@ struct OrganizerView: View {
                 Button {
                     let exportView = PlanningPrintView(weekToDisplay: weekToDisplay)
                         .environment(\.modelContext, modelContext)
-                    PDFExporter.print(view: exportView, title: title)
+                    PDFExporter.print(view: exportView, appStettings: appSettings, title: title)
                 } label: {
                     Label("Imprimer le planning", systemImage: "printer")
                         .labelStyle(.iconOnly)

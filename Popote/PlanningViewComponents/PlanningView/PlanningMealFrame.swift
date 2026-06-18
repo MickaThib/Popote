@@ -11,6 +11,7 @@ import SwiftData
 struct PlanningMealFrame: View {
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     @Query(sort: \ShoppingList.weekStart) private var shoppingLists: [ShoppingList]
 
     let day: Date
@@ -413,7 +414,7 @@ struct PlanningMealFrame: View {
     }
 
     func itemColor() -> Color {
-        slot == .noon ? Color.noon : Color.evening
+        slot == .noon ? appSettings.secondaryColor : appSettings.mainColor
     }
 }
 

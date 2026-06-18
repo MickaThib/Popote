@@ -12,6 +12,7 @@ import SwiftData
 struct ShoppingListItem: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     
     let item: ShoppingItem
     var deleteAction: (() -> Void)?
@@ -53,7 +54,7 @@ struct ShoppingListItem: View {
                 .buttonStyle(.plain)
             
         }
-        .foregroundStyle(item.justAdded ? Color.noon : Color.themeContrast)
+        .foregroundStyle(item.justAdded ? appSettings.secondaryColor : appSettings.mainColorContrast)
         .opacity(item.isChecked ? 0.5 : 1)
         .onTapGesture {
             item.isChecked.toggle()

@@ -11,6 +11,7 @@ import SwiftData
 struct PlanningPrintView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
 
     let weekToDisplay: Date
     private let printContentWidth: CGFloat = 800
@@ -41,7 +42,7 @@ struct PlanningPrintView: View {
             
             Text(title)
                 .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(Color.theme)
+                .foregroundStyle(appSettings.mainColor)
                 .padding(.bottom, 36)
             
             HStack {
@@ -49,7 +50,7 @@ struct PlanningPrintView: View {
                 
                 Text("MIDI")
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(appSettings.mainColorContrast)
                     .font(.system(size: 14, weight: .bold))
                     .padding(.vertical, 3)
                     .background(
@@ -58,12 +59,12 @@ struct PlanningPrintView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.theme)
+                            .stroke(appSettings.mainColor)
                     )
                 
                 Text("SOIR")
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(appSettings.mainColorContrast)
                     .font(.system(size: 14, weight: .bold))
                     .padding(.vertical, 3)
                     .background(
@@ -72,7 +73,7 @@ struct PlanningPrintView: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.theme)
+                            .stroke(appSettings.mainColor)
                     )
             }
             
@@ -101,6 +102,8 @@ struct PlanningPrintView: View {
 
 struct PlanningLinePrintView: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     let modelContext: ModelContext
     let day: Date
     let planningViewModel:PlanningViewModel
@@ -119,7 +122,7 @@ struct PlanningLinePrintView: View {
     
     var dayFillColor: Color {
         if CalendarViewModel.isWeekend(day){
-            return Color.theme.opacity(0.2)
+            return appSettings.mainColor.opacity(0.2)
         } else {
             return Color.white
         }
@@ -131,16 +134,16 @@ struct PlanningLinePrintView: View {
                 Text(day.formatted(.dateTime.weekday(.wide)))
                     .font(.system(size: 14, weight: .bold))
                     .textCase(.uppercase)
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(appSettings.mainColorContrast)
                 Text(day.formatted(.dateTime.day().month(.wide)))
                     .font(.system(size: 10))
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(appSettings.mainColorContrast)
             }
             .frame(width: 110)
             .frame(maxHeight: .infinity)
             .overlay {
                 RoundedRectangle(cornerRadius: 5)
-                    .strokeBorder(Color.theme)
+                    .strokeBorder(appSettings.mainColor)
             }
             .background(
                 RoundedRectangle(cornerRadius: 5)
@@ -309,15 +312,19 @@ struct PlanningLinePrintView: View {
         
         func itemColor() -> Color {
             if slot == .noon {
-                return Color.noon
+                let settings = UserDefaults.standard.string(forKey: "secondaryColorHex") ?? "#FA8070"
+                return Color(displayP3Hex: settings)
             } else {
-                return Color.evening
+                let settings = UserDefaults.standard.string(forKey: "mainColorHex") ?? "#6762A4"
+                return Color(displayP3Hex: settings)
             }
         }
     }
 }
 
 struct PlanningPrintMealItem: View {
+    
+    @Environment(AppSettings.self) private var appSettings
     
     let meal: MealItem
     let slot: MealSlot
@@ -359,9 +366,9 @@ struct PlanningPrintMealItem: View {
     
     func itemColor() -> Color {
         if slot == .noon {
-            return Color.noon
+            return appSettings.secondaryColor
         } else {
-            return Color.evening
+            return appSettings.mainColor
         }
     }
 }

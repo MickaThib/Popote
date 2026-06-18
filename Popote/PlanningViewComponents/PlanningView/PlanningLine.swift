@@ -10,6 +10,8 @@ import SwiftData
 
 struct PlanningLine: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     let day: Date
     let planningViewModel:PlanningViewModel
     let calendarViewModel: CalendarViewModel
@@ -29,9 +31,9 @@ struct PlanningLine: View {
     
     var dayStrokeColor: Color {
         if isToday {
-            return Color.theme
+            return appSettings.mainColor
         } else if CalendarViewModel.isWeekend(day){
-            return Color.theme.opacity(0.2)
+            return appSettings.mainColor.opacity(0.2)
         } else {
             return Color.clear
         }
@@ -41,17 +43,17 @@ struct PlanningLine: View {
         if CalendarViewModel.isWeekend(day){
             return Color.white
         } else {
-            return Color.theme
+            return appSettings.mainColor
         }
     }
     
     var dayTextColor: Color {
         if isToday {
-            return Color.theme
+            return appSettings.mainColor
         } else if CalendarViewModel.isWeekend(day){
-            return Color.themeContrast
+            return appSettings.mainColorContrast
         } else {
-            return Color.themeContrast
+            return appSettings.mainColorContrast
         }
     }
     

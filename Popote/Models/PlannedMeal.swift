@@ -36,13 +36,18 @@ class PlannedMeal {
 }
 
 enum MealSlot:String, Codable, CaseIterable {
+    
     case noon = "Midi"
     case evening = "Soir"
     
     func color() -> Color {
         switch self {
-        case .evening: return Color.theme
-        case .noon: return Color.noon
+        case .evening:
+            let settings = UserDefaults.standard.string(forKey: "mainColorHex") ?? "#6762A4"
+            return Color(displayP3Hex: settings)
+        case .noon:
+            let settings = UserDefaults.standard.string(forKey: "secondaryColorHex") ?? "#FA8070"
+            return Color(displayP3Hex: settings)
         }
     }
 }

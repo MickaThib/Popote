@@ -9,6 +9,8 @@ import SwiftUI
 
 struct GuestListLineView: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     @Bindable var guest: Guest
     
     let deleteAction: () -> Void
@@ -38,7 +40,7 @@ struct GuestListLineView: View {
             if !isEditing {
                 Text(guest.name)
                     .font(.system(size: 18))
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(appSettings.mainColorContrast)
             } else {
                 TextField("Nom", text: $guest.name)
                     .font(.system(size: 18))
@@ -59,7 +61,7 @@ struct GuestListLineView: View {
                 } label: {
                     Image(systemName: "pencil.circle")
                         .font(.system(size: 22, weight: .light))
-                        .foregroundStyle(Color.themeContrast.opacity(0.5))
+                        .foregroundStyle(appSettings.mainColorContrast.opacity(0.5))
                 }
                 .buttonStyle(.plain)
             }
@@ -70,7 +72,7 @@ struct GuestListLineView: View {
                 } label: {
                     Image(systemName: "checkmark.circle")
                         .font(.system(size: 22, weight: .light))
-                        .foregroundStyle(Color.themeContrast.opacity(0.5))
+                        .foregroundStyle(appSettings.mainColorContrast.opacity(0.5))
                 }
                 .buttonStyle(.plain)
             }
@@ -81,7 +83,7 @@ struct GuestListLineView: View {
                 } label: {
                     Image(systemName: "trash.circle")
                         .font(.system(size: 22, weight: .light))
-                        .foregroundStyle(Color.themeContrast.opacity(0.5))
+                        .foregroundStyle(appSettings.mainColorContrast.opacity(0.5))
                 }
                 .buttonStyle(.plain)
             }

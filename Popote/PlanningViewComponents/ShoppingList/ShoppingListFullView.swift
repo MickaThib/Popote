@@ -12,6 +12,7 @@ import SwiftData
 struct ShoppingListFullView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     @EnvironmentObject private var shoppingPanelController: ShoppingListPanelController
     
     let startOfWeek: Date
@@ -121,7 +122,7 @@ struct ShoppingListFullView: View {
         }
         .foregroundStyle(Color.white)
         .frame(height: 45)
-        .background(Color.noon)
+        .background(appSettings.secondaryColor)
     }
     
     private func deleteAllItems() {

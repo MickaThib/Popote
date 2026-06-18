@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 struct EditMealView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     @Query(sort: \Ingredient.name) private var ingredients: [Ingredient]
 
     
@@ -33,7 +34,7 @@ struct EditMealView: View {
                     
                     Text("Ingrédients")
                         .font(.headline)
-                        .foregroundStyle(Color.themeContrast)
+                        .foregroundStyle(appSettings.mainColorContrast)
                     
                     EditMealIngredientList(meal: meal, ingredients: ingredients)
                     .frame(maxWidth: .infinity, minHeight: 80)
@@ -41,7 +42,7 @@ struct EditMealView: View {
                     
                     Text("Notes")
                         .font(.headline)
-                        .foregroundStyle(Color.themeContrast)
+                        .foregroundStyle(appSettings.mainColorContrast)
                     
                     TextField("Ajouter des notes...", text: $meal.notes, axis: .vertical)
                         .lineLimit(5...10)
@@ -63,6 +64,7 @@ struct EditMealView: View {
 struct PhotoView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     
     let meal: MealItem
     @State private var showImporter = false
@@ -98,7 +100,7 @@ struct PhotoView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 200)
                 .contentShape(RoundedRectangle(cornerRadius: 10))
-                .background(Color.theme.opacity(0.5))
+                .background(appSettings.mainColor.opacity(0.5))
             }
         }
         .overlay(alignment: .topTrailing) {
@@ -171,6 +173,7 @@ struct PhotoView: View {
 struct EditMealTextField: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
 
     @State private var isEditing = false
     @Binding var startEditing: Bool
@@ -183,7 +186,7 @@ struct EditMealTextField: View {
                 TextField("Nom de la recette", text: $meal.title)
                     .font(.system(size: 30))
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(appSettings.mainColorContrast)
                     .padding(.vertical, 16)
                     .focused($titleFocused)
                     .onSubmit {
@@ -193,7 +196,7 @@ struct EditMealTextField: View {
             } else {
                 Text(meal.title)
                     .font(.system(size: 30))
-                    .foregroundStyle(Color.theme)
+                    .foregroundStyle(appSettings.mainColor)
                     .fontWeight(.bold)
                     .padding(.vertical, 20)
             }
@@ -222,6 +225,7 @@ struct EditMealTextField: View {
 struct EditMealIngredientList: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     
     @Bindable var meal: MealItem
     let ingredients: [Ingredient]
@@ -271,7 +275,7 @@ struct EditMealIngredientList: View {
             } label: {
                 Image(systemName: "plus.circle")
                     .font(.system(size: 22, weight: .light))
-                    .foregroundStyle(Color.themeContrast)
+                    .foregroundStyle(appSettings.mainColorContrast)
                     .padding()
             }
             .buttonStyle(.plain)
@@ -294,12 +298,12 @@ struct EditMealIngredientList: View {
     
     private var backgroundShape: some View {
         RoundedRectangle(cornerRadius: 8)
-            .fill(isTargeted ? Color.theme.opacity(0.1) : Color.theme.opacity(0.05))
+            .fill(isTargeted ? appSettings.mainColor.opacity(0.1) : appSettings.mainColor.opacity(0.05))
     }
     
     private var borderShape: some View {
         RoundedRectangle(cornerRadius: 8)
-            .stroke(Color.theme, lineWidth: isTargeted ? 2 : 1)
+            .stroke(appSettings.mainColor, lineWidth: isTargeted ? 2 : 1)
     }
     
     private func deleteIngredient(_ ingredient: MealIngredient) {

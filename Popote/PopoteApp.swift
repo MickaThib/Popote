@@ -13,8 +13,12 @@ struct PopoteApp: App {
 
     let sharedModelContainer: ModelContainer
     @StateObject private var shoppingPanelController: ShoppingListPanelController
+    @State private var appSettings: AppSettings
 
     init() {
+        
+        let appSettings = AppSettings()
+        self._appSettings = State(initialValue: appSettings)
 
         // MARK: - Application Support Directory
 
@@ -116,7 +120,7 @@ struct PopoteApp: App {
             print("MODEL CONTAINER CREATED")
 
             self._shoppingPanelController = StateObject(
-                wrappedValue: ShoppingListPanelController(modelContainer: container)
+                wrappedValue: ShoppingListPanelController(modelContainer: container, appSettings: appSettings)
             )
 
         } catch {
@@ -133,6 +137,7 @@ struct PopoteApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(shoppingPanelController)
+                .environment(appSettings)
         }
         .modelContainer(sharedModelContainer)
     }

@@ -13,7 +13,7 @@ import PDFKit
 @MainActor
 struct PDFExporter {
     
-    static func print(view: some View, title: String = "Planning de la semaine") {
+    static func print(view: some View, appStettings: AppSettings, title: String = "Planning de la semaine") {
         
         let pageSize = CGSize(width: 595, height: 842) // A4 paysage en points
         let margin: CGFloat = 24
@@ -26,6 +26,7 @@ struct PDFExporter {
         */
         let renderer = ImageRenderer(
             content: view
+                .environment(appStettings)
                 .fixedSize(horizontal: false, vertical: true)
         )
         

@@ -11,12 +11,12 @@ import SwiftData
 struct GuestListView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     
     let guests: [Guest]
     
     @State private var showDeleteGuestAlert = false
     @State private var newGuestTextField = ""
-    @State private var newGuestColor: Color = Color.theme
     @State private var guestToDelete: Guest? = nil
     @State private var editingGuest: Guest?
     
@@ -41,9 +41,7 @@ struct GuestListView: View {
             .foregroundStyle(Color.white)
             .padding(.horizontal)
             .padding(.vertical, 10)
-            .background(
-                Color.noon
-            )
+            .background( appSettings.secondaryColor )
             
             List {
                 ForEach(guests) { guest in
@@ -84,7 +82,7 @@ struct GuestListView: View {
     }
     
     func addGuestAction() {
-        let newGuest = Guest(name: "Invité", colorHex: Color.theme.displayP3HexString)
+        let newGuest = Guest(name: "Invité", colorHex: appSettings.mainColorHex)
         modelContext.insert(newGuest)
         do { try modelContext.save() } catch { print(error) }
         editingGuest = newGuest

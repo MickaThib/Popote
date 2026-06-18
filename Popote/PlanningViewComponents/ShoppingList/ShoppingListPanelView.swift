@@ -10,6 +10,8 @@ import SwiftUI
 
 struct ShoppingListPanelView: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     let date: Date
     let closePanelAction: () -> Void
     
@@ -50,7 +52,7 @@ struct ShoppingListPanelView: View {
         }
         .foregroundStyle(Color.white)
         .frame(height: 45)
-        .background(Color.noon)
+        .background(appSettings.secondaryColor)
     }
 }
 

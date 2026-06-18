@@ -11,6 +11,7 @@ import SwiftData
 struct MealsManager: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
 
     @State var selectedMeal: MealItem? = nil
     @State var isEditingNewMeal: Bool = false
@@ -27,14 +28,14 @@ struct MealsManager: View {
                 Task { @MainActor in
                     isEditingNewMeal = true  // déclenché après que la vue est montée
                 }
-            })        .shadow(color: Color.theme.opacity(0.3),radius: 6, x: 5, y: 5)
+            })        .shadow(color: appSettings.mainColor.opacity(0.3),radius: 6, x: 5, y: 5)
 
                 .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 5))
                 .frame(minWidth: 300, maxWidth: 350)
             
             if let meal = selectedMeal {
                 EditMealView(meal: meal, startEditing: $isEditingNewMeal)
-                    .shadow(color: Color.theme.opacity(0.3),radius: 6, x: 5, y: 5)
+                    .shadow(color: appSettings.mainColor.opacity(0.3),radius: 6, x: 5, y: 5)
                     .padding(.vertical, 20)
                     .padding(.horizontal, 5)
 
@@ -45,7 +46,7 @@ struct MealsManager: View {
             }
             
             IngredientListView()
-                .shadow(color: Color.theme.opacity(0.3),radius: 6, x: 5, y: 5)
+                .shadow(color: appSettings.mainColor.opacity(0.3),radius: 6, x: 5, y: 5)
 
                 .padding(EdgeInsets(top: 20, leading: 5, bottom: 20, trailing: 20))
                 .frame(minWidth: 300, maxWidth: 350)

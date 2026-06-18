@@ -11,6 +11,8 @@ import SwiftData
 struct GuestsGroupsView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
+    
     @Query private var guestGroups: [GuestsGroup]
     
     @State private var showDeleteAlert = false
@@ -45,7 +47,7 @@ struct GuestsGroupsView: View {
             .foregroundStyle(Color.white)
             .padding(.horizontal)
             .padding(.vertical, 10)
-            .background( Color.theme )
+            .background( appSettings.mainColor )
             .frame(minWidth: 370)
             
             

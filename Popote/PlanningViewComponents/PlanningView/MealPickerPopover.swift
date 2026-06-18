@@ -10,6 +10,8 @@ import SwiftData
 
 struct MealPickerPopover: View {
     
+    @Environment(AppSettings.self) private var appSettings
+    
     let meals: [MealItem]
     let onSelect: (MealItem) -> Void
     @State private var hoveredMealID: MealItem.ID?
@@ -76,7 +78,7 @@ struct MealPickerPopover: View {
                         HStack {
                             Text(meal.title)
                                 .fontWeight(.medium)
-                                .foregroundStyle(Color.themeContrast)
+                                .foregroundStyle(appSettings.mainColorContrast)
                             
                             Spacer()
                         }
@@ -84,11 +86,11 @@ struct MealPickerPopover: View {
                         .padding(.horizontal, 10)
                         .background(
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(hoveredMealID == meal.id ? Color.theme.opacity(0.2) : Color.white)
+                                .fill(hoveredMealID == meal.id ? appSettings.mainColor.opacity(0.2) : Color.white)
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 4)
-                                .stroke(Color.theme)
+                                .stroke(appSettings.mainColor)
                         )
                         .onHover { hover in
                             hoveredMealID = hover ? meal.id : nil

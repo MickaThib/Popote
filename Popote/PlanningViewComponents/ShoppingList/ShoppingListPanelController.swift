@@ -14,9 +14,11 @@ final class ShoppingListPanelController: ObservableObject {
     
     private var panel: NSPanel?
     private let modelContainer: ModelContainer
+    private let appSettings: AppSettings
         
-    init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
+    init(modelContainer: ModelContainer, appSettings: AppSettings) {
+            self.modelContainer = modelContainer
+            self.appSettings = appSettings
     }
     
     @MainActor
@@ -31,6 +33,7 @@ final class ShoppingListPanelController: ObservableObject {
             self?.close()
         })
             .modelContainer(modelContainer)
+            .environment(appSettings)
             .frame(minWidth: 360, minHeight: 500)
         
         let hostingController = NSHostingController(rootView: contentView)

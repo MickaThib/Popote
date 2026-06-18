@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct MealList: View {
+    
+    @Environment(AppSettings.self) private var appSettings
         
     @Query(sort: \MealItem.title) var mealList: [MealItem]
     
@@ -62,9 +64,7 @@ struct MealList: View {
             }
             .foregroundStyle(Color.white)
             .frame(height: 45)
-            .background(
-                Color.theme
-            )
+            .background( appSettings.mainColor )
             
             if isSearchFieldVisible {
                 TextField("Rechercher un repas", text: $searchText)

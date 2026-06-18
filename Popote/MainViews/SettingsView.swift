@@ -9,13 +9,15 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @Environment(AppSettings.self) private var appSettings
     @Environment(\.dismiss) var dismiss
     @State var firstDay: Weekday = .friday
     @State var numberOfDaysInPlanning: DaysInPlanning = .eightDays
-    @State var mainColor: Color = .purple
-    @State var secondaryColor: Color = .orange
     
     var body: some View {
+        
+        @Bindable var appSettings = appSettings
+        
         VStack(alignment: .leading) {
             
             Text("Réglages")
@@ -47,8 +49,30 @@ struct SettingsView: View {
                     //Text("Choix : \(numberOfDaysInPlanning.rawValue)")
                 }
                 Section(header: Text("Interface")) {
-                    ColorPicker("Couleur principale", selection: $mainColor)
-                    ColorPicker("Couleur secondaire", selection: $secondaryColor)
+                    
+                    ColorPicker(
+                        "Couleur principale",
+                        selection: Binding(
+                            get: { Color(displayP3Hex: appSettings.mainColorHex) },
+                            set: { newColor in
+                                appSettings.mainColorHex = newColor.displayP3HexString
+                        })
+                    )
+                    
+                    ColorPicker(
+                        "Couleur secondaire",
+                        selection: Binding(
+                            get: { Color(displayP3Hex: appSettings.secondaryColorHex) },
+                            set: { newColor in
+                                appSettings.secondaryColorHex = newColor.displayP3HexString
+                        })
+                    )
+                    
+                    Button("Réinitialiser les couleurs") {
+                        appSettings.mainColorHex = "#6762A4"
+                        appSettings.secondaryColorHex = "#FA8070"
+                    }
+                    .buttonStyle(.borderless)
                 }
             }
             .formStyle(.grouped)

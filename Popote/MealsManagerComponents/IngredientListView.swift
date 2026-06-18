@@ -11,6 +11,7 @@ import SwiftData
 struct IngredientListView: View {
     
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     
     @Query(sort: \Ingredient.name) private var ingredients: [Ingredient]
     
@@ -52,9 +53,7 @@ struct IngredientListView: View {
             .foregroundStyle(.white)
             .padding(.horizontal)
             .padding(.vertical, 10)
-            .background(
-                Color.noon
-            )
+            .background( appSettings.secondaryColor )
             
             //MARK: Recherche
             TextField("Rechercher", text: $searchText)

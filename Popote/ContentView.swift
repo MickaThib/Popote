@@ -10,6 +10,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppSettings.self) private var appSettings
     
     var body: some View {
         VStack {
@@ -28,17 +29,7 @@ struct ContentView: View {
             }
         }
         .toolbarBackground(.hidden, for: .windowToolbar)
-        .background(
-//            LinearGradient(
-//                colors: [
-//                    .theme.opacity(0.2),
-//                    .theme.opacity(0.1)
-//                ],
-//                startPoint: .bottom,
-//                endPoint: .top
-//            )
-            Color.theme.opacity(0.1)
-        )
+        .background( appSettings.mainColor.opacity(0.1) )
     }
 }
 
