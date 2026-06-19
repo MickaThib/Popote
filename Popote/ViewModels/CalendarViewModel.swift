@@ -15,6 +15,8 @@ class CalendarViewModel: ObservableObject {
     
     @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
     @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = 8
+    @AppStorage("ShoppingDay") private var shoppingDayRawValue: Int = Weekday.saturday.rawValue
+    @AppStorage("ShoppingDayMoment") private var shoppingDayMomentRawValue: Int = ShoppingMoment.morning.rawValue
     
     var preferredFirstDay: Weekday {
         Weekday(rawValue: planningFirstDayRawValue) ?? .friday
@@ -51,11 +53,20 @@ class CalendarViewModel: ObservableObject {
         
         let calendar = CalendarViewModel.calendar
         let startOfDay = calendar.startOfDay(for: date)
-
-        return CalendarViewModel.firstDayOfWeek(
-            startWeekday: preferredFirstDay.next,
-            from: startOfDay
-        )
+        
+        // si on fait les courses le matin, la liste de courses commence le midi du même jour
+        if shoppingDayMomentRawValue == 0 {
+            return CalendarViewModel.firstDayOfWeek(
+                startWeekday: Weekday(rawValue: shoppingDayRawValue) ?? .saturday,
+                from: startOfDay
+            )
+        } else {
+            // si on fait les cours l'aprem ou le soir, elle commence le lendemain
+            return CalendarViewModel.firstDayOfWeek(
+                startWeekday: Weekday(rawValue: shoppingDayRawValue)?.next ?? .sunday,
+                from: startOfDay
+            )
+        }
     }
     
     func shoppingListDate(for planningDate: Date) -> Date {

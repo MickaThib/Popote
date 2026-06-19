@@ -13,6 +13,8 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
     @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = 8
+    @AppStorage("ShoppingDay") private var shoppingDay: Int = Weekday.saturday.rawValue
+    @AppStorage("ShoppingDayMoment") private var shoppingDayMomentRawValue: Int = ShoppingMoment.morning.rawValue
     
     
     var body: some View {
@@ -60,6 +62,37 @@ struct SettingsView: View {
                         Text("Nombre de jours à afficher")
                     }
                     .pickerStyle(.segmented)
+                    
+                    Picker(selection: Binding<Weekday>(
+                        get: {
+                            Weekday(rawValue: shoppingDay) ?? .saturday
+                        },
+                        set: { newValue in
+                            shoppingDay = newValue.rawValue
+                        }
+                    )){
+                        ForEach(Weekday.allCases) { day in
+                            Text(day.string).tag(day)
+                        }
+                    } label: {
+                        Text("Jour des courses")
+                    }
+                        
+                    Picker(selection: Binding<ShoppingMoment>(
+                        get: {
+                            ShoppingMoment(rawValue: shoppingDayMomentRawValue) ?? .morning
+                        },
+                        set: { newValue in
+                            shoppingDayMomentRawValue = newValue.rawValue
+                        }
+                    )) {
+                        ForEach(ShoppingMoment.allCases) { moment in
+                            Text(moment.label).tag(moment)
+                        }
+                    } label: {
+                        Text("")
+                    }
+                    .pickerStyle(.radioGroup)
                     
                 }
                 Section(header: Text("Interface")) {
@@ -124,6 +157,25 @@ enum DaysInPlanning: Int, CaseIterable, Identifiable {
             return "7 jours"
         case .eightDays:
             return "8 jours"
+        }
+    }
+}
+
+enum ShoppingMoment: Int, Identifiable, CaseIterable {
+    
+    case morning = 0
+    case afternoon = 1
+    
+    var id: Int {
+        rawValue
+    }
+    
+    var label: String {
+        switch self {
+        case .morning:
+            return "Matin"
+        case .afternoon:
+            return "Après-midi"
         }
     }
 }

@@ -14,6 +14,7 @@ struct OrganizerView: View {
     @Environment(AppSettings.self) private var appSettings
     
     @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
+    @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = 8
         
     @State var weekToDisplay: Date = Date()
     
@@ -154,7 +155,11 @@ struct OrganizerView: View {
         let startWeekday = Weekday(rawValue: planningFirstDayRawValue) ?? .friday
         
         guard let startOfWeek = CalendarViewModel.firstDayOfWeek(startWeekday: startWeekday, from: weekToDisplay),
-              let finalDate = CalendarViewModel.calendar.date(byAdding: .day, value: 7, to: startOfWeek)
+              let finalDate = CalendarViewModel.calendar.date(
+                  byAdding: .day,
+                  value: numberOfDaysInPlanningRawValue - 1,
+                  to: startOfWeek
+              )
         else {
             return "Planning de la semaine"
         }
