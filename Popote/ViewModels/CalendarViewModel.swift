@@ -14,6 +14,7 @@ class CalendarViewModel: ObservableObject {
     @Published var weeks: [Week] = []
     
     @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
+    @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = 8
     
     var preferredFirstDay: Weekday {
         Weekday(rawValue: planningFirstDayRawValue) ?? .friday
@@ -30,14 +31,14 @@ class CalendarViewModel: ObservableObject {
                 
         guard let startDay = CalendarViewModel.firstDayOfWeek(startWeekday: firstDay, from: date) else { return nil }
         
-        let days = (0..<8).compactMap {
+        let days = (0..<numberOfDaysInPlanningRawValue).compactMap {
             CalendarViewModel.calendar.date(byAdding: .day, value: $0, to: startDay)
         }
         
         return Week(id: startDay, days: days)
     }
     
-    // Helper : calcule le vendredi précédent (ou le jour même si c'est vendredi) en utilisant le composant .weekday
+    // Helper : calcule le jour de référence précédent (ou le jour même si c'est le même jour) en utilisant le composant .weekday
     static func firstDayOfWeek(startWeekday: Weekday, from date: Date) -> Date? {
         let startOfDay = calendar.startOfDay(for: date)
         // weekday: 1 = dimanche, 6 = vendredi (dans le calendrier grégorien)
@@ -47,8 +48,7 @@ class CalendarViewModel: ObservableObject {
     }
     
     func shoppingWeekStart(for date: Date) -> Date? {
-        let nextDayRawValue = preferredFirstDay.next.rawValue
-
+        
         let calendar = CalendarViewModel.calendar
         let startOfDay = calendar.startOfDay(for: date)
 

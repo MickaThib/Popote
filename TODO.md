@@ -31,4 +31,5 @@
 
 
 ## SETTINGS
-- [ ] Choisir la durée de la semaine et quel jour elle commence
+- [X] Choisir la durée de la semaine et quel jour elle commence
+- [ ] Ajouter une option "jour des courses" pour déterminer quand commence la liste de courses
