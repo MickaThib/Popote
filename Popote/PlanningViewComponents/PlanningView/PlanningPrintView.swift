@@ -14,7 +14,7 @@ struct PlanningPrintView: View {
     @Environment(AppSettings.self) private var appSettings
     
     @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
-
+    
     let weekToDisplay: Date
     private let printContentWidth: CGFloat = 800
     
@@ -32,7 +32,11 @@ struct PlanningPrintView: View {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "fr_FR")
         formatter.dateFormat = "d MMMM yyyy"
-        if let dateStart = CalendarViewModel.firstDayOfWeek(startWeekday: startWeekday, from: weekToDisplay) {
+        
+        if let dateStart = CalendarViewModel.firstDayOfWeek(
+            startWeekday: startWeekday,
+            from: weekToDisplay
+        ) {
             return "Planning de la semaine du \(formatter.string(from: dateStart))"
         } else {
             return "Planning de la semaine"
@@ -40,7 +44,7 @@ struct PlanningPrintView: View {
     }
     
     var body: some View {
-                
+        
         VStack(spacing: 6) {
             
             Text(title)
@@ -80,10 +84,7 @@ struct PlanningPrintView: View {
                     )
             }
             
-            if let days = calendarViewModel.generateWeek(
-                from: weekToDisplay,
-                firstDay: Weekday(rawValue: planningFirstDayRawValue) ?? .friday
-            )?.days {
+            if let days = calendarViewModel.generateWeek(from: weekToDisplay)?.days {
                 ForEach(days, id: \.self) { day in
                     PlanningLinePrintView(
                         modelContext: modelContext,
@@ -116,12 +117,7 @@ struct PlanningLinePrintView: View {
     let allGuests: [Guest]
     let allGroups: [GuestsGroup]
     
-    let calendar: Calendar = {
-        var cal = Calendar(identifier: .gregorian)
-        cal.locale = Locale(identifier: "fr_FR")
-        cal.firstWeekday = 2
-        return cal
-    }()
+    private let markerWidth: CGFloat = 26
     
     var dayFillColor: Color {
         if CalendarViewModel.isWeekend(day){
@@ -132,195 +128,239 @@ struct PlanningLinePrintView: View {
     }
     
     var body: some View {
-        HStack {
-            VStack {
-                Text(day.formatted(.dateTime.weekday(.wide)))
-                    .font(.system(size: 14, weight: .bold))
-                    .textCase(.uppercase)
-                    .foregroundStyle(appSettings.mainColorContrast)
-                Text(day.formatted(.dateTime.day().month(.wide)))
-                    .font(.system(size: 10))
-                    .foregroundStyle(appSettings.mainColorContrast)
-            }
-            .frame(width: 110)
-            .frame(maxHeight: .infinity)
-            .overlay {
-                RoundedRectangle(cornerRadius: 5)
-                    .strokeBorder(appSettings.mainColor)
-            }
-            .background(
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(dayFillColor)
-            )
+        HStack(spacing: 8) {
+            dayLabel
             
+            noonColumn
+                .frame(maxWidth: .infinity)
             
-            PlanningPrintFrameView(
-                modelContext: modelContext,
-                day: day,
-                slot: .noon,
-                planningViewModel: planningViewModel,
-                plannedMeals: planningViewModel.planned(
-                    for: day,
-                    slot: .noon,
-                    in: plannedMeals
-                ),
-                allGuests: allGuests,
-                allGroups: allGroups
-            )
-            
-            PlanningPrintFrameView(
-                modelContext: modelContext,
-                day: day,
-                slot: .evening,
-                planningViewModel: planningViewModel,
-                plannedMeals: planningViewModel.planned(
-                    for: day,
-                    slot: .evening,
-                    in: plannedMeals
-                ),
-                allGuests: allGuests,
-                allGroups: allGroups
-            )
+            eveningColumn
+                .frame(maxWidth: .infinity)
         }
         .frame(maxHeight: .infinity)
     }
     
-    struct PlanningPrintFrameView: View {
-        
-        let modelContext:ModelContext
-        
-        let day: Date
-        let slot: MealSlot
-        let planningViewModel:PlanningViewModel
-        let plannedMeals:[PlannedMeal]
-        private var plannedMealsWithMeal: [PlannedMeal] {
-            plannedMeals.filter { $0.meal != nil }
-        }
-        
-        let allGuests: [Guest]
-        let allGroups: [GuestsGroup]
-        
-        var isDesactivated: Bool {
-            plannedMeals.contains { $0.noMealRequired }
-        }
-                
-        var body: some View {
-            VStack {
-                HStack {
-                    GuestFieldPrintView(
-                        modelContext: modelContext,
-                        day: day,
-                        slot: slot,
-                        plannedMeals: plannedMeals,
-                        allGuests: allGuests,
-                        allGroups: allGroups
-                    )
-                    
-                    if let pmNotes = plannedMeals.first?.notes, !pmNotes.isEmpty {
-                        if !pmNotes.isEmpty {
-                            Spacer()
-                            Text(pmNotes)
-                                .foregroundStyle(isDesactivated ? Color.gray : slot.color())
-                                .font(.system(size: 11, weight: .medium))
-                        }
-                    }
-                   
-                    
-                }
-                .padding(.horizontal, 7)
-                .padding(.top, 7)
-                
-                if plannedMealsWithMeal.isEmpty {
-                    // Si aucun repas n'est prévu
-                    emptyMealView
-                        .padding(.horizontal, 7)
-                        .padding(.bottom, 7)
-                    
-                } else if plannedMealsWithMeal.count == 1 {
-                    // Si un seul repas est prévu : prévoir espace "plus" pour en ajouter un autre
-                    singleMealView
-                        .padding(.horizontal, 7)
-                        .padding(.bottom, 7)
-                } else {
-                    // Si deux repas (ou plus) sont prévus : répartir cases à égalité
-                    multipleMealsView
-                        .padding(.horizontal, 7)
-                        .padding(.bottom, 7)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(isDesactivated ? Color.gray.opacity(0.2) : itemColor().opacity(0.2))
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(isDesactivated ? Color.gray : itemColor())
-            }
-        }
-        
-        private var emptyMealView: some View {
-            HStack(alignment: .firstTextBaseline, spacing: 30) {
-                Text(isDesactivated ? "Aucun repas à prévoir" : "Aucun repas prévu")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.gray)
-            }
-            .padding(.leading, 14)
-            .frame(maxWidth: .infinity, minHeight: 60, maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(Color.white)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(isDesactivated ? Color.gray : itemColor(), lineWidth: 1)
-            }
-        }
-        
-        private var singleMealView: some View {
-            HStack {
-                if let plannedMeal = plannedMealsWithMeal.first {
-                    replaceableMealItem(for: plannedMeal)
-                }
-            }
-        }
-        
-        private var multipleMealsView: some View {
-            HStack {
-                ForEach(plannedMealsWithMeal) { plannedMeal in
-                    replaceableMealItem(for: plannedMeal)
-                }
-            }
-        }
-        
-        private func replaceableMealItem(for plannedMeal: PlannedMeal) -> some View {
+    private var dayLabel: some View {
+        VStack {
+            Text(day.formatted(.dateTime.weekday(.wide)))
+                .font(.system(size: 14, weight: .bold))
+                .textCase(.uppercase)
+                .foregroundStyle(appSettings.mainColorContrast)
             
-            guard let meal = plannedMeal.meal else {
-                return AnyView(emptyMealView)
+            Text(day.formatted(.dateTime.day().month(.wide)))
+                .font(.system(size: 10))
+                .foregroundStyle(appSettings.mainColorContrast)
+        }
+        .frame(width: 110)
+        .frame(maxHeight: .infinity)
+        .overlay {
+            RoundedRectangle(cornerRadius: 5)
+                .strokeBorder(appSettings.mainColor)
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 5)
+                .fill(dayFillColor)
+        }
+    }
+
+    private var noonColumn: some View {
+        HStack(spacing: 8) {
+            if calendarViewModel.shouldShowShoppingMarker(before: .noon, on: day) {
+                ShoppingMarkerPrintView(moment: calendarViewModel.shoppingMoment)
+                    .frame(width: markerWidth)
             }
             
-            return AnyView(
-                PlanningPrintMealItem(
-                    meal: meal,
-                    slot: plannedMeal.slot,
-                    deleteAction: {}
+            noonFrame
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    private var eveningColumn: some View {
+        HStack(spacing: 8) {
+            if calendarViewModel.shouldShowShoppingMarker(before: .evening, on: day) {
+                ShoppingMarkerPrintView(moment: calendarViewModel.shoppingMoment)
+                    .frame(width: markerWidth)
+            }
+            
+            eveningFrame
+                .frame(maxWidth: .infinity)
+            
+            if calendarViewModel.shouldShowShoppingMarkerAfterEvening(on: day) {
+                ShoppingMarkerPrintView(moment: calendarViewModel.shoppingMoment)
+                    .frame(width: markerWidth)
+            }
+        }
+    }
+    
+    private var noonFrame: some View {
+        PlanningPrintFrameView(
+            modelContext: modelContext,
+            day: day,
+            slot: .noon,
+            planningViewModel: planningViewModel,
+            plannedMeals: planningViewModel.planned(
+                for: day,
+                slot: .noon,
+                in: plannedMeals
+            ),
+            allGuests: allGuests,
+            allGroups: allGroups
+        )
+    }
+
+    private var eveningFrame: some View {
+        PlanningPrintFrameView(
+            modelContext: modelContext,
+            day: day,
+            slot: .evening,
+            planningViewModel: planningViewModel,
+            plannedMeals: planningViewModel.planned(
+                for: day,
+                slot: .evening,
+                in: plannedMeals
+            ),
+            allGuests: allGuests,
+            allGroups: allGroups
+        )
+    }
+    
+}
+
+struct PlanningPrintFrameView: View {
+    
+    let modelContext:ModelContext
+    
+    let day: Date
+    let slot: MealSlot
+    let planningViewModel:PlanningViewModel
+    let plannedMeals:[PlannedMeal]
+    private var plannedMealsWithMeal: [PlannedMeal] {
+        plannedMeals.filter { $0.meal != nil }
+    }
+    
+    let allGuests: [Guest]
+    let allGroups: [GuestsGroup]
+    
+    var isDesactivated: Bool {
+        plannedMeals.contains { $0.noMealRequired }
+    }
+    
+    var body: some View {
+        VStack {
+            HStack {
+                GuestFieldPrintView(
+                    modelContext: modelContext,
+                    day: day,
+                    slot: slot,
+                    plannedMeals: plannedMeals,
+                    allGuests: allGuests,
+                    allGroups: allGroups
                 )
-                .frame(minHeight: 60, maxHeight: .infinity)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 5)
-                        .stroke(itemColor(), lineWidth: 2)
+                
+                if let pmNotes = plannedMeals.first?.notes, !pmNotes.isEmpty {
+                    if !pmNotes.isEmpty {
+                        Spacer()
+                        Text(pmNotes)
+                            .foregroundStyle(isDesactivated ? Color.gray : slot.color())
+                            .font(.system(size: 11, weight: .medium))
+                    }
                 }
-            )
+                
+                
+            }
+            .padding(.horizontal, 7)
+            .padding(.top, 7)
+            
+            if plannedMealsWithMeal.isEmpty {
+                // Si aucun repas n'est prévu
+                emptyMealView
+                    .padding(.horizontal, 7)
+                    .padding(.bottom, 7)
+                
+            } else if plannedMealsWithMeal.count == 1 {
+                // Si un seul repas est prévu : prévoir espace "plus" pour en ajouter un autre
+                singleMealView
+                    .padding(.horizontal, 7)
+                    .padding(.bottom, 7)
+            } else {
+                // Si deux repas (ou plus) sont prévus : répartir cases à égalité
+                multipleMealsView
+                    .padding(.horizontal, 7)
+                    .padding(.bottom, 7)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(isDesactivated ? Color.gray.opacity(0.2) : itemColor().opacity(0.2))
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(isDesactivated ? Color.gray : itemColor())
+        }
+    }
+    
+    private var emptyMealView: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 30) {
+            Text(isDesactivated ? "Aucun repas à prévoir" : "Aucun repas prévu")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(.gray)
+        }
+        .padding(.leading, 14)
+        .frame(maxWidth: .infinity, minHeight: 60, maxHeight: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color.white)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(isDesactivated ? Color.gray : itemColor(), lineWidth: 1)
+        }
+    }
+    
+    private var singleMealView: some View {
+        HStack {
+            if let plannedMeal = plannedMealsWithMeal.first {
+                replaceableMealItem(for: plannedMeal)
+            }
+        }
+    }
+    
+    private var multipleMealsView: some View {
+        HStack {
+            ForEach(plannedMealsWithMeal) { plannedMeal in
+                replaceableMealItem(for: plannedMeal)
+            }
+        }
+    }
+    
+    private func replaceableMealItem(for plannedMeal: PlannedMeal) -> some View {
+        
+        guard let meal = plannedMeal.meal else {
+            return AnyView(emptyMealView)
         }
         
-        func itemColor() -> Color {
-            if slot == .noon {
-                let settings = UserDefaults.standard.string(forKey: "secondaryColorHex") ?? "#FA8070"
-                return Color(displayP3Hex: settings)
-            } else {
-                let settings = UserDefaults.standard.string(forKey: "mainColorHex") ?? "#6762A4"
-                return Color(displayP3Hex: settings)
+        return AnyView(
+            PlanningPrintMealItem(
+                meal: meal,
+                slot: plannedMeal.slot,
+                deleteAction: {}
+            )
+            .frame(minHeight: 60, maxHeight: .infinity)
+            .overlay {
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(itemColor(), lineWidth: 2)
             }
+        )
+    }
+    
+    func itemColor() -> Color {
+        if slot == .noon {
+            let settings = UserDefaults.standard.string(forKey: "secondaryColorHex") ?? "#FA8070"
+            return Color(displayP3Hex: settings)
+        } else {
+            let settings = UserDefaults.standard.string(forKey: "mainColorHex") ?? "#6762A4"
+            return Color(displayP3Hex: settings)
         }
     }
 }
@@ -450,6 +490,25 @@ struct ChipPrintView: View {
                 RoundedRectangle(cornerRadius: 5)
                     .strokeBorder(color, lineWidth: 1)
             }
+    }
+}
+
+struct ShoppingMarkerPrintView: View {
+    
+    let moment: ShoppingMoment
+    
+    var body: some View {
+        VStack(spacing: 3) {
+            Image(systemName: "cart.fill")
+                .font(.system(size: 12, weight: .semibold))
+        }
+        .foregroundStyle(.gray)
+        .frame(maxWidth: .infinity)
+        .frame(maxHeight: .infinity)
+        .background {
+            RoundedRectangle(cornerRadius: 13)
+                .fill(Color.gray.opacity(0.12))
+        }
     }
 }
 

@@ -11,7 +11,6 @@ import SwiftData
 struct PlanningView: View {
     
     @Environment(AppSettings.self) private var appSettings
-    @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
     
     let weekToDisplay: Date
     
@@ -25,38 +24,43 @@ struct PlanningView: View {
     @Query(sort: \GuestsGroup.title) private var allGroups: [GuestsGroup]
     
     var body: some View {
-        
         ScrollView {
+            slotsHeader
+            planningLines
+        }
+        .padding()
+    }
+    
+    private var slotsHeader: some View {
+        HStack {
+            Spacer().frame(width: 158)
             
-            HStack {
-                Spacer().frame(width: 158)
-                
-                Text("MIDI")
-                    .frame(maxWidth: .infinity)
-                    .foregroundStyle(appSettings.mainColorContrast)
-                    .font(.system(size: 14, weight: .bold))
-                    .padding(.vertical, 3)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(appSettings.mainColor.opacity(0.1))
-                    )
-
-                Text("SOIR")
-                    .frame(maxWidth: .infinity)
-                    .foregroundStyle(appSettings.mainColorContrast)
-                    .font(.system(size: 14, weight: .bold))
-                    .padding(.vertical, 3)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(appSettings.mainColor.opacity(0.1))
-                    )
-            }
-            .padding(.vertical, 0)
+            Text("MIDI")
+                .frame(maxWidth: .infinity)
+                .foregroundStyle(appSettings.mainColorContrast)
+                .font(.system(size: 14, weight: .bold))
+                .padding(.vertical, 3)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(appSettings.mainColor.opacity(0.1))
+                )
             
-            if let days = calendarViewModel.generateWeek(
-                from: weekToDisplay,
-                firstDay: Weekday(rawValue: planningFirstDayRawValue) ?? .friday
-            )?.days {
+            Text("SOIR")
+                .frame(maxWidth: .infinity)
+                .foregroundStyle(appSettings.mainColorContrast)
+                .font(.system(size: 14, weight: .bold))
+                .padding(.vertical, 3)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(appSettings.mainColor.opacity(0.1))
+                )
+        }
+        .padding(.vertical, 0)
+    }
+    
+    private var planningLines: some View {
+        Group {
+            if let days = calendarViewModel.generateWeek(from: weekToDisplay)?.days {
                 ForEach(days, id: \.self) { day in
                     PlanningLine(
                         day: day,
@@ -69,10 +73,10 @@ struct PlanningView: View {
                 }
             }
         }
-        .padding()
     }
 }
 
 #Preview {
     PlanningView(weekToDisplay: Date())
+        .environment(AppSettings())
 }

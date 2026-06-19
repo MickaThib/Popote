@@ -24,7 +24,7 @@ struct ShoppingListContainerView<Content: View>: View {
             date: Date,
             @ViewBuilder content: @escaping (ShoppingList?, Date) -> Content
         ) {
-            let start = calendarViewModel.shoppingWeekStart(for: date)!
+            let start = calendarViewModel.displayedShoppingListStart(forPlanningDate: date)
             self.startOfWeek = start
             self.content = content
             

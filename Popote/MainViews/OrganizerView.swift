@@ -13,10 +13,8 @@ struct OrganizerView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppSettings.self) private var appSettings
     
-    @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
-    @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = 8
-        
-    @State var weekToDisplay: Date = Date()
+    @State private var weekToDisplay: Date = Date()
+    @State private var showSettings: Bool = false
     
     private let calendarViewModel = CalendarViewModel()
     
@@ -27,91 +25,37 @@ struct OrganizerView: View {
         return "Planning de la semaine du \(formatter.string(from: weekToDisplay))"
     }
     
-    @State var showSettings: Bool = false
-        
     var body: some View {
-        
         HStack(spacing: 30) {
             
-            //MARK: Contenu principal
-            VStack (spacing: 0) {
-                //MARK: Navigation buttons
-                HStack(alignment: .firstTextBaseline) {
-                    Button {
-                        if let newWeekToDisplay = CalendarViewModel.calendar.date(byAdding: .day, value: -7, to: weekToDisplay) {
-                            weekToDisplay = newWeekToDisplay
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "chevron.left")
-                            Text("Précédente")
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Spacer()
-                    
-                    Text(createWeekTitleString())
-                        .font(.system(size: 18, weight: .bold))
-                    
-                    Spacer()
-                    
-                    Button {
-                        if let newWeekToDisplay = CalendarViewModel.calendar.date(byAdding: .day, value: 7, to: weekToDisplay) {
-                            weekToDisplay = newWeekToDisplay
-                        }
-                    } label: {
-                        HStack {
-                            Text("Suivante")
-                            Image(systemName: "chevron.right")
-                        }
-                    }
-                    .buttonStyle(.plain)
-
-                }
-                .foregroundStyle(Color.white)
-                .padding(.horizontal)
-                .padding(.top, 12)
-                .padding(.bottom, 12)
-                .background(
-                    appSettings.mainColor
-                )
+            // MARK: - Contenu principal
+            VStack(spacing: 0) {
+                planningNavigationHeader
                 
                 PlanningView(weekToDisplay: weekToDisplay)
                     .frame(minWidth: 700, maxWidth: .infinity)
             }
-            .background(
-                Color.white
-            )
-            .clipShape(
-                RoundedRectangle(cornerRadius: 10)
-            )
-            .shadow(color: appSettings.mainColor.opacity(0.3),radius: 6, x: 5, y: 5)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .shadow(color: appSettings.mainColor.opacity(0.3), radius: 6, x: 5, y: 5)
             
-            //MARK: Volet droit
+            // MARK: - Volet droit
             VSplitView {
-                
-                //Section haute
                 MealList()
-                .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
-
-                                
-                //Section basse
+                    .frame(minHeight: 100)
+                
                 ShoppingListView(
-                    date: calendarViewModel.shoppingListDate(for: weekToDisplay)
+                    date: calendarViewModel.displayedShoppingListStart(forPlanningDate: weekToDisplay)
                 )
-                .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
+                .frame(minHeight: 100)
             }
             .frame(width: 300)
-            .shadow(color: appSettings.mainColor.opacity(0.3),radius: 6, x: 5, y: 5)
-
+            .shadow(color: appSettings.mainColor.opacity(0.3), radius: 6, x: 5, y: 5)
         }
         .padding(.top, 20)
         .padding(.horizontal, 30)
         .padding(.bottom, 30)
         .toolbar {
-            
-            //MARK: Impression du planning en cours
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     let exportView = PlanningPrintView(weekToDisplay: weekToDisplay)
@@ -125,7 +69,6 @@ struct OrganizerView: View {
             
             ToolbarSpacer(.fixed)
             
-            //MARK: Retour à la date du jour
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     weekToDisplay = Date()
@@ -135,7 +78,6 @@ struct OrganizerView: View {
                 }
             }
             
-            //MARK: Réglages
             ToolbarItemGroup(placement: .navigation) {
                 Button {
                     showSettings = true
@@ -146,24 +88,69 @@ struct OrganizerView: View {
             }
         }
         .sheet(isPresented: $showSettings) {
-           SettingsView()
+            SettingsView()
+        }
+    }
+    
+    private var planningNavigationHeader: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Button {
+                moveDisplayedWeek(by: -7)
+            } label: {
+                HStack {
+                    Image(systemName: "chevron.left")
+                    Text("Précédente")
+                }
+            }
+            .buttonStyle(.plain)
+            
+            Spacer()
+            
+            Text(createWeekTitleString())
+                .font(.system(size: 18, weight: .bold))
+            
+            Spacer()
+            
+            Button {
+                moveDisplayedWeek(by: 7)
+            } label: {
+                HStack {
+                    Text("Suivante")
+                    Image(systemName: "chevron.right")
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .foregroundStyle(Color.white)
+        .padding(.horizontal)
+        .padding(.top, 12)
+        .padding(.bottom, 12)
+        .background(appSettings.mainColor)
+    }
+    
+    private func moveDisplayedWeek(by numberOfDays: Int) {
+        if let newWeekToDisplay = CalendarViewModel.calendar.date(
+            byAdding: .day,
+            value: numberOfDays,
+            to: weekToDisplay
+        ) {
+            weekToDisplay = newWeekToDisplay
         }
     }
     
     func createWeekTitleString() -> String {
-        
-        let startWeekday = Weekday(rawValue: planningFirstDayRawValue) ?? .friday
-        
-        guard let startOfWeek = CalendarViewModel.firstDayOfWeek(startWeekday: startWeekday, from: weekToDisplay),
-              let finalDate = CalendarViewModel.calendar.date(
-                  byAdding: .day,
-                  value: numberOfDaysInPlanningRawValue - 1,
-                  to: startOfWeek
-              )
-        else {
+        guard let startOfWeek = CalendarViewModel.firstDayOfWeek(
+            startWeekday: calendarViewModel.preferredFirstDay,
+            from: weekToDisplay
+        ),
+        let finalDate = CalendarViewModel.calendar.date(
+            byAdding: .day,
+            value: calendarViewModel.numberOfDaysInPlanning - 1,
+            to: startOfWeek
+        ) else {
             return "Planning de la semaine"
         }
-                        
+        
         let startDateStr = startOfWeek.formatted(.dateTime.day().month(.wide))
         let finalDateStr = finalDate.formatted(.dateTime.day().month(.wide).year())
         return "Semaine du " + startDateStr + " au " + finalDateStr
@@ -172,4 +159,5 @@ struct OrganizerView: View {
 
 #Preview {
     OrganizerView()
+        .environment(AppSettings())
 }

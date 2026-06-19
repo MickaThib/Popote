@@ -2,6 +2,7 @@
 
 ## GLOBAL
 - [ ] Prévoir des données pré-enregistrées ?
+- [ ] Au premier lancement, inviter à définir ses réglages
 
 ## SHOPPING LIST
 - [ ] Améliorer le rendu de la note exportée / Exporter via le partage iOS
@@ -31,6 +32,6 @@
 
 
 ## SETTINGS
-- [X] Choisir la durée de la semaine et quel jour elle commence
-- [ ] Ajouter une option "jour des courses" pour déterminer quand commence la liste de courses
+- [X] Ajouter une option "jour des courses" pour déterminer quand commence la liste de courses
       (préciser matin ou soir. Actuellement considéré comme le matin. Si c'est le soir, compter en réalité le lendemain)
+- [ ] Décider si on veut ou non afficher l'indicateur des courses
