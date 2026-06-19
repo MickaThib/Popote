@@ -17,6 +17,7 @@ struct PlanningMealFrame: View {
     let day: Date
     let slot: MealSlot
     let planningViewModel: PlanningViewModel
+    let calendarViewModel = CalendarViewModel()
 
     @Query(sort: \MealItem.title) private var meals: [MealItem]
     let plannedMeals: [PlannedMeal]
@@ -338,7 +339,7 @@ struct PlanningMealFrame: View {
     // MARK: - Shopping list
 
     private func normalizedStartOfWeek(for day: Date) -> Date? {
-        guard let weekStart = CalendarViewModel.shoppingWeekStart(for: day) else { return nil }
+        guard let weekStart = calendarViewModel.shoppingWeekStart(for: day) else { return nil }
         return CalendarViewModel.calendar.startOfDay(for: weekStart)
     }
 

@@ -11,6 +11,7 @@ import SwiftData
 struct PlanningView: View {
     
     @Environment(AppSettings.self) private var appSettings
+    @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
     
     let weekToDisplay: Date
     
@@ -54,7 +55,7 @@ struct PlanningView: View {
             
             if let days = calendarViewModel.generateWeek(
                 from: weekToDisplay,
-                firstDay: .friday
+                firstDay: Weekday(rawValue: planningFirstDayRawValue) ?? .friday
             )?.days {
                 ForEach(days, id: \.self) { day in
                     PlanningLine(

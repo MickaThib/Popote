@@ -12,6 +12,8 @@ struct PlanningPrintView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(AppSettings.self) private var appSettings
+    
+    @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
 
     let weekToDisplay: Date
     private let printContentWidth: CGFloat = 800
@@ -26,10 +28,11 @@ struct PlanningPrintView: View {
     @Query(sort: \GuestsGroup.title) private var allGroups: [GuestsGroup]
     
     var title: String {
+        let startWeekday = Weekday(rawValue: planningFirstDayRawValue) ?? .friday
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "fr_FR")
         formatter.dateFormat = "d MMMM yyyy"
-        if let dateStart = CalendarViewModel.firstDayOfWeek(startWeekday: .friday, from: weekToDisplay) {
+        if let dateStart = CalendarViewModel.firstDayOfWeek(startWeekday: startWeekday, from: weekToDisplay) {
             return "Planning de la semaine du \(formatter.string(from: dateStart))"
         } else {
             return "Planning de la semaine"
@@ -79,7 +82,7 @@ struct PlanningPrintView: View {
             
             if let days = calendarViewModel.generateWeek(
                 from: weekToDisplay,
-                firstDay: .friday
+                firstDay: Weekday(rawValue: planningFirstDayRawValue) ?? .friday
             )?.days {
                 ForEach(days, id: \.self) { day in
                     PlanningLinePrintView(

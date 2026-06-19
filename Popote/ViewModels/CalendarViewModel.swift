@@ -7,10 +7,17 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 class CalendarViewModel: ObservableObject {
     
     @Published var weeks: [Week] = []
+    
+    @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
+    
+    var preferredFirstDay: Weekday {
+        Weekday(rawValue: planningFirstDayRawValue) ?? .friday
+    }
     
     static let calendar: Calendar = {
         var cal = Calendar(identifier: .gregorian)
@@ -21,13 +28,13 @@ class CalendarViewModel: ObservableObject {
     
     func generateWeek(from date:Date, firstDay: Weekday) -> Week? {
                 
-        guard let startFriday = CalendarViewModel.firstDayOfWeek(startWeekday: firstDay, from: date) else { return nil }
+        guard let startDay = CalendarViewModel.firstDayOfWeek(startWeekday: firstDay, from: date) else { return nil }
         
         let days = (0..<8).compactMap {
-            CalendarViewModel.calendar.date(byAdding: .day, value: $0, to: startFriday)
+            CalendarViewModel.calendar.date(byAdding: .day, value: $0, to: startDay)
         }
         
-        return Week(id: startFriday, days: days)
+        return Week(id: startDay, days: days)
     }
     
     // Helper : calcule le vendredi précédent (ou le jour même si c'est vendredi) en utilisant le composant .weekday
@@ -39,25 +46,27 @@ class CalendarViewModel: ObservableObject {
         return calendar.date(byAdding: .day, value: -daysToSubtract, to: startOfDay)
     }
     
-    static func shoppingWeekStart(for date: Date) -> Date? {
+    func shoppingWeekStart(for date: Date) -> Date? {
+        let nextDayRawValue = preferredFirstDay.next.rawValue
+
         let calendar = CalendarViewModel.calendar
         let startOfDay = calendar.startOfDay(for: date)
 
-        return firstDayOfWeek(
-            startWeekday: .saturday,
+        return CalendarViewModel.firstDayOfWeek(
+            startWeekday: preferredFirstDay.next,
             from: startOfDay
         )
     }
     
-    static func shoppingListDate(for planningDate: Date) -> Date {
-        guard let planningWeekStart = firstDayOfWeek(
-            startWeekday: .friday,
+    func shoppingListDate(for planningDate: Date) -> Date {
+        guard let planningWeekStart = CalendarViewModel.firstDayOfWeek(
+            startWeekday: preferredFirstDay,
             from: planningDate
         ) else {
             return planningDate
         }
 
-        return calendar.date(
+        return CalendarViewModel.calendar.date(
             byAdding: .day,
             value: 1,
             to: planningWeekStart
@@ -91,6 +100,18 @@ enum Weekday: Int, CaseIterable, Identifiable {
         case .friday: return "Vendredi"
         case .saturday: return "Samedi"
         case .sunday: return "Dimanche"
+        }
+    }
+    
+    var next: Weekday {
+        switch self {
+        case .monday: return .tuesday
+        case .tuesday: return .wednesday
+        case .wednesday: return .thursday
+        case .thursday: return .friday
+        case .friday: return .saturday
+        case .saturday: return .sunday
+        case .sunday: return .monday
         }
     }
 }

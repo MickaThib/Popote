@@ -12,8 +12,12 @@ struct OrganizerView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(AppSettings.self) private var appSettings
+    
+    @AppStorage("PlanningFirstDay") private var planningFirstDayRawValue: Int = Weekday.friday.rawValue
         
     @State var weekToDisplay: Date = Date()
+    
+    private let calendarViewModel = CalendarViewModel()
     
     var title: String {
         let formatter = DateFormatter()
@@ -93,7 +97,7 @@ struct OrganizerView: View {
                                 
                 //Section basse
                 ShoppingListView(
-                    date: CalendarViewModel.shoppingListDate(for: weekToDisplay)
+                    date: calendarViewModel.shoppingListDate(for: weekToDisplay)
                 )
                 .frame(minHeight: 100) // hauteur minimale pour éviter l'écrasement
             }
@@ -147,7 +151,9 @@ struct OrganizerView: View {
     
     func createWeekTitleString() -> String {
         
-        guard let startOfWeek = CalendarViewModel.firstDayOfWeek(startWeekday: .friday, from: weekToDisplay),
+        let startWeekday = Weekday(rawValue: planningFirstDayRawValue) ?? .friday
+        
+        guard let startOfWeek = CalendarViewModel.firstDayOfWeek(startWeekday: startWeekday, from: weekToDisplay),
               let finalDate = CalendarViewModel.calendar.date(byAdding: .day, value: 7, to: startOfWeek)
         else {
             return "Planning de la semaine"

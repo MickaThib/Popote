@@ -124,4 +124,5 @@ struct PlanningLine: View {
                  allGuests: [],
                  allGroups: []
     )
+    .environment(AppSettings())
 }

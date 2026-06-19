@@ -14,6 +14,7 @@ struct ShoppingListContainerView<Content: View>: View {
     
     let startOfWeek: Date
     let content: (ShoppingList?, Date) -> Content
+    private let calendarViewModel = CalendarViewModel()
     
     @Query private var shoppingLists: [ShoppingList]
     
@@ -23,7 +24,7 @@ struct ShoppingListContainerView<Content: View>: View {
             date: Date,
             @ViewBuilder content: @escaping (ShoppingList?, Date) -> Content
         ) {
-            let start = CalendarViewModel.shoppingWeekStart(for: date)!
+            let start = calendarViewModel.shoppingWeekStart(for: date)!
             self.startOfWeek = start
             self.content = content
             
