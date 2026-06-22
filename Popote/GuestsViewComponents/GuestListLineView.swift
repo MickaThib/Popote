@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GuestListLineView: View {
     
@@ -46,11 +47,27 @@ struct GuestListLineView: View {
                     .font(.system(size: 18))
                     .textFieldStyle(.roundedBorder)
                     .focused($nameFieldFocused)
-                    .onAppear { nameFieldFocused = true }
+                    .onAppear {
+                        if isEditing {
+                            DispatchQueue.main.async {
+                                nameFieldFocused = true
+                            }
+                        }
+                    }
+                    .onChange(of: isEditing, { _, newValue in
+                        if newValue {
+                            DispatchQueue.main.async {
+                                nameFieldFocused = true
+                            }
+                        } else {
+                            nameFieldFocused = false
+                        }
+                    })
                     .onSubmit { stopEditing() }
                 
                 ColorPicker("Couleur", selection: colorBinding, supportsOpacity: false)
                     .labelsHidden()
+                    .id(guest.persistentModelID)
             }
             
             Spacer()

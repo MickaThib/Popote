@@ -53,15 +53,18 @@ struct GuestListView: View {
                         },
                         isEditing: editingGuest == guest,
                         startEditing: {
+                            NSColorPanel.shared.close()
                             editingGuest = guest
                         },
                         stopEditing: {
-                            if let editedName = editingGuest?.name {
-                                if editedName.trimmingCharacters(in: .whitespacesAndNewlines) == "" {
-                                    editingGuest?.name = "Inconnu"
+                            if editingGuest == guest {
+                                if guest.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                    guest.name = "Inconnu"
                                 }
+
+                                editingGuest = nil
+                                NSColorPanel.shared.close()
                             }
-                            editingGuest = nil
                         })
                     .frame(height: 50)
                     .listRowSeparator(.hidden)
