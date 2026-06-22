@@ -1,37 +1,30 @@
 # TODO LIST
 
 ## GLOBAL
-- [ ] Prévoir des données pré-enregistrées ?
 - [ ] Au premier lancement, inviter à définir ses réglages
+
+## MEAL VIEW
+- [ ] Si un plat est créé et non modifié, le supprimer
 
 ## SHOPPING LIST
 - [ ] Améliorer le rendu de la note exportée / Exporter via le partage iOS
 
 ## PLANNING
 
+### EXPORT PRINT/PDF
+- [ ] Export non centré horizontalement
+
 ### LISTE DE COURSE
+- [ ] Dans la fenêtre détachée, ajouter options d'export de la liste
 - [ ] Partage en texte : le pop-up s'affiche en haut de la fenêtre
-- [ ] Partage en texte : formater le texte (en gros, en gras)
-- [ ] Partage en rappels : créer des sur-catégories ?
-- [ ] Partage en rappels : ordre alphabétique ?
-- [ ] Menu de partage plus visuel : utiliser des icones d'app ?
+- [ ] Partage en texte : formater le texte (en gros, en gras) ?
+- [ ] Menu de partage plus visuel : utiliser des icones d'app
 
-### DRAG & DROP
-- [ ] Drag depuis une case du planning vers l'extérieur = suppression ?
-
-
-## GROUP VIEW
-- [ ] Un seul groupe de convives en mode edition à la fois
-- [ ] Déplacer/réorganiser les groups ?
-- [ ] A la creation d'un groupe, se mettre en mode edition
-- [ ] Drop : ajout d'une réaction au drop (isTargeted commenté) ?
-
-
-## GUESTS VIEW
-- [ ] Si la couleur de l'icone est trop sombre, texte blanc ?
-
+## GROUP/GUESTS VIEW
+- [X] Un seul groupe de convives en mode edition à la fois
+- [X] A la creation d'un groupe, se mettre en mode edition
+- [X] Double clic ou clic pour éditer le nom d'un groupe
+- [ ] Quand on créé un convive, le selecteur de couleurs est focusé
 
 ## SETTINGS
-- [X] Ajouter une option "jour des courses" pour déterminer quand commence la liste de courses
-      (préciser matin ou soir. Actuellement considéré comme le matin. Si c'est le soir, compter en réalité le lendemain)
 - [ ] Décider si on veut ou non afficher l'indicateur des courses

@@ -14,6 +14,9 @@ struct GuestGroupView: View {
     
     let guestsGroup: GuestsGroup
     let deleteAction: () -> Void
+    let startEditingAction: () -> Void
+    let endEditingAction: () -> Void
+    let isEditing: Bool
     
     private var groupColor: Color {
         Color.init(displayP3Hex: guestsGroup.colorHex)
@@ -31,7 +34,6 @@ struct GuestGroupView: View {
     }
     
     @State private var isHovering = false
-    @State private var isEditing = false
     @State private var newName: String = ""
     @FocusState private var isFocused: Bool
     
@@ -47,6 +49,24 @@ struct GuestGroupView: View {
                             .textFieldStyle(.plain)
                             .padding(.horizontal)
                             .focused($isFocused)
+                            .onAppear {
+                                newName = guestsGroup.title
+                                
+                                if isEditing {
+                                    DispatchQueue.main.async {
+                                        isFocused = true
+                                    }
+                                }
+                            }
+                            .onChange(of: isEditing, { _, newValue in
+                                if newValue {
+                                    newName = guestsGroup.title
+                                    
+                                    DispatchQueue.main.async {
+                                        isFocused = true
+                                    }
+                                }
+                            })
                             .onSubmit {
                                 commitEdit()
                             }
@@ -66,6 +86,11 @@ struct GuestGroupView: View {
                     Text(guestsGroup.title)
                         .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(groupColor)
+                        .onTapGesture(count: 1) {
+                            if isEditing == false {
+                                startEditingAction()
+                            }
+                        }
                 }
             }
             .padding(.vertical, 10)
@@ -130,20 +155,27 @@ struct GuestGroupView: View {
     private var editDeleteButtons: some View {
         HStack(spacing: 4) {
             
-            Button {
-                if isEditing {
+            if isEditing {
+                Button {
                     commitEdit()
-                    isEditing = false
-                } else {
-                    isEditing = true
-                    isFocused = true
+                } label: {
+                    Image(systemName: "checkmark.circle")
+                        .foregroundStyle(groupColor)
+                        .font(.system(size: 16, weight: .light))
                 }
                 
-            } label: {
-                Image(systemName: "pencil")
-                    .foregroundStyle(groupColor)
-                    .font(.system(size: 16, weight: .light))
             }
+            // Décommenter pour afficher un bouton edit au hover
+//            else {
+//                Button {
+//                    isEditing = true
+//                    isFocused = true
+//                } label: {
+//                    Image(systemName: "pencil")
+//                        .foregroundStyle(groupColor)
+//                        .font(.system(size: 16, weight: .light))
+//                }
+//            }
             
             Button {
                 deleteAction()
@@ -158,9 +190,19 @@ struct GuestGroupView: View {
     }
     
     private func commitEdit() {
-        guard !newName.isEmpty else { return }
-        guestsGroup.title = newName
-        isEditing = false
+        let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if !trimmedName.isEmpty {
+            guestsGroup.title = trimmedName
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            print(error)
+        }
+
+        endEditingAction()
     }
     
     private func handleDrop(_ transfers: [GuestTransfer], _ location: CGPoint) -> Bool {
@@ -217,8 +259,8 @@ struct GroupedGuestItem: View {
         Guest(name: "Eliott", colorHex: "ccaa00"),
         Guest(name: "Soline", colorHex: "ff0055")
     ])
-    GuestGroupView(guestsGroup: guestsGroup, deleteAction: {})
+    GuestGroupView(guestsGroup: guestsGroup, deleteAction: {}, startEditingAction: {}, endEditingAction: {}, isEditing: false)
         .frame(width: 200)
-    GuestGroupView(guestsGroup: GuestsGroup(title: "Kidz", colorHex: "4020BB"), deleteAction: {})
+    GuestGroupView(guestsGroup: GuestsGroup(title: "Kidz", colorHex: "4020BB"), deleteAction: {}, startEditingAction: {}, endEditingAction: {}, isEditing: false)
         .frame(width: 200)
 }

@@ -16,6 +16,7 @@ struct GuestsGroupsView: View {
     @Query private var guestGroups: [GuestsGroup]
     
     @State private var showDeleteAlert = false
+    @State private var editingGroup: GuestsGroup? = nil
     @State private var groupToDelete: GuestsGroup? = nil
         
     let columns = [
@@ -35,6 +36,7 @@ struct GuestsGroupsView: View {
                 Button {
                     let newGuestsGroup = GuestsGroup(title: "Groupe")
                     modelContext.insert(newGuestsGroup)
+                    editingGroup = newGuestsGroup
                     
                     do { try modelContext.save() } catch { print(error) }
                     
@@ -53,11 +55,21 @@ struct GuestsGroupsView: View {
             
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(guestGroups, id: \.self) { group in
-                        GuestGroupView(guestsGroup: group, deleteAction: {
+                    ForEach(guestGroups) { group in
+                        GuestGroupView(guestsGroup: group,
+                                       deleteAction: {
                             groupToDelete = group
                             showDeleteAlert = true
-                        })
+                        },
+                                       startEditingAction: {
+                            editingGroup = group
+                        },
+                                       endEditingAction: {
+                            if editingGroup == group {
+                                editingGroup = nil
+                            }
+                        },
+                                       isEditing: editingGroup == group)
                     }
                 }
                 .frame(minWidth: 320)
