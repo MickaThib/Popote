@@ -16,6 +16,7 @@ struct ShoppingListFrameView: View {
     @State private var showEmptyListAlert = false
     @State private var shareErrorMessage: String?
     @State private var showExportSuccess = false
+    @State private var showShareOptions = false
     
     private let reminderExporter = ShoppingReminderExporter()
     private let calendarViewModel = CalendarViewModel()
@@ -148,29 +149,43 @@ struct ShoppingListFrameView: View {
     }
     
     private var shareMenu: some View {
-        Menu {
-            Button {
-                Task {
-                    await exportToReminders()
-                }
-            } label: {
-                Label("Exporter vers Rappels", systemImage: "checklist")
-            }
-            
-            ShareLink(
-                item: shoppingListText,
-                subject: Text("Liste de courses Popote"),
-                message: Text("Voici la liste de courses.")
-            ) {
-                Label("Partager en texte", systemImage: "text.alignleft")
-            }
+        Button {
+            showShareOptions.toggle()
         } label: {
             Image(systemName: "square.and.arrow.up")
                 .padding(.trailing)
                 .font(.system(size: 18))
         }
         .buttonStyle(.plain)
-        .disabled(!isShareMenuActive)
+        .popover(isPresented: $showShareOptions, arrowEdge: .bottom) {
+            HStack(spacing: 8) {
+                MacShareOptionButton(
+                    title: "Rappels",
+                    systemImage: "checklist"
+                ) { _ in
+                    showShareOptions = false
+                    
+                    Task {
+                        await exportToReminders()
+                    }
+                }
+                
+                MacShareOptionButton(
+                    title: "Texte",
+                    systemImage: "text.alignleft"
+                ) { sender in
+                    let picker = NSSharingServicePicker(items: [shoppingListText])
+                    
+                    picker.show(
+                        relativeTo: sender.bounds,
+                        of: sender,
+                        preferredEdge: .minY
+                    )
+                }
+            }
+            .padding(8)
+
+        }
     }
     
     private func deleteAllItems() {
@@ -231,16 +246,31 @@ struct ShoppingListFrameView: View {
         var list = "Liste de courses du \(Date().formatted(.dateTime.day().month().year()))\n\n"
         
         for category in ShoppingCategory.allCases {
-            list.append("\(category.rawValue.uppercased()) :\n\n")
-            
-            for item in sortedItems where item.category == category {
-                list.append("◎ \(item.name)\n")
+            if !categoryIsEmpty(items: sortedItems, category: category) {
+                list.append("\(category.rawValue.uppercased()) :\n\n")
+                
+                for item in sortedItems where item.category == category {
+                    list.append("• \(item.name)\n")
+                }
+                
+                list.append("\n")
             }
-            
-            list.append("\n")
         }
         
         return list
+    }
+    
+    private func categoryIsEmpty(items:[ShoppingItem], category: ShoppingCategory) -> Bool {
+        var sortedItems: [ShoppingItem] = []
+        for item in items where item.category == category {
+            sortedItems.append(item)
+        }
+        
+        if sortedItems.count <= 0 {
+            return true
+        } else {
+            return false
+        }
     }
 }
 
