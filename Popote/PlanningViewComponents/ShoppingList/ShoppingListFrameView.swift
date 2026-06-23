@@ -228,7 +228,7 @@ struct ShoppingListFrameView: View {
             }
             .map {
                 ShoppingReminderExportItem(
-                    name: $0.name,
+                    name: $0.name, quantity: $0.quantity,
                     isCompleted: $0.isChecked
                 )
             }
@@ -250,7 +250,7 @@ struct ShoppingListFrameView: View {
                 list.append("\(category.rawValue.uppercased()) :\n\n")
                 
                 for item in sortedItems where item.category == category {
-                    list.append("• \(item.name)\n")
+                    list.append("• \(item.name) - x\(item.quantity)\n")
                 }
                 
                 list.append("\n")

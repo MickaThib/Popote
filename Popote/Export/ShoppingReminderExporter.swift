@@ -27,7 +27,7 @@ final class ShoppingReminderExporter {
         
         for item in items {
             let reminder = EKReminder(eventStore: eventStore)
-            reminder.title = item.name
+            reminder.title = "\(item.name) - x\(item.quantity)"
             reminder.calendar = calendar
             reminder.isCompleted = item.isCompleted
             
@@ -70,6 +70,7 @@ final class ShoppingReminderExporter {
 
 struct ShoppingReminderExportItem {
     let name: String
+    let quantity: Int
     let isCompleted: Bool
 }
 
