@@ -59,6 +59,16 @@ struct OrganizerView: View {
         .padding(.horizontal, 30)
         .padding(.bottom, 30)
         .toolbar {
+            
+            // MARK: DEBUG
+            ToolbarItem {
+                Button("Réinitialiser l’accueil") {
+                    UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
+                }
+            }
+            // END DEBUG
+            
+            
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
                     let exportView = PlanningPrintView(weekToDisplay: weekToDisplay)
@@ -89,6 +99,8 @@ struct OrganizerView: View {
                         .labelStyle(.iconOnly)
                 }
             }
+            
+            
         }
         .sheet(isPresented: $showSettings) {
             SettingsView {
