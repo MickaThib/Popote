@@ -20,8 +20,5 @@
 - [ ] Partage en texte : formater le texte (en gros, en gras) ?
 - [ ] Menu de partage plus visuel : utiliser des icones d'app
 
-## GROUP/GUESTS VIEW
-- [X] Quand on créé un convive, le selecteur de couleurs est focusé
-
 ## SETTINGS
-- [ ] Décider si on veut ou non afficher l'indicateur des courses
+- [X] Décider si on veut ou non afficher l'indicateur des courses

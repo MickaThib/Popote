@@ -16,6 +16,13 @@ struct SettingsView: View {
     @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = DaysInPlanning.eightDays.rawValue
     @AppStorage("ShoppingDay") private var shoppingDayRawValue: Int = Weekday.saturday.rawValue
     @AppStorage("ShoppingDayMoment") private var shoppingDayMomentRawValue: Int = ShoppingMoment.morning.rawValue
+    @AppStorage("ShowShoppingMomentIndicator") private var showShoppingMomentIndicator: Bool = true
+    
+    let validationAction: (() -> Void)?
+    
+    init(validationAction: (()-> Void)? = nil) {
+        self.validationAction = validationAction
+    }
     
     var body: some View {
         @Bindable var appSettings = appSettings
@@ -63,6 +70,8 @@ struct SettingsView: View {
                         Text("")
                     }
                     .pickerStyle(.radioGroup)
+                    
+                    Toggle("Afficher l'indicateur du jour des courses", isOn: $showShoppingMomentIndicator)
                 }
                 
                 Section(header: Text("Interface")) {
@@ -100,7 +109,9 @@ struct SettingsView: View {
             HStack {
                 Spacer()
                 Button("Valider") {
+                    validationAction?()
                     dismiss()
+                    
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)

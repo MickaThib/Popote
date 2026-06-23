@@ -17,6 +17,8 @@ class CalendarViewModel: ObservableObject {
     @AppStorage("NumberOfDaysInPlanning") private var numberOfDaysInPlanningRawValue: Int = DaysInPlanning.eightDays.rawValue
     @AppStorage("ShoppingDay") private var shoppingDayRawValue: Int = Weekday.saturday.rawValue
     @AppStorage("ShoppingDayMoment") private var shoppingDayMomentRawValue: Int = ShoppingMoment.morning.rawValue
+    @AppStorage("ShowShoppingMomentIndicator") private var showShoppingMomentIndicator: Bool = true
+
     
     var preferredFirstDay: Weekday {
         Weekday(rawValue: planningFirstDayRawValue) ?? .friday
@@ -180,19 +182,24 @@ class CalendarViewModel: ObservableObject {
 
     func shouldShowShoppingMarker(before slot: MealSlot, on date: Date) -> Bool {
         guard isShoppingDay(date) else { return false }
-
-        switch shoppingMoment {
-        case .morning:
-            return slot == .noon
-        case .afternoon:
-            return slot == .evening
-        case .evening:
+        
+        if showShoppingMomentIndicator {
+            
+            switch shoppingMoment {
+            case .morning:
+                return slot == .noon
+            case .afternoon:
+                return slot == .evening
+            case .evening:
+                return false
+            }
+        } else {
             return false
         }
     }
 
     func shouldShowShoppingMarkerAfterEvening(on date: Date) -> Bool {
-        isShoppingDay(date) && shoppingMoment == .evening
+        isShoppingDay(date) && shoppingMoment == .evening && showShoppingMomentIndicator
     }
 }
 

@@ -15,6 +15,7 @@ struct OrganizerView: View {
     
     @State private var weekToDisplay: Date = Date()
     @State private var showSettings: Bool = false
+    @State private var refreshID = UUID()
     
     private let calendarViewModel = CalendarViewModel()
     
@@ -34,6 +35,7 @@ struct OrganizerView: View {
                 
                 PlanningView(weekToDisplay: weekToDisplay)
                     .frame(minWidth: 700, maxWidth: .infinity)
+                    .id(refreshID)
             }
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -88,7 +90,9 @@ struct OrganizerView: View {
             }
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            SettingsView {
+                refreshID = UUID()
+            }
         }
     }
     
