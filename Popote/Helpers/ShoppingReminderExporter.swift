@@ -68,6 +68,11 @@ final class ShoppingReminderExporter {
     }
 }
 
+struct ShoppingReminderExportItem {
+    let name: String
+    let isCompleted: Bool
+}
+
 enum ShoppingReminderExportError: LocalizedError {
     case accessDenied
     case noReminderSource

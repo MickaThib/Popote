@@ -1,28 +1,28 @@
-//
-//  ShoppingListFullView.swift
-//  Popote
-//
-//  Created by Mickael on 12/06/2026.
-//
-// Vue complète présente dans la vue planning globale (header + liste d'items)
-
 import SwiftUI
 import SwiftData
 
-struct ShoppingListFullView: View {
+struct ShoppingListFrameView: View {
+    
+    let startOfWeek: Date
+    let presentationMode: ShoppingListPresentationMode
+    let closePanelAction: (() -> Void)?
     
     @Environment(\.modelContext) private var modelContext
     @Environment(AppSettings.self) private var appSettings
     @EnvironmentObject private var shoppingPanelController: ShoppingListPanelController
     
-    let startOfWeek: Date
-    let currentList: ShoppingList?
+    @Query private var shoppingLists: [ShoppingList]
     
     @State private var showEmptyListAlert = false
     @State private var shareErrorMessage: String?
     @State private var showExportSuccess = false
     
     private let reminderExporter = ShoppingReminderExporter()
+    private let calendarViewModel = CalendarViewModel()
+    
+    private var currentList: ShoppingList? {
+        shoppingLists.first
+    }
     
     private var items: [ShoppingItem] {
         currentList?.items ?? []
@@ -31,6 +31,30 @@ struct ShoppingListFullView: View {
     private var isShareMenuActive: Bool {
         guard let currentList else { return false }
         return !currentList.items.isEmpty
+    }
+    
+    init(
+        date: Date,
+        presentationMode: ShoppingListPresentationMode,
+        closePanelAction: (() -> Void)? = nil
+    ) {
+        let start = calendarViewModel.displayedShoppingListStart(forPlanningDate: date)
+        self.startOfWeek = start
+        self.presentationMode = presentationMode
+        self.closePanelAction = closePanelAction
+        
+        let end = CalendarViewModel.calendar.date(
+            byAdding: .day,
+            value: 1,
+            to: start
+        )!
+        
+        _shoppingLists = Query(
+            filter: #Predicate<ShoppingList> { list in
+                list.weekStart >= start && list.weekStart < end
+            },
+            sort: \.weekStart
+        )
     }
     
     var body: some View {
@@ -47,12 +71,25 @@ struct ShoppingListFullView: View {
                 .fill(Color.white)
         )
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .padding(.top)
+        //.padding(.top)
         .alert("Vider la liste ?", isPresented: $showEmptyListAlert) {
             Button("Vider la liste", role: .destructive) {
                 deleteAllItems()
             }
+            
             Button("Annuler", role: .cancel) {}
+        }
+        .alert("Erreur", isPresented: .constant(shareErrorMessage != nil)) {
+            Button("OK") {
+                shareErrorMessage = nil
+            }
+        } message: {
+            Text(shareErrorMessage ?? "")
+        }
+        .alert("Export terminé", isPresented: $showExportSuccess) {
+            Button("OK") {}
+        } message: {
+            Text("La liste de courses a été exportée dans Rappels.")
         }
     }
     
@@ -66,14 +103,7 @@ struct ShoppingListFullView: View {
             
             Spacer()
             
-            Button {
-                shoppingPanelController.show(weekToDisplay: startOfWeek)
-            } label: {
-                Image(systemName: "arrow.down.backward.and.arrow.up.forward.rectangle")
-                    .font(.system(size: 18))
-                    .padding(.trailing, 7)
-            }
-            .buttonStyle(.plain)
+            presentationButton
             
             Button {
                 showEmptyListAlert = true
@@ -83,50 +113,70 @@ struct ShoppingListFullView: View {
                     .padding(.trailing, 7)
             }
             .buttonStyle(.plain)
+            .disabled(items.isEmpty)
             
-            Menu {
-                Button {
-                    Task {
-                        await exportToReminders()
-                    }
-                } label: {
-                    Label("Exporter vers Rappels", systemImage: "checklist")
-                }
-                
-                ShareLink(
-                    item: shoppingListText,
-                    subject: Text("Liste de courses Popote"),
-                    message: Text("Voici la liste de courses.")
-                ) {
-                    Label("Partager en texte", systemImage: "text.alignleft")
-                }
-            } label: {
-                Image(systemName: "square.and.arrow.up")
-                    .padding(.trailing)
-                    .font(.system(size: 18))
-            }
-            .buttonStyle(.plain)
-            .disabled(!isShareMenuActive)
-            .alert("Erreur", isPresented: .constant(shareErrorMessage != nil)) {
-                Button("OK") {
-                    shareErrorMessage = nil
-                }
-            } message: {
-                Text(shareErrorMessage ?? "")
-            }
-            .alert("Export terminé", isPresented: $showExportSuccess) {
-                Button("OK") {}
-            } message: {
-                Text("La liste de courses a été exportée dans Rappels.")
-            }
+            shareMenu
         }
         .foregroundStyle(Color.white)
         .frame(height: 45)
         .background(appSettings.secondaryColor)
     }
     
+    @ViewBuilder
+    private var presentationButton: some View {
+        switch presentationMode {
+        case .embedded:
+            Button {
+                shoppingPanelController.show(weekToDisplay: startOfWeek)
+            } label: {
+                Image(systemName: "arrow.down.backward.and.arrow.up.forward.rectangle")
+                    .font(.system(size: 18))
+                    .padding(.trailing, 7)
+            }
+            .buttonStyle(.plain)
+            
+        case .panel:
+            Button {
+                closePanelAction?()
+            } label: {
+                Image(systemName: "arrow.up.right.and.arrow.down.left.rectangle")
+                    .font(.system(size: 18))
+                    .padding(.trailing, 7)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+    
+    private var shareMenu: some View {
+        Menu {
+            Button {
+                Task {
+                    await exportToReminders()
+                }
+            } label: {
+                Label("Exporter vers Rappels", systemImage: "checklist")
+            }
+            
+            ShareLink(
+                item: shoppingListText,
+                subject: Text("Liste de courses Popote"),
+                message: Text("Voici la liste de courses.")
+            ) {
+                Label("Partager en texte", systemImage: "text.alignleft")
+            }
+        } label: {
+            Image(systemName: "square.and.arrow.up")
+                .padding(.trailing)
+                .font(.system(size: 18))
+        }
+        .buttonStyle(.plain)
+        .disabled(!isShareMenuActive)
+    }
+    
     private func deleteAllItems() {
-        for item in items {
+        let itemsToDelete = items
+        
+        for item in itemsToDelete {
             modelContext.delete(item)
         }
         
@@ -153,7 +203,9 @@ struct ShoppingListFullView: View {
     }
     
     private var reminderExportItems: [ShoppingReminderExportItem] {
-        guard let currentList else { return [] }
+        guard let currentList else {
+            return []
+        }
         
         return currentList.items
             .sorted {
@@ -182,7 +234,7 @@ struct ShoppingListFullView: View {
             list.append("\(category.rawValue.uppercased()) :\n\n")
             
             for item in sortedItems where item.category == category {
-                list.append("• \(item.name)\n")
+                list.append("◎ \(item.name)\n")
             }
             
             list.append("\n")
@@ -192,11 +244,7 @@ struct ShoppingListFullView: View {
     }
 }
 
-struct ShoppingReminderExportItem {
-    let name: String
-    let isCompleted: Bool
-}
-
-#Preview {
-    ShoppingListFullView(startOfWeek: Date(), currentList: nil)
+enum ShoppingListPresentationMode {
+    case embedded
+    case panel
 }

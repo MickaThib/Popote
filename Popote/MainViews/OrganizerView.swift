@@ -49,6 +49,7 @@ struct OrganizerView: View {
                 ShoppingListView(
                     date: calendarViewModel.displayedShoppingListStart(forPlanningDate: weekToDisplay)
                 )
+                .padding(.top)
                 .frame(minHeight: 100)
             }
             .frame(width: 300)
