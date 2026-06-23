@@ -18,6 +18,7 @@ struct MealListView: View {
     @Binding var selectedMeal: MealItem?
     @State var showDeleteAlert: Bool = false
     @State private var mealToDelete: MealItem?
+    let selectMeal: (MealItem) -> Void
     
     @State var searchText: String = ""
     var filteredMeals: [MealItem] {
@@ -90,7 +91,7 @@ struct MealListView: View {
                     .listRowSeparator(.hidden)
                     .frame(height: 30)
                     .onTapGesture {
-                        selectedMeal = meal
+                        selectMeal(meal)
                     }
             }
             .padding(.top, 0)
@@ -161,6 +162,7 @@ private struct MealListViewPreviewWrapper: View {
     var body: some View {
         MealListView(
             selectedMeal: $selectedMeal,
+            selectMeal: { selectedMeal = $0 },
             addMeal: {}
         )
     }
