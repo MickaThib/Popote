@@ -15,6 +15,7 @@ struct ShoppingListContentView: View {
     
     let startOfWeek: Date
     let currentList: ShoppingList?
+    @State var currentEditingItem: ShoppingItem? = nil
     private var items: [ShoppingItem] { currentList?.items ?? [] }
     
     var body: some View {
@@ -23,7 +24,17 @@ struct ShoppingListContentView: View {
                 Section(cat.rawValue) {
                     
                     ForEach(items(for: cat), id: \.self) { item in
-                        ShoppingListItem(item: item, deleteAction: { delete(item: item) })
+                        ShoppingListItem(
+                            item: item,
+                            deleteAction: { delete(item: item) },
+                            isEditing: currentEditingItem == item,
+                            startEditing: {
+                                currentEditingItem = item
+                            },
+                            endEditing: {
+                                currentEditingItem = nil
+                            }
+                        )
                             .listRowSeparator(.hidden)
                     }
                     

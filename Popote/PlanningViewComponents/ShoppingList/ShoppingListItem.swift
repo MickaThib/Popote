@@ -16,14 +16,59 @@ struct ShoppingListItem: View {
     
     let item: ShoppingItem
     var deleteAction: (() -> Void)?
+    let isEditing: Bool
+    var startEditing: () -> Void
+    var endEditing: () -> Void
+    
     @State var showDeleteAlert = false
+    @FocusState private var titleFieldFocused: Bool
+    
     
     var body: some View {
         HStack {
             Image(systemName: item.isChecked ? "inset.filled.circle" : "circle")
                 .font(.system(size: 18))
-            Text(item.name)
-                .fontWeight(.bold)
+            if isEditing {
+                TextField("", text: Binding(
+                    get: {
+                        item.name
+                    }, set: { newValue in
+                        item.name = newValue
+                    })
+                )
+                .focused($titleFieldFocused)
+                .onAppear {
+                    if isEditing {
+                        DispatchQueue.main.async {
+                            titleFieldFocused = true
+                        }
+                    }
+                }
+                .onChange(of: isEditing, { _, newValue in
+                    if newValue {
+                        DispatchQueue.main.async {
+                            titleFieldFocused = true
+                        }
+                    } else {
+                        titleFieldFocused = false
+                    }
+                })
+                .onChange(of: titleFieldFocused, { _, newValue in
+                    if newValue == false {
+                        endEditing()
+                    }
+                })
+                .onSubmit {
+                    do { try modelContext.save() } catch { print(error) }
+                    endEditing()
+                }
+            } else {
+                Text(item.name)
+                    .fontWeight(.bold)
+                    .onTapGesture {
+                        startEditing()
+                    }
+            }
             if item.quantity != 1 {
                 Text("x \(item.quantity)")
             }
@@ -76,6 +121,6 @@ struct ShoppingListItem: View {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: ShoppingItem.self, configurations: config)
     let item = ShoppingItem(name: "Concombre", quantity: 1)
-    ShoppingListItem(item: item, deleteAction: {})
+    ShoppingListItem(item: item, isEditing: false, startEditing: {}, endEditing: {})
         .modelContainer(container)
 }
