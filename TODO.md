@@ -1,8 +1,8 @@
 # TODO LIST
 
 ## GLOBAL
-- [ ] Au premier lancement, inviter à définir ses réglages
-
-## SHOPPING LIST
-- [X] Intégrer la quantité dans l'export de la liste de courses
+- [ ] Quand un aliment existe déjà, au lieu de gueuler l’insérer dans la liste
+- [ ] Pouvoir créer un repas depuis OrganizerView
+- [ ] Cliquer sur un élément de la liste de courses pour l’éditer
+- [ ] Supprimer un shoppingItem -> Entrée pour supprimer
 

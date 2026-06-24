@@ -57,7 +57,8 @@ final class ShoppingListPanelController: ObservableObject {
         panel.title = "Liste de courses"
         panel.contentViewController = hostingController
         panel.isFloatingPanel = true
-        panel.level = .floating
+        panel.level = .statusBar
+        panel.hidesOnDeactivate = false
         panel.collectionBehavior = [
             .canJoinAllSpaces,
             .fullScreenAuxiliary

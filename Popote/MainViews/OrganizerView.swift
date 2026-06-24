@@ -61,11 +61,11 @@ struct OrganizerView: View {
         .toolbar {
             
             // MARK: DEBUG
-            ToolbarItem {
-                Button("Réinitialiser l’accueil") {
-                    UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
-                }
-            }
+//            ToolbarItem {
+//                Button("Réinitialiser l’accueil") {
+//                    UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
+//                }
+//            }
             // END DEBUG
             
             
