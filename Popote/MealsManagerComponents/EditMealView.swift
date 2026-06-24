@@ -252,6 +252,10 @@ struct EditMealIngredientList: View {
                     meal.ingredients.append(newIngredient)
                     modelContext.insert(newIngredient)
                     do { try modelContext.save() } catch { print(error) }
+                } onInsertExisting: { existingIngredient in
+                    let existingMealIngredient = MealIngredient(ingredient: existingIngredient, quantity: 1)
+                    meal.ingredients.append(existingMealIngredient)
+                    do { try modelContext.save() } catch { print(error) }
                 }
             }
     }

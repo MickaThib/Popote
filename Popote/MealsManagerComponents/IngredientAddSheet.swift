@@ -13,6 +13,7 @@ struct IngredientAddSheet: View {
 
     let existingIngredients: [Ingredient]
     let onAdd: (String) -> Void
+    let onInsertExisting: (Ingredient) -> Void
 
     @State private var ingredientName = ""
     @State private var showDuplicateConfirmation = false
@@ -58,8 +59,19 @@ struct IngredientAddSheet: View {
             isPresented: $showDuplicateConfirmation,
             titleVisibility: .visible
         ) {
+            
+            Button("Insérer l’existant") {
 
-            Button("Ajouter quand même") {
+                if let existing = existingIngredients.first(where: {
+                    normalize($0.name) == normalize(ingredientName)
+                }) {
+                    onInsertExisting(existing)
+                    dismiss()
+                }
+            }
+            .keyboardShortcut(.defaultAction)
+
+            Button("Créer un doublon") {
 
                 showDuplicateConfirmation = false
 
@@ -118,22 +130,23 @@ private extension IngredientAddSheet {
 
     func ingredientExists(_ name: String) -> Bool {
 
-        func normalize(_ string: String) -> String {
-
-            string
-                .folding(
-                    options: [.caseInsensitive, .diacriticInsensitive],
-                    locale: .current
-                )
-                .replacingOccurrences(
-                    of: "\\s+",
-                    with: "",
-                    options: .regularExpression
-                )
-        }
-
         return existingIngredients.contains {
             normalize($0.name) == normalize(name)
         }
     }
+    
+    func normalize(_ string: String) -> String {
+
+        string
+            .folding(
+                options: [.caseInsensitive, .diacriticInsensitive],
+                locale: .current
+            )
+            .replacingOccurrences(
+                of: "\\s+",
+                with: "",
+                options: .regularExpression
+            )
+    }
+    
 }

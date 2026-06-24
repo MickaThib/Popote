@@ -114,7 +114,7 @@ struct IngredientListView: View {
                 existingIngredients: ingredients
             ) { name in
                 addIngredient(name: name)
-            }
+            } onInsertExisting: { _ in }
         }
     }
     
