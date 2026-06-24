@@ -59,8 +59,8 @@ struct IngredientCustomLabel: View {
                         Image(systemName: "pencil")
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal)
-                    
+                    .padding(.trailing, 6)
+
                 } else if isEditing {
                     
                     Button {
@@ -69,16 +69,18 @@ struct IngredientCustomLabel: View {
                         Image(systemName: "checkmark")
                     }
                     .buttonStyle(.plain)
-                    .padding(.horizontal)
+                    .padding(.trailing, 6)
                 }
             }
-            Button {
-                deleteAction()
-            } label: {
-                Image(systemName: "xmark")
+            if isHovering || isEditing {
+                Button {
+                    deleteAction()
+                } label: {
+                    Image(systemName: "xmark")
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing)
             }
-            .buttonStyle(.plain)
-            .padding(.trailing)
         }
         .frame(maxWidth: .infinity)
         .foregroundStyle(appSettings.mainColorContrast)
