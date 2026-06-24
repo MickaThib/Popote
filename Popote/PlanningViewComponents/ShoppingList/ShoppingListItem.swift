@@ -111,8 +111,8 @@ struct ShoppingListItem: View {
             }
         }
         .alert("Supprimer \(item.name) ?", isPresented: $showDeleteAlert) {
-            Button("Supprimer", role: .destructive) { deleteAction?() }
-            Button("Annuler", role: .cancel) {}
+            Button("Supprimer", role: .destructive) { deleteAction?() }.keyboardShortcut(.defaultAction)
+            Button("Annuler", role: .cancel) {}.keyboardShortcut(.cancelAction)
         }
     }
 }
