@@ -17,6 +17,7 @@ struct IngredientCustomLabel: View {
     
     @State private var isEditing: Bool = false
     @State private var newName: String = ""
+    @State private var isHovering: Bool = false
     @FocusState private var isFocused: Bool
     
     var body: some View {
@@ -31,27 +32,45 @@ struct IngredientCustomLabel: View {
                             commitEdit()
                         }
                     }
+                    .padding(.bottom, 1)
             } else {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
+                    .onTapGesture {
+                        newName = title
+                        isEditing = true
+                        isFocused = true
+                    }
             }
             
             Spacer()
             
             if newTitleAction != nil {
-                Button {
-                    if isEditing {
-                        commitEdit()
-                    } else {
-                        newName = title
-                        isEditing = true
-                        isFocused = true
+                if isHovering && !isEditing {
+                    Button {
+                        if isEditing {
+                            commitEdit()
+                        } else {
+                            newName = title
+                            isEditing = true
+                            isFocused = true
+                        }
+                    } label: {
+                        Image(systemName: "pencil")
                     }
-                } label: {
-                    Image(systemName: "pencil")
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
+                    
+                } else if isEditing {
+                    
+                    Button {
+                        commitEdit()
+                    } label: {
+                        Image(systemName: "checkmark")
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal)
                 }
-                .buttonStyle(.plain)
-                .padding(.horizontal)
             }
             Button {
                 deleteAction()
@@ -63,6 +82,9 @@ struct IngredientCustomLabel: View {
         }
         .frame(maxWidth: .infinity)
         .foregroundStyle(appSettings.mainColorContrast)
+        .onHover { hover in
+            isHovering = hover
+        }
     }
     
     private func commitEdit() {
