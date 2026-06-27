@@ -18,9 +18,11 @@ struct MealListView: View {
     @Binding var selectedMeal: MealItem?
     @State var showDeleteAlert: Bool = false
     @State private var mealToDelete: MealItem?
+    
     let selectMeal: (MealItem) -> Void
     
     @State var searchText: String = ""
+    
     var filteredMeals: [MealItem] {
         if searchText.isEmpty {
             meals
@@ -100,6 +102,29 @@ struct MealListView: View {
         .background(
             Color.white
         )
+        .background {
+            KeyEventView { event in
+                switch event.keyCode {
+                case 126: // flèche haut
+                    selectedMeal = previousFilteredMeal(
+                        selectedMeal: selectedMeal,
+                        from: filteredMeals
+                    )
+                    return true
+                    
+                case 125: // flèche bas
+                    selectedMeal = nextFilteredMeal(
+                        selectedMeal: selectedMeal,
+                        from: filteredMeals
+                    )
+                    return true
+                    
+                default:
+                    return false
+                }
+            }
+            .frame(width: 0, height: 0)
+        }
         .clipShape(
             RoundedRectangle(cornerRadius: 10)
         )
@@ -129,6 +154,40 @@ struct MealListView: View {
                 mealToDelete = nil
             }
         }
+    }
+    
+    func previousFilteredMeal(selectedMeal: MealItem?, from meals: [MealItem]) -> MealItem? {
+        guard !meals.isEmpty else { return nil }
+        
+        guard let selectedMeal,
+              let index = meals.firstIndex(of: selectedMeal)
+        else {
+            return meals.last
+        }
+        
+        guard index > meals.startIndex else {
+            return meals.first
+        }
+        
+        return meals[meals.index(before: index)]
+    }
+
+    func nextFilteredMeal(selectedMeal: MealItem?, from meals: [MealItem]) -> MealItem? {
+        guard !meals.isEmpty else { return nil }
+        
+        guard let selectedMeal,
+              let index = meals.firstIndex(of: selectedMeal)
+        else {
+            return meals.first
+        }
+        
+        let nextIndex = meals.index(after: index)
+        
+        guard nextIndex < meals.endIndex else {
+            return meals.last
+        }
+        
+        return meals[nextIndex]
     }
 }
 

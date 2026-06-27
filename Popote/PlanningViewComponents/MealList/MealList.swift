@@ -31,12 +31,24 @@ struct MealList: View {
     var body: some View {
         VStack (spacing: 0) {
             HStack (alignment: .firstTextBaseline) {
+                
                 Text("Mes repas")
                     .font(.system(size: 22))
                     .fontWeight(.bold)
                     .padding(.horizontal)
                     .padding(.vertical, 12)
+                
                 Spacer()
+                
+                Button {
+                    //TODO: Sheet pour ajouter un repas
+                } label: {
+                    Image(systemName: "plus")
+                        .padding(.trailing, 7)
+                        .font(.system(size: 18))
+                }
+                .buttonStyle(.plain)
+
                 Button {
                     if isSearchFieldVisible {
                         isSearchFocused = false
