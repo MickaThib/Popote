@@ -103,27 +103,27 @@ struct MealListView: View {
             Color.white
         )
         .background {
-            KeyEventView { event in
-                switch event.keyCode {
-                case 126: // flèche haut
-                    selectedMeal = previousFilteredMeal(
-                        selectedMeal: selectedMeal,
-                        from: filteredMeals
-                    )
-                    return true
-                    
-                case 125: // flèche bas
-                    selectedMeal = nextFilteredMeal(
-                        selectedMeal: selectedMeal,
-                        from: filteredMeals
-                    )
-                    return true
-                    
-                default:
-                    return false
-                }
-            }
-            .frame(width: 0, height: 0)
+//            KeyEventView { event in
+//                switch event.keyCode {
+//                case 126: // flèche haut
+//                    selectedMeal = previousFilteredMeal(
+//                        selectedMeal: selectedMeal,
+//                        from: filteredMeals
+//                    )
+//                    return true
+//                    
+//                case 125: // flèche bas
+//                    selectedMeal = nextFilteredMeal(
+//                        selectedMeal: selectedMeal,
+//                        from: filteredMeals
+//                    )
+//                    return true
+//                    
+//                default:
+//                    return false
+//                }
+//            }
+//            .frame(width: 0, height: 0)
         }
         .clipShape(
             RoundedRectangle(cornerRadius: 10)

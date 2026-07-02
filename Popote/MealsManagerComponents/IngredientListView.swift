@@ -85,6 +85,7 @@ struct IngredientListView: View {
                     deleteAction: {deleteIngredient(ingredient: ingredient)}
                 )
                 .listRowSeparator(.visible)
+                .contentShape(Rectangle())
                 .draggable(IngredientTransfer(persistentID: ingredient.persistentModelID))
             }
             .padding(.top, 0)

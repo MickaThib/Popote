@@ -36,11 +36,6 @@ struct IngredientCustomLabel: View {
             } else {
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
-                    .onTapGesture {
-                        newName = title
-                        isEditing = true
-                        isFocused = true
-                    }
             }
             
             Spacer()
